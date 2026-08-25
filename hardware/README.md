@@ -17,7 +17,10 @@ is invisible:
 | Pod | Contents | Approx size | Why there |
 |---|---|---|---|
 | **Front** | Camera module, touch pad | 26 × 14 × 17mm | Must aim forward; kept minimal because it's the part people see |
-| **Rear** | XIAO board, battery, buzzer | 62 × 23 × 19mm | Behind the ear — where hearing aids and BTE headphones put their bulk, and hair covers it |
+| **Rear** | XIAO board, audio amp, speaker | 59 × 31 × 23mm | Behind the ear — where hearing aids and BTE headphones put their bulk, and hair covers it |
+
+Rear-pod size is driven by the 28mm kit speaker. A bone-conduction
+transducer (21.5 × 14.5 × 8mm) shrinks it considerably.
 
 The ribbon runs along the temple arm between them. For a prototype, tuck it
 along the top edge with a dab of removable adhesive at one or two points.
@@ -41,8 +44,9 @@ minutes to print. Snap it onto your actual glasses:
 Only move on once it grips properly. This one step is the difference between
 one wasted evening and four.
 
-**2. Then the four real parts:** `front_base`, `front_lid`, `rear_base`,
-`rear_lid`.
+**2. Then everything else.** Slice `plate.stl` — all five parts laid out on
+one bed, 93 × 84mm total. Or print `front_base`, `front_lid`, `rear_base`,
+`rear_lid` individually if you'd rather stage them.
 
 ### Suggested slicer settings (Snapmaker U1, 0.4mm nozzle)
 
@@ -58,17 +62,16 @@ one wasted evening and four.
 
 ## MEASURE BEFORE YOU PRINT
 
-The parameters at the top of `vocalens_pod.scad` are **placeholders**, since
-the team currently has only the Freenove Ultimate Starter Kit and the XIAO
-Sense. These need real numbers:
+The parameters at the top of `vocalens_pod.scad` are **placeholders**. These
+need real numbers off your actual parts:
 
 | Parameter | What to measure |
 |---|---|
 | `TEMPLE_THICKNESS`, `TEMPLE_WIDTH` | The actual glasses you're clipping onto |
 | `CAM_LEN/WID/HGT` | The detached camera module |
 | `XIAO_LEN/WID/HGT` | The board **without** the camera module attached |
-| `BATT_*` | Sized for a common 3.7V 1S LiPo — not sourced yet |
-| `BUZZER_*` | Freenove kit passive buzzer, standing in for the eventual bone-conduction transducer |
+| `SPKR_DIA`, `SPKR_HGT` | The kit's round speaker |
+| `AMP_LEN/WID/HGT` | The kit's Audio Converter & Amplifier module |
 
 ## Sourcing
 
