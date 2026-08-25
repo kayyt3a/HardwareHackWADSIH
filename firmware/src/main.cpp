@@ -1,4 +1,4 @@
-// PocketLabel firmware — glasses form factor, XIAO ESP32S3 Sense
+// Vocalens firmware — glasses form factor, XIAO ESP32S3 Sense
 //
 // Trigger: wake word ("hey ..., what does this say?") OR a touch-pad tap on
 // the temple as a manual backup. On trigger: record the spoken question from
@@ -115,7 +115,7 @@ void captureAskAndSpeak() {
   String url = String("http://") + SERVER_HOST + ":" + SERVER_PORT + "/ask";
   http.begin(url);
 
-  String boundary = "PocketLabelBoundary";
+  String boundary = "VocalensBoundary";
   http.addHeader("Content-Type", "multipart/form-data; boundary=" + boundary);
 
   String imagePart = "--" + boundary + "\r\n"

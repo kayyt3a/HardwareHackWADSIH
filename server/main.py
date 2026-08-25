@@ -1,5 +1,5 @@
 """
-PocketLabel server — glasses form factor.
+Vocalens server — glasses form factor.
 
 /ask receives a JPEG frame and an optional recorded question (audio) from
 the XIAO ESP32S3 Sense. Flow:
@@ -36,9 +36,9 @@ import tts
 import vision
 
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger("pocketlabel")
+logger = logging.getLogger("vocalens")
 
-app = FastAPI(title="PocketLabel server")
+app = FastAPI(title="Vocalens server")
 app.mount("/setup", StaticFiles(directory="static", html=True), name="setup")
 
 CONFIDENCE_THRESHOLD = float(os.environ.get("CONFIDENCE_THRESHOLD", "0.55"))

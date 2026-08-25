@@ -1,4 +1,4 @@
-# PocketLabel — FourSight
+# Vocalens — FourSight
 
 Hardware Hack 2026 — Challenge 1C, "Eyes for Labels"
 
