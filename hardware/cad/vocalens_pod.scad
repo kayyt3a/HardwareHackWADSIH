@@ -231,13 +231,29 @@ else if (part == "fit_test") fit_test();
 else if (part == "plate") {
   // Everything on one bed, spaced 8mm apart. This is the single file to
   // slice if you just want to print the whole thing in one go.
+  //
+  // The lids are FLIPPED rib-side-up here. Their friction ribs protrude
+  // below the plate, so printed as-modelled the plate would float 1mm off
+  // the bed and the slicer would add supports under it. Flipped, the flat
+  // face is on the bed and the ribs print as small upward bumps — no
+  // supports, better surface finish on the visible side.
   fw = body_w(FRONT_W);
   rw = body_w(REAR_W);
-  translate([0, 0, 0])              front_base();
-  translate([0, fw + 8, 0])         front_lid();
-  translate([FRONT_LEN + 8, 0, 0])  rear_base();
-  translate([FRONT_LEN + 8, rw + 8, 0]) rear_lid();
-  translate([0, fw + rw + 24, 0])   fit_test();
+  // A flipped lid extends BACKWARDS in Y from its origin, so each lid's
+  // own width has to be added to the offset or it overlaps the base in
+  // front of it. Getting this wrong fuses two parts into one on the plate.
+  flw = fw - 2 * WALL - 2 * CLEARANCE;   // front lid width
+  rlw = rw - 2 * WALL - 2 * CLEARANCE;   // rear lid width
+  gap = 8;
+
+  translate([0, 0, 0])             front_base();
+  translate([FRONT_LEN + gap, 0, 0]) rear_base();
+  translate([0, fw + gap + flw, WALL])
+    rotate([180, 0, 0]) front_lid();
+  translate([FRONT_LEN + gap, rw + gap + rlw, WALL])
+    rotate([180, 0, 0]) rear_lid();
+  translate([0, max(fw + gap + flw, rw + gap + rlw) + gap + 6, 0])
+    fit_test();
 }
 else {
   translate([0, 0, 0])   front_base();
