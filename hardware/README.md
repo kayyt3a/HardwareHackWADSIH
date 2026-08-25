@@ -70,17 +70,19 @@ Sense. These need real numbers:
 | `BATT_*` | Sized for a common 3.7V 1S LiPo — not sourced yet |
 | `BUZZER_*` | Freenove kit passive buzzer, standing in for the eventual bone-conduction transducer |
 
-## Not yet sourced
+## Sourcing
 
-Two components in the build aren't in either kit and need buying — worth
-ordering now rather than discovering on demo week:
+The Freenove kit already contains the speaker, the audio amplifier module,
+the camera, and battery holders — so a working prototype needs **no
+purchases**. See `BUILD_GUIDE.md` for the full parts mapping and Perth
+retailers if you do need something.
 
-- **Bone-conduction transducer + small amp** (e.g. MAX98357A). The kit's
-  passive buzzer is a placeholder so the mechanical prototype can proceed,
-  but it is not what the final device should use — bone conduction is what
-  makes the audio private to the wearer, which is a load-bearing part of the
-  pitch.
-- **LiPo battery + charge circuit** for untethered wear.
+Two optional items:
+- **A longer FPC ribbon** for the camera, if you want the two-pod split (the
+  kit ribbon is too short to reach behind the ear). A few dollars.
+- **A bone-conduction transducer** (~$15-20, east-coast suppliers) replacing
+  the kit speaker, so only the wearer hears the answer. Nice-to-have for the
+  privacy story, not required to work.
 
 No separate touch sensor is needed: ESP32 capacitive touch works off a bare
 GPIO pad, so the touch pad is just a small metal disc or screw head glued

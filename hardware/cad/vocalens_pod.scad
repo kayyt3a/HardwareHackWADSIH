@@ -74,9 +74,16 @@ BATT_LEN = 30;
 BATT_WID = 20;
 BATT_HGT = 6;
 
-/* [Buzzer placeholder — Freenove kit passive buzzer] */
-BUZZER_DIA = 13;
-BUZZER_HGT = 9;
+/* [Speaker — the round speaker included in the Freenove kit] */
+// MEASURE YOURS. Kit speakers are typically 20-28mm diameter, 5-8mm deep.
+SPKR_DIA = 28;
+SPKR_HGT = 6;
+
+/* [Audio amp — the kit's "Audio Converter & Amplifier" module] */
+// MEASURE YOURS. Small I2S breakout, typically ~22 x 16 x 4mm.
+AMP_LEN = 22;
+AMP_WID = 16;
+AMP_HGT = 5;
 
 part = "layout"; // front_base | front_lid | rear_base | rear_lid | fit_test | layout
 
@@ -142,10 +149,13 @@ module pod_lid(length, content_w, has_touch_pad = false, touch_from_end = 8,
     if (has_touch_pad)
       translate([lid_l - touch_from_end, lid_w / 2, -1])
         cylinder(h = WALL + 2, d = 6);
+    // speaker grille — a ring of holes over the speaker position
     if (sound_holes)
-      for (i = [0 : sound_count - 1])
-        translate([lid_l - sound_from_end - i * 3.5, lid_w / 2, -1])
-          cylinder(h = WALL + 2, d = 1.6);
+      for (ring = [0 : 2])
+        for (a = [0 : 60 : 359])
+          translate([lid_l - sound_from_end - ring * 4 - 4,
+                     lid_w / 2 + (ring == 0 ? 0 : ring * 4 * sin(a)), -1])
+            cylinder(h = WALL + 2, d = 1.8);
   }
 }
 
@@ -176,9 +186,12 @@ module front_lid() { pod_lid(FRONT_LEN, FRONT_W, has_touch_pad = true); }
 // REAR POD — XIAO board + battery + buzzer. Sits behind the ear where
 // bulk is acceptable and largely hidden.
 // ---------------------------------------------------------------------
-REAR_LEN = XIAO_LEN + BATT_LEN + 2 * WALL + 6;
-REAR_W = max(XIAO_WID, BATT_WID, BUZZER_DIA);
-REAR_CAV_H = max(XIAO_HGT, BATT_HGT, BUZZER_HGT);
+// Board and amp STACK (amp sits on the board), so the pod length is set by
+// the longer of that stack and the speaker sitting next to it — not by
+// adding every component end to end.
+REAR_LEN = max(XIAO_LEN, AMP_LEN) + SPKR_DIA + 2 * WALL + 5;
+REAR_W = max(XIAO_WID, AMP_WID, SPKR_DIA);
+REAR_CAV_H = max(XIAO_HGT + AMP_HGT, SPKR_HGT);
 
 module rear_base() {
   rw = body_w(REAR_W);
@@ -195,7 +208,7 @@ module rear_base() {
 }
 
 // Buzzer sits at the rear end of the pod, so the sound holes go there too.
-module rear_lid() { pod_lid(REAR_LEN, REAR_W, sound_holes = true); }
+module rear_lid() { pod_lid(REAR_LEN, REAR_W, sound_holes = true, sound_from_end = 6); }
 
 // ---------------------------------------------------------------------
 // FIT TEST — a 12mm slice of the clip only. Print this FIRST and check it
@@ -215,6 +228,17 @@ else if (part == "front_lid") front_lid();
 else if (part == "rear_base") rear_base();
 else if (part == "rear_lid") rear_lid();
 else if (part == "fit_test") fit_test();
+else if (part == "plate") {
+  // Everything on one bed, spaced 8mm apart. This is the single file to
+  // slice if you just want to print the whole thing in one go.
+  fw = body_w(FRONT_W);
+  rw = body_w(REAR_W);
+  translate([0, 0, 0])              front_base();
+  translate([0, fw + 8, 0])         front_lid();
+  translate([FRONT_LEN + 8, 0, 0])  rear_base();
+  translate([FRONT_LEN + 8, rw + 8, 0]) rear_lid();
+  translate([0, fw + rw + 24, 0])   fit_test();
+}
 else {
   translate([0, 0, 0])   front_base();
   translate([0, 20, 0])  front_lid();
