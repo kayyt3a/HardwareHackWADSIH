@@ -2,6 +2,7 @@ firmware/src/secrets.h
 server/.env
 server/.venv/
 server/__pycache__/
+server/profiles.json
 .pio/
 .vscode/
 *.pyc

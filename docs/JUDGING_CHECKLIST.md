@@ -38,3 +38,13 @@ Fill this in as the build progresses — it's what you'll actually say on demo n
   not building carer notifications or location tracking, not building
   multi-language support yet, deliberately shipped with a manual touch-pad
   trigger as backup while the custom wake word was still in training.
+- **Is the profile feature a medical device claim?**: No — be ready to say
+  this precisely. The dosage profile only ever surfaces a printed detail
+  ("this contains X, which you've listed as an allergy"); it never says
+  "safe" or "unsafe," never recommends a dose, and is not a substitute for
+  a pharmacist. Say this plainly if a judge asks, don't wait to be asked.
+- **Who can see/hear the reminders list?**: Playback is through a
+  bone-conduction transducer the wearer alone hears — a reminder someone
+  saved ("my GP appointment is Tuesday") isn't broadcast to a room the way
+  a phone's speaker or screen would be. Worth naming as a deliberate
+  privacy choice in the pitch.

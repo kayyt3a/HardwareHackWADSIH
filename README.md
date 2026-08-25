@@ -7,6 +7,16 @@ request. Say the wake word and ask a question — "what does this say?",
 "what colour is this?", "is this the ten or the twenty?" — and hear a short
 spoken answer through a bone-conduction transducer.
 
+Also handles:
+- **Barcode/QR scanning** — checked first, before the vision model, so a
+  recognised product answers near-instantly with no model call at all.
+- **A per-wearer profile** (`server/profile_store.py`, set up once at
+  `/setup`) — either dosage-relevant facts (age, weight, conditions,
+  allergies) surfaced as context when relevant, or a voice-built reminders
+  list ("remember this" / "what do I have coming up"). See
+  `docs/ARCHITECTURE.md` for why these are kept as facts-only context, never
+  a recommendation.
+
 Built on a Seeed XIAO ESP32S3 Sense as a dumb sensor/actuator (camera, onboard
 mic, a temple touch pad as a manual backup trigger, a bone-conduction
 transducer for audio out). All intelligence lives server-side in Python,
@@ -59,6 +69,13 @@ pip install -r requirements.txt
 cp .env.example .env   # fill in ANTHROPIC_API_KEY and OPENAI_API_KEY
 uvicorn main:app --host 0.0.0.0 --port 8000
 ```
+
+`pyzbar` (barcode decoding) needs the system `zbar` library — `apt install
+libzbar0` on Debian/Ubuntu, `brew install zbar` on macOS — install that
+before `pip install -r requirements.txt` if the import fails.
+
+Visit `http://<server-ip>:8000/setup` to set up a wearer's profile
+(dosage facts or reminders mode) before a demo.
 
 **Firmware**
 ```

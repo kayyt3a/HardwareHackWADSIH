@@ -7,6 +7,7 @@ a multi-stage pipeline.
 import base64
 import json
 import os
+from typing import Optional
 
 from anthropic import Anthropic
 
@@ -33,13 +34,34 @@ clearly" than to guess and be wrong — this person cannot verify your answer
 by looking themselves.
 
 Do not make medical, dosage, or clinical claims even if the label is a
-medication — describe what is printed, nothing more."""
+medication — describe what is printed, nothing more.
+
+You may be given facts about the person (age, weight, known conditions,
+known allergies) as context. If given, you may mention when something
+printed on the label is directly relevant to one of those facts (e.g. an
+allergen they've listed appears in the ingredients) — but only to point out
+that a printed detail exists, never to judge whether it's safe for them.
+Phrase it as "this contains X, which you've noted as an allergy" not "this
+is unsafe for you" or "you should/shouldn't take this". If no such facts are
+given, don't mention a profile at all."""
 
 _DEFAULT_QUESTION = "What does this say?"
 
 
-def _call_vision(image_bytes: bytes, media_type: str, question: str) -> dict:
+def _call_vision(
+    image_bytes: bytes,
+    media_type: str,
+    question: str,
+    user_context: Optional[str] = None,
+) -> dict:
     b64_image = base64.b64encode(image_bytes).decode("utf-8")
+
+    prompt_text = (
+        f'The person asked: "{question}". Answer that question about '
+        "what's in the photo, and respond with the JSON object described in your instructions."
+    )
+    if user_context:
+        prompt_text += f"\n\nFacts about this person, for context only: {user_context}."
 
     response = _client.messages.create(
         model="claude-sonnet-5",
@@ -59,9 +81,7 @@ def _call_vision(image_bytes: bytes, media_type: str, question: str) -> dict:
                     },
                     {
                         "type": "text",
-                        "text": f'The person asked: "{question}". Answer that question about '
-                        "what's in the photo, and respond with the JSON object described "
-                        "in your instructions.",
+                        "text": prompt_text,
                     },
                 ],
             }
@@ -86,16 +106,23 @@ def _call_vision(image_bytes: bytes, media_type: str, question: str) -> dict:
     return result
 
 
-def read_label(image_bytes: bytes, media_type: str = "image/jpeg") -> dict:
+def read_label(
+    image_bytes: bytes, media_type: str = "image/jpeg", user_context: Optional[str] = None
+) -> dict:
     """Default mode: no spoken question captured (e.g. wake-word triggered
     with no clear question, or the touch-pad backup trigger). Assumes the
     most common ask — "what does this say?" """
-    return _call_vision(image_bytes, media_type, _DEFAULT_QUESTION)
+    return _call_vision(image_bytes, media_type, _DEFAULT_QUESTION, user_context)
 
 
-def answer_question(image_bytes: bytes, question: str, media_type: str = "image/jpeg") -> dict:
+def answer_question(
+    image_bytes: bytes,
+    question: str,
+    media_type: str = "image/jpeg",
+    user_context: Optional[str] = None,
+) -> dict:
     """A spoken question was captured and transcribed — answer that specific
     question about the photo (colour, currency, comparison, label text,
     whatever the person actually asked)."""
     question = question.strip() or _DEFAULT_QUESTION
-    return _call_vision(image_bytes, media_type, question)
+    return _call_vision(image_bytes, media_type, question, user_context)

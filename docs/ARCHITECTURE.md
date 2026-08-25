@@ -14,7 +14,20 @@
 [FastAPI server, LAN]
         |
         v  Whisper transcription of question_audio (if present)
-        v  one Claude vision call: image + transcribed question
+        v  intent classification (keyword-based, server/intent.py):
+        |    "remember" -> save current read to the profile's reminders
+        |    "recall"   -> read back saved reminders, no camera/model call
+        |    "ask"      -> default path, continues below
+        v
+   [ask path] barcode/QR decode first (server/barcode.py) -- if it decodes
+   AND the product is found in Open Food Facts, answer immediately, no
+   model call at all
+        |  (no barcode, or not found -> fall through)
+        v
+   one Claude vision call: image + transcribed question + optional dosage
+   context from the user's profile (age/weight/conditions/allergies --
+   facts only, the prompt explicitly forbids the model from turning these
+   into a safety verdict, see server/vision.py)
    prompt asks for: spoken_summary, category, confidence, needs_reposition
         |
         v  if confidence low or needs_reposition: skip the model's answer,
@@ -73,6 +86,34 @@ up right now" message rather than hanging silently. See
 `firmware/src/offline_fallback.h`. Speech-to-text and TTS both need network
 in the current config (OpenAI-backed), so the offline path skips the
 question entirely rather than attempting a degraded version of it.
+
+## User profile: dosage facts vs. reminders
+
+`server/profile_store.py` holds one JSON record per wearer, set up once via
+the bench-only form at `/setup` (see `server/static/profile_setup.html`) —
+this is a setup tool, not part of the wearable's own interaction loop.
+
+Two `profile_type` modes, matching the two personas discussed for this
+build:
+- **"dosage"** — age, weight, known conditions, known allergies. Only ever
+  fed to the model as context to *surface* a printed detail the person
+  might care about ("this contains X, which you've listed as an allergy").
+  The system prompt explicitly forbids turning this into a recommendation
+  or safety judgment — this device is not a medical device (see the
+  brief's ethics section), and a dosage *verdict* is 1B's territory, not
+  1C's.
+- **"reminders"** — a plain list the wearer builds themselves by saying
+  "remember this" after a read (e.g. pointing at an event flyer or
+  appointment card). Recalled by asking "what do I have coming up" — pure
+  text-to-speech from stored strings, no camera or model call needed for
+  recall itself. This is deliberately NOT a synced calendar; it's exactly
+  as much memory as the wearer explicitly asked the device to keep.
+
+Only one profile type should be set per device for a given demo — the
+dosage/reminders split exists because these are two different user
+personas (the brief's "80-year-old managing nine medications" vs. a
+younger low-vision user with a normal social calendar), not because a
+single wearer needs both at once.
 
 ## Privacy
 

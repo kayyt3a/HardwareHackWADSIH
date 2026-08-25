@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>PocketLabel profile setup</title>
+<style>
+  body { font-family: sans-serif; max-width: 480px; margin: 2rem auto; padding: 0 1rem; }
+  label { display: block; margin-top: 1rem; font-weight: bold; }
+  input, select { width: 100%; padding: 0.5rem; margin-top: 0.25rem; box-sizing: border-box; }
+  button { margin-top: 1.5rem; padding: 0.75rem 1.5rem; }
+  #status { margin-top: 1rem; }
+</style>
+</head>
+<body>
+<h1>PocketLabel profile setup</h1>
+<p>One-time setup for demo purposes — bench-only tool, not part of the wearable's own flow.</p>
+
+<form id="profileForm">
+  <label>User ID <input name="user_id" value="default"></label>
+
+  <label>Profile type
+    <select name="profile_type">
+      <option value="dosage">Dosage-relevant facts (age, weight, conditions, allergies)</option>
+      <option value="reminders">Reminders/notes only</option>
+    </select>
+  </label>
+
+  <label>Age <input name="age" type="number"></label>
+  <label>Weight (kg) <input name="weight_kg" type="number" step="0.1"></label>
+  <label>Known conditions (comma-separated) <input name="conditions" placeholder="e.g. high blood pressure"></label>
+  <label>Known allergies (comma-separated) <input name="allergies" placeholder="e.g. penicillin"></label>
+
+  <button type="submit">Save profile</button>
+</form>
+<div id="status"></div>
+
+<script>
+document.getElementById('profileForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const form = new FormData(e.target);
+  const userId = form.get('user_id') || 'default';
+  form.delete('user_id');
+  const res = await fetch(`/profile/${encodeURIComponent(userId)}`, { method: 'POST', body: form });
+  const status = document.getElementById('status');
+  status.textContent = res.ok ? 'Saved.' : `Error: ${res.status}`;
+});
+</script>
+</body>
+</html>
