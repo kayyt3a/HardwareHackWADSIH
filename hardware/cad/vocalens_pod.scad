@@ -74,10 +74,26 @@ BATT_LEN = 30;
 BATT_WID = 20;
 BATT_HGT = 6;
 
+/* [Audio output — pick one] */
+// false = the round speaker from the Freenove kit, sitting INSIDE the pod.
+// true  = a bone-conduction transducer mounted on the pod's INNER face,
+//         pressed against the mastoid bone behind the ear. It leaves the
+//         cavity free, so the rear pod gets dramatically smaller.
+// Build with the kit speaker now; flip this to true when the transducer
+// arrives and reprint just the rear pod.
+BONE_CONDUCTION = false;
+
 /* [Speaker — the round speaker included in the Freenove kit] */
 // MEASURE YOURS. Kit speakers are typically 20-28mm diameter, 5-8mm deep.
 SPKR_DIA = 28;
 SPKR_HGT = 6;
+
+/* [Bone-conduction transducer — e.g. Adafruit ADA1674] */
+// Mounts OUTSIDE the cavity, on the inner face, so these dimensions set
+// the mounting pad, not internal volume.
+BC_LEN = 21.5;
+BC_WID = 14.5;
+BC_HGT = 8;
 
 /* [Audio amp — the kit's "Audio Converter & Amplifier" module] */
 // MEASURE YOURS. Small I2S breakout, typically ~22 x 16 x 4mm.
@@ -189,13 +205,32 @@ module front_lid() { pod_lid(FRONT_LEN, FRONT_W, has_touch_pad = true); }
 // Board and amp STACK (amp sits on the board), so the pod length is set by
 // the longer of that stack and the speaker sitting next to it — not by
 // adding every component end to end.
-REAR_LEN = max(XIAO_LEN, AMP_LEN) + SPKR_DIA + 2 * WALL + 5;
-REAR_W = max(XIAO_WID, AMP_WID, SPKR_DIA);
-REAR_CAV_H = max(XIAO_HGT + AMP_HGT, SPKR_HGT);
+// With bone conduction the transducer lives on the outer face, so nothing
+// but the board+amp stack has to fit inside — roughly half the length.
+REAR_LEN = BONE_CONDUCTION
+  ? max(XIAO_LEN, AMP_LEN) + 2 * WALL + 5
+  : max(XIAO_LEN, AMP_LEN) + SPKR_DIA + 2 * WALL + 5;
+REAR_W = BONE_CONDUCTION
+  ? max(XIAO_WID, AMP_WID)
+  : max(XIAO_WID, AMP_WID, SPKR_DIA);
+REAR_CAV_H = BONE_CONDUCTION
+  ? XIAO_HGT + AMP_HGT
+  : max(XIAO_HGT + AMP_HGT, SPKR_HGT);
 
 module rear_base() {
   rw = body_w(REAR_W);
   pod_body(REAR_LEN, REAR_CAV_H, REAR_W) {
+    // Bone-conduction transducer pad: a shallow recess on the INNER face
+    // (the side against the head) to seat the transducer, plus a wire
+    // pass-through into the cavity. Firm bone contact is what makes bone
+    // conduction work, so it must sit proud against the skull, not buried.
+    if (BONE_CONDUCTION) {
+      translate([(REAR_LEN - BC_LEN) / 2, -EPS, cav_floor() - 1])
+        cube([BC_LEN, 1.0, BC_WID]);
+      translate([REAR_LEN / 2, WALL / 2, cav_floor() + 2])
+        rotate([90, 0, 0])
+          cylinder(h = WALL + 2, d = 3, center = true);
+    }
     // FPC ribbon entry from the front pod — front face
     translate([-1, rw / 2 - 5, cav_floor() + 1])
       cube([WALL + 2, 10, 1.5]);
@@ -208,7 +243,10 @@ module rear_base() {
 }
 
 // Buzzer sits at the rear end of the pod, so the sound holes go there too.
-module rear_lid() { pod_lid(REAR_LEN, REAR_W, sound_holes = true, sound_from_end = 6); }
+// No grille needed when the transducer is on the outer face.
+module rear_lid() {
+  pod_lid(REAR_LEN, REAR_W, sound_holes = !BONE_CONDUCTION, sound_from_end = 6);
+}
 
 // ---------------------------------------------------------------------
 // FIT TEST — a 12mm slice of the clip only. Print this FIRST and check it

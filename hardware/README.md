@@ -19,8 +19,20 @@ is invisible:
 | **Front** | Camera module, touch pad | 26 × 14 × 17mm | Must aim forward; kept minimal because it's the part people see |
 | **Rear** | XIAO board, audio amp, speaker | 59 × 31 × 23mm | Behind the ear — where hearing aids and BTE headphones put their bulk, and hair covers it |
 
-Rear-pod size is driven by the 28mm kit speaker. A bone-conduction
-transducer (21.5 × 14.5 × 8mm) shrinks it considerably.
+Rear-pod size is driven by the audio output. Set `BONE_CONDUCTION` at the
+top of the `.scad` to pick:
+
+| `BONE_CONDUCTION` | Audio out | Rear pod |
+|---|---|---|
+| `false` (default) | Kit's 28mm speaker, inside the pod | 59 × 31 × 23mm |
+| `true` | Transducer on the pod's inner face, against the skull | **31 × 22 × 23mm** |
+
+Pre-rendered bone-conduction parts are in `cad/bone_conduction/`. Only the
+rear pod changes — the front pod and fit test are identical either way.
+
+Bone conduction isn't better-sounding (it's thinner, no bass). It wins on
+size, on privacy, and on leaving the ear canal completely open — which
+matters for someone who relies on hearing for spatial awareness.
 
 The ribbon runs along the temple arm between them. For a prototype, tuck it
 along the top edge with a dab of removable adhesive at one or two points.
@@ -83,9 +95,12 @@ retailers if you do need something.
 Two optional items:
 - **A longer FPC ribbon** for the camera, if you want the two-pod split (the
   kit ribbon is too short to reach behind the ear). A few dollars.
-- **A bone-conduction transducer** (~$15-20, east-coast suppliers) replacing
-  the kit speaker, so only the wearer hears the answer. Nice-to-have for the
-  privacy story, not required to work.
+- **A bone-conduction transducer** (~$15-20). Not stocked in Perth — Jaycar's
+  smallest speaker is 27mm, no better than the kit's. Order from
+  [Core Electronics](https://core-electronics.com.au) or
+  [Little Bird](https://littlebirdelectronics.com.au) (3-5 days to Perth), or
+  same-day: buy the cheapest bone-conduction *headphones* you can find and
+  pull the transducers out — a pair gives you two.
 
 No separate touch sensor is needed: ESP32 capacitive touch works off a bare
 GPIO pad, so the touch pad is just a small metal disc or screw head glued
