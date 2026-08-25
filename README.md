@@ -1,29 +1,51 @@
-# PocketLabel
+# PocketLabel — FourSight
 
 Hardware Hack 2026 — Challenge 1C, "Eyes for Labels"
 
-A handheld, point-and-hear label reader for people with low vision. Point it at a
-label, feel a haptic buzz that speeds up as you aim correctly, press the button,
-and hear a short spoken summary of what the label says.
+A pair of glasses for people with low vision that read the world aloud on
+request. Say the wake word and ask a question — "what does this say?",
+"what colour is this?", "is this the ten or the twenty?" — and hear a short
+spoken answer through a bone-conduction transducer.
 
-Built on a Seeed XIAO ESP32S3 Sense as a dumb sensor/actuator (camera, mic, one
-button, a distance sensor, a vibration motor, a small I2S speaker). All intelligence
-lives server-side in Python, following the same capture → server → vision-language
-model → action pattern as [otto_finder](https://github.com/bethqzak/otto_finder).
+Built on a Seeed XIAO ESP32S3 Sense as a dumb sensor/actuator (camera, onboard
+mic, a temple touch pad as a manual backup trigger, a bone-conduction
+transducer for audio out). All intelligence lives server-side in Python,
+following the same capture → server → vision-language model → action pattern
+as [otto_finder](https://github.com/bethqzak/otto_finder).
+
+## Why glasses, not handheld
+
+Elderly users are prone to losing or forgetting to carry a separate handheld
+device. Worn glasses solve that by design — nothing to remember to pick up —
+and pointing your face at something is also a more natural aiming motion than
+aiming a handheld unit, which directly addresses the brief's repeated point
+that "aiming, not reading, is the real problem."
+
+## Activation
+
+Two triggers, by design (see `docs/ARCHITECTURE.md` for the reasoning):
+- **Wake word** ("hey ..., what does this say?") — hands-free, the headline
+  UX. Runs as local on-device keyword spotting so no audio leaves the glasses
+  until it fires.
+- **Touch pad on the temple** — manual backup for noisy environments or a
+  wake-word miss, and what to build/test against first since the wake-word
+  path depends on ESP-SR integration (see `firmware/src/wake_word.h`).
 
 ## Why a dedicated device and not just a phone
 
-- Always ready: no unlock, no app switch, no menu.
-- One-handed and physically aimable — the haptic buzz tells you when you're
-  on-target *before* you commit to a read, which a flat phone screen can't do
-  for someone who can't see the screen.
-- Silent by default: nothing records or transmits until the button is pressed.
+- Hands-free and always worn — nothing to find, unlock, or hold up.
+- Head-aim replaces screen-aim, which matters when you can't see the screen
+  to aim it in the first place.
+- Silent and camera-off by default: nothing records or transmits until a
+  trigger fires — an important claim to be able to make plainly in the pitch
+  given a face-worn camera reads as more surveillance-adjacent than a
+  handheld one.
 
 ## Repo layout
 
 ```
 firmware/   PlatformIO project for the XIAO ESP32S3 Sense
-server/     FastAPI server: vision call + TTS
+server/     FastAPI server: speech-to-text + vision call + TTS
 docs/       Architecture notes, pitch prep, judging-criteria checklist
 ```
 
@@ -34,16 +56,21 @@ docs/       Architecture notes, pitch prep, judging-criteria checklist
 cd server
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env   # fill in ANTHROPIC_API_KEY (and OPENAI_API_KEY if using OpenAI TTS)
+cp .env.example .env   # fill in ANTHROPIC_API_KEY and OPENAI_API_KEY
 uvicorn main:app --host 0.0.0.0 --port 8000
 ```
 
 **Firmware**
 ```
 cd firmware
-# edit src/secrets.h with your WiFi SSID/password and the server's LAN IP
+cp src/secrets.h.example src/secrets.h   # fill in WiFi + server IP
 pio run -t upload
 ```
+
+Bring-up order: get the touch-pad trigger + camera + `/read_label` round trip
+working first (no mic, no wake word needed), then layer on mic recording +
+`/ask`, then wake-word detection last — it's the highest-risk piece, see
+`firmware/src/wake_word.h`.
 
 See `docs/ARCHITECTURE.md` for the full data flow and `docs/JUDGING_CHECKLIST.md`
 for how this addresses the brief's dignity/privacy/failure-mode questions.

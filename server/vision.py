@@ -30,10 +30,15 @@ Respond with ONLY a JSON object, no other text, with these fields:
 
 Be honest about uncertainty. It is much better to say "I can't read this
 clearly" than to guess and be wrong — this person cannot verify your answer
-by looking themselves."""
+by looking themselves.
+
+Do not make medical, dosage, or clinical claims even if the label is a
+medication — describe what is printed, nothing more."""
+
+_DEFAULT_QUESTION = "What does this say?"
 
 
-def read_label(image_bytes: bytes, media_type: str = "image/jpeg") -> dict:
+def _call_vision(image_bytes: bytes, media_type: str, question: str) -> dict:
     b64_image = base64.b64encode(image_bytes).decode("utf-8")
 
     response = _client.messages.create(
@@ -54,7 +59,9 @@ def read_label(image_bytes: bytes, media_type: str = "image/jpeg") -> dict:
                     },
                     {
                         "type": "text",
-                        "text": "Read this label and respond with the JSON object described in your instructions.",
+                        "text": f'The person asked: "{question}". Answer that question about '
+                        "what's in the photo, and respond with the JSON object described "
+                        "in your instructions.",
                     },
                 ],
             }
@@ -77,3 +84,18 @@ def read_label(image_bytes: bytes, media_type: str = "image/jpeg") -> dict:
     result.setdefault("confidence", 0.0)
     result.setdefault("needs_reposition", False)
     return result
+
+
+def read_label(image_bytes: bytes, media_type: str = "image/jpeg") -> dict:
+    """Default mode: no spoken question captured (e.g. wake-word triggered
+    with no clear question, or the touch-pad backup trigger). Assumes the
+    most common ask — "what does this say?" """
+    return _call_vision(image_bytes, media_type, _DEFAULT_QUESTION)
+
+
+def answer_question(image_bytes: bytes, question: str, media_type: str = "image/jpeg") -> dict:
+    """A spoken question was captured and transcribed — answer that specific
+    question about the photo (colour, currency, comparison, label text,
+    whatever the person actually asked)."""
+    question = question.strip() or _DEFAULT_QUESTION
+    return _call_vision(image_bytes, media_type, question)

@@ -21,10 +21,15 @@
 // User-wired peripherals — adjust to match your build. XIAO ESP32S3 Sense
 // exposes a limited set of GPIO once the camera/mic are in use; verify each
 // against the board pinout diagram before wiring.
-#define PIN_BUTTON 1        // momentary push button, INPUT_PULLUP, active LOW
-#define PIN_VIBRATION_MOTOR 2 // vibration motor via transistor, PWM-capable pin
-#define PIN_TOF_SDA 5        // I2C to ToF/distance sensor (e.g. VL53L0X)
-#define PIN_TOF_SCL 6
-#define PIN_I2S_BCLK 7       // I2S to MAX98357A amp for speech playback
+//
+// Glasses form factor: the onboard PDM mic (fixed pins, part of the Sense
+// expansion board) is used both for wake-word listening and for recording
+// the spoken question. Output audio goes out a SEPARATE I2S peripheral to a
+// bone-conduction transducer via a small amp (e.g. MAX98357A) — the ESP32-S3
+// has two I2S peripherals, so mic-in and speaker-out don't collide, but
+// double check this against whatever amp/transducer you actually source.
+#define PIN_TOUCH_PAD 3       // capacitive touch pad on the temple, manual
+                              // backup trigger alongside the wake word
+#define PIN_I2S_BCLK 7        // I2S out to amp -> bone-conduction transducer
 #define PIN_I2S_LRC 8
 #define PIN_I2S_DIN 9

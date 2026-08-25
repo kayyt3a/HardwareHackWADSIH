@@ -1,34 +1,33 @@
-// PocketLabel firmware — XIAO ESP32S3 Sense
+// PocketLabel firmware — glasses form factor, XIAO ESP32S3 Sense
 //
-// Loop: continuously read distance sensor and drive the vibration motor as
-// haptic aim-assist. On button press: capture a JPEG frame, POST it to the
-// server, and play the returned MP3 speech through the I2S speaker.
+// Trigger: wake word ("hey ..., what does this say?") OR a touch-pad tap on
+// the temple as a manual backup. On trigger: record the spoken question from
+// the onboard mic, capture a JPEG frame, POST both to the server, and play
+// the returned MP3 answer through a bone-conduction transducer.
 //
 // Known gotchas carried over from otto_finder's build notes:
 //  - PSRAM must be set to OPI PSRAM in board config (see platformio.ini
 //    build_flags) or camera init will fail with large frame sizes.
-//  - The camera and any PWM-driven peripheral (vibration motor) can fight
-//    over the same LEDC timer. If the vibration motor behaves erratically
-//    after camera init, explicitly allocate it a different LEDC channel
-//    (see setupVibrationMotor() below).
+//  - The camera and any other PWM/LEDC-driven peripheral can fight over the
+//    same LEDC timer — if you add anything PWM-driven later, give it an
+//    explicit LEDC channel away from the camera's.
 //  - Verify every pin in pins.h against your specific XIAO ESP32S3 Sense
-//    wiring before flashing — camera pins are fixed, everything else is
-//    only a suggested layout and may collide with camera pins in practice.
+//    wiring before flashing — camera and mic pins are fixed by the board,
+//    everything else is only a suggested layout.
+//  - Wake-word detection (wake_word.h) and mic recording (mic_capture.h) are
+//    both stubs pending ESP-SR integration — see comments in those files.
+//    The touch pad works standalone without either being finished, so build
+//    and test the rest of the pipeline against the touch pad first.
 
 #include <Arduino.h>
 #include <WiFi.h>
 #include <HTTPClient.h>
-#include <Wire.h>
 #include "esp_camera.h"
 #include "pins.h"
 #include "secrets.h"
+#include "wake_word.h"
+#include "mic_capture.h"
 #include "offline_fallback.h"
-
-// --- Haptic aim-assist tuning ---
-static const int TOF_TARGET_MIN_MM = 80;   // ideal read distance range
-static const int TOF_TARGET_MAX_MM = 150;
-static const int VIBRATION_LEDC_CHANNEL = 4; // deliberately not 0, to avoid
-                                              // colliding with camera's LEDC use
 
 bool wifiConnected = false;
 
@@ -80,47 +79,27 @@ bool setupCamera() {
   return true;
 }
 
-void setupVibrationMotor() {
-  ledcSetup(VIBRATION_LEDC_CHANNEL, 5000, 8);
-  ledcAttachPin(PIN_VIBRATION_MOTOR, VIBRATION_LEDC_CHANNEL);
+bool touchTriggered() {
+  // touchRead() returns lower values the more contact there is; threshold
+  // needs tuning per board/finger once wired up.
+  const int TOUCH_THRESHOLD = 30;
+  return touchRead(PIN_TOUCH_PAD) < TOUCH_THRESHOLD;
 }
 
-void buzz(uint8_t intensity) {
-  ledcWrite(VIBRATION_LEDC_CHANNEL, intensity);
-}
+// Implemented in audio_playback.cpp — see that file for ESP8266Audio wiring.
+void playMp3Stream(WiFiClient *stream, int contentLength);
 
-// Reads distance sensor (implement readDistanceMm() for your specific ToF
-// module, e.g. VL53L0X via Adafruit_VL53L0X, or an HC-SR04 ultrasonic).
-// Placeholder returns -1 (no reading) so the rest of the pipeline still
-// compiles before the sensor is wired up.
-int readDistanceMm() {
-  // TODO: replace with real sensor read
-  return -1;
-}
+// POSTs the JPEG frame + recorded question audio as multipart/form-data to
+// /ask and plays back the returned MP3. Multipart is built manually since
+// HTTPClient doesn't provide a helper for it.
+void captureAskAndSpeak() {
+  uint8_t *audioBuf = (uint8_t *)ps_malloc(MIC_BUFFER_BYTES);
+  size_t audioLen = audioBuf ? recordQuestion(audioBuf) : 0;
 
-void updateHapticFeedback() {
-  int distance = readDistanceMm();
-  if (distance < 0) {
-    buzz(0);
-    return;
-  }
-  if (distance >= TOF_TARGET_MIN_MM && distance <= TOF_TARGET_MAX_MM) {
-    buzz(255); // steady strong buzz = in range
-  } else {
-    // pulse, softer the further out of range
-    int diff = min(abs(distance - TOF_TARGET_MIN_MM), abs(distance - TOF_TARGET_MAX_MM));
-    int intensity = max(0, 120 - diff / 4);
-    buzz((millis() / 200) % 2 == 0 ? intensity : 0);
-  }
-}
-
-// POSTs the JPEG frame as multipart/form-data to /read_label and plays back
-// the returned MP3. Multipart is built manually since HTTPClient doesn't
-// provide a helper for it.
-void captureAndSend(int distanceMm) {
   camera_fb_t *fb = esp_camera_fb_get();
   if (!fb) {
     Serial.println("Camera capture failed");
+    if (audioBuf) free(audioBuf);
     return;
   }
 
@@ -128,39 +107,54 @@ void captureAndSend(int distanceMm) {
     Serial.println("No WiFi — falling back to offline barcode scan");
     handleOfflineFallback(fb);
     esp_camera_fb_return(fb);
+    if (audioBuf) free(audioBuf);
     return;
   }
 
   HTTPClient http;
-  String url = String("http://") + SERVER_HOST + ":" + SERVER_PORT + "/read_label";
+  String url = String("http://") + SERVER_HOST + ":" + SERVER_PORT + "/ask";
   http.begin(url);
 
   String boundary = "PocketLabelBoundary";
   http.addHeader("Content-Type", "multipart/form-data; boundary=" + boundary);
 
-  String head = "--" + boundary + "\r\n"
-                "Content-Disposition: form-data; name=\"distance_mm\"\r\n\r\n" +
-                String(distanceMm) + "\r\n"
-                "--" + boundary + "\r\n"
-                "Content-Disposition: form-data; name=\"image\"; filename=\"frame.jpg\"\r\n"
-                "Content-Type: image/jpeg\r\n\r\n";
+  String imagePart = "--" + boundary + "\r\n"
+                      "Content-Disposition: form-data; name=\"image\"; filename=\"frame.jpg\"\r\n"
+                      "Content-Type: image/jpeg\r\n\r\n";
+  String midBoundary = "\r\n--" + boundary + "\r\n"
+                        "Content-Disposition: form-data; name=\"question_audio\"; filename=\"q.wav\"\r\n"
+                        "Content-Type: audio/wav\r\n\r\n";
   String tail = "\r\n--" + boundary + "--\r\n";
 
-  size_t totalLen = head.length() + fb->len + tail.length();
+  size_t totalLen = imagePart.length() + fb->len +
+                     (audioLen > 0 ? midBoundary.length() + audioLen : 0) +
+                     tail.length();
   uint8_t *body = (uint8_t *)malloc(totalLen);
   if (!body) {
     Serial.println("Out of memory building request body");
     esp_camera_fb_return(fb);
+    if (audioBuf) free(audioBuf);
     http.end();
     return;
   }
-  memcpy(body, head.c_str(), head.length());
-  memcpy(body + head.length(), fb->buf, fb->len);
-  memcpy(body + head.length() + fb->len, tail.c_str(), tail.length());
+
+  size_t offset = 0;
+  memcpy(body + offset, imagePart.c_str(), imagePart.length());
+  offset += imagePart.length();
+  memcpy(body + offset, fb->buf, fb->len);
+  offset += fb->len;
+  if (audioLen > 0) {
+    memcpy(body + offset, midBoundary.c_str(), midBoundary.length());
+    offset += midBoundary.length();
+    memcpy(body + offset, audioBuf, audioLen);
+    offset += audioLen;
+  }
+  memcpy(body + offset, tail.c_str(), tail.length());
 
   int httpCode = http.POST(body, totalLen);
   free(body);
   esp_camera_fb_return(fb);
+  if (audioBuf) free(audioBuf);
 
   if (httpCode == 200) {
     Serial.println("Got response, playing audio");
@@ -172,32 +166,24 @@ void captureAndSend(int distanceMm) {
   http.end();
 }
 
-// Implemented in audio_playback.cpp — see that file for ESP8266Audio wiring.
-void playMp3Stream(WiFiClient *stream, int contentLength);
-
 void setup() {
   Serial.begin(115200);
-  pinMode(PIN_BUTTON, INPUT_PULLUP);
-  setupVibrationMotor();
   setupWiFi();
   if (!setupCamera()) {
     Serial.println("Halting: camera required");
     while (true) delay(1000);
   }
+  setupWakeWord();
+  setupMic();
   setupOfflineFallback();
-  Serial.println("PocketLabel ready");
+  Serial.println("Glasses ready — say the wake word or tap the temple pad");
 }
 
 void loop() {
-  updateHapticFeedback();
-
-  static bool lastButtonState = HIGH;
-  bool buttonState = digitalRead(PIN_BUTTON);
-  if (lastButtonState == HIGH && buttonState == LOW) {
-    Serial.println("Button pressed — capturing");
-    captureAndSend(readDistanceMm());
+  if (isWakeWordDetected() || touchTriggered()) {
+    Serial.println("Triggered — recording question and capturing frame");
+    captureAskAndSpeak();
+    delay(1000); // debounce: avoid immediately re-triggering on the same tap
   }
-  lastButtonState = buttonState;
-
   delay(20);
 }
