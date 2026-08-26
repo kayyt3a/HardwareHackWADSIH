@@ -1,6 +1,7 @@
 # Vocalens — build guide
 
-Step by step, from printed parts to a working device.
+Step by step, from printed parts to a working device. This is the single-pod,
+zero-purchase build — the committed build for this event, not a stopgap.
 
 ## What you need
 
@@ -8,31 +9,18 @@ Step by step, from printed parts to a working device.
 
 | Part | Used for |
 |---|---|
-| Camera module (FPC ribbon) | Front pod — the eye of the device |
-| Speaker | Rear pod — speaks the answer |
+| Camera module (stays attached to its FPC ribbon) | The eye of the device |
+| Speaker | Speaks the answer |
 | Audio Converter & Amplifier | Drives the speaker over I2S |
 | Jumper wires (F-F and M-F) | All connections |
 | 2×AA battery holder **or** 9V battery cable | Untethered power (optional — USB works too) |
 
-**Your own:** XIAO ESP32S3 Sense, a pair of glasses you don't mind clipping onto.
+**Your own:** XIAO ESP32S3 Sense, a pair of glasses you don't mind clipping
+onto.
 
-**Optional upgrade (~$15–20):** a bone-conduction transducer replacing the
-kit speaker, so only the wearer hears the answer. Not needed for a working
-prototype — the kit speaker does the job, it's just audible to the room.
-
-## Where to buy in Perth
-
-You probably don't need to buy anything. If you do:
-
-- **Altronics** — 174 Roe St, Northbridge. WA-owned, closest to the city.
-  [altronics.com.au](https://www.altronics.com.au/storelocations/)
-- **Jaycar** — Osborne Park (83–87 Frobisher Rd), Belmont, Malaga, O'Connor,
-  Jandakot. [jaycar.com.au](https://www.jaycar.com.au/store-finder)
-
-Neither reliably stocks bone-conduction transducers — those come from
-[Core Electronics](https://core-electronics.com.au) or
-[Little Bird](https://littlebirdelectronics.com.au) (east coast, 3–5 days to
-Perth, so order early if you want one).
+**Nothing else.** No purchases for this build. A bone-conduction transducer
+and a longer FPC ribbon (for a future two-pod version) are documented in
+`hardware/README.md` as pitch material only — not sourced, not needed here.
 
 ---
 
@@ -44,8 +32,8 @@ if you have them; a ruler is good enough to start.
 | Parameter | Measure |
 |---|---|
 | `TEMPLE_THICKNESS`, `TEMPLE_WIDTH` | The temple arm of your glasses |
-| `CAM_LEN/WID/HGT` | The camera module (not the ribbon) |
-| `XIAO_LEN/WID/HGT` | The XIAO board, camera detached |
+| `CAM_LEN/WID/HGT` | The camera module, still attached to its ribbon |
+| `XIAO_LEN/WID/HGT` | The XIAO board (camera stays attached in this build — its height is added automatically, don't include it in `XIAO_HGT`) |
 | `SPKR_DIA`, `SPKR_HGT` | The kit speaker |
 | `AMP_LEN/WID/HGT` | The audio amplifier module |
 
@@ -55,7 +43,7 @@ if you have them; a ruler is good enough to start.
 openscad -o fit_test.stl -D 'part="fit_test"' cad/vocalens_pod.scad
 ```
 
-Or just slice the supplied `cad/fit_test.stl`. ~3 minutes to print.
+Or slice the supplied `cad/fit_test.stl` directly. ~3 minutes to print.
 
 Snap it onto your glasses:
 
@@ -66,35 +54,20 @@ Snap it onto your glasses:
 Re-print until it grips. Do not skip this — it is the difference between one
 wasted evening and four.
 
-## Step 3 — Print everything
+## Step 3 — Print the pod
 
-Slice `cad/plate.stl` — all five parts laid out on one bed, 93 × 84mm total.
+Slice `cad/single_plate.stl` — base, lid, and a spare fit test on one bed,
+79 × 67mm total, comfortably inside the Snapmaker U1's 270mm bed.
 
 **Snapmaker U1 settings:**
 - Layer height 0.16mm
 - 4 perimeters (matches the 1.6mm `WALL`)
 - Print as modelled, cavity-up — no supports needed in that orientation
+- The lid in the plate is pre-flipped rib-side-up so it sits flat with no
+  supports
 - PLA is fine; PETG if you want the clip to survive more on/off cycles
 
-## Step 4 — Detach and extend the camera
-
-The camera module unclips from the FPC connector on the XIAO's Sense
-expansion board. Lift the small dark retainer bar on the connector, slide
-the ribbon out, and the camera comes free.
-
-The kit's ribbon is short (~2cm). You need it to reach from the front pod to
-behind the ear (~10cm), so you need a longer FPC cable of the same pitch and
-pin count — **this is the one thing you may genuinely need to buy**, and it's
-a few dollars. Check the ribbon on your kit camera for pin count before
-ordering.
-
-> **If you can't get a longer ribbon in time:** fall back to a single-pod
-> design — put everything in one pod at the front of the temple. It's
-> chunkier and less elegant, but it works and needs no extra parts. Say so
-> in the pitch: "the two-pod split is the design, the single pod is what we
-> could build this week."
-
-## Step 5 — Wire it up
+## Step 4 — Wire it up
 
 All connections are jumper wires. Nothing here needs soldering except
 possibly the speaker leads.
@@ -114,30 +87,27 @@ for a single speaker.
 
 **Touch pad:** run one jumper wire from **GPIO 3** (`PIN_TOUCH_PAD`) to a
 small piece of metal — a coin, a screw head, a scrap of foil — glued into
-the 6mm recess in `front_lid`. ESP32 capacitive touch needs no sensor
-component; the bare wire and a conductive surface are the whole circuit.
+the recess in the lid. ESP32 capacitive touch needs no sensor component;
+the bare wire and a conductive surface are the whole circuit.
 
 **Power:** USB-C to a laptop or power bank is simplest and most reliable for
 a demo. If you want untethered, the 2×AA holder gives ~3V — wire it to the
-XIAO's BAT pads. Note the XIAO expects a LiPo on those pads, so check
-voltage before connecting anything.
+XIAO's BAT pads. The XIAO expects a LiPo on those pads, so check voltage
+before connecting anything.
 
-## Step 6 — Assemble
+## Step 5 — Assemble
 
-1. Seat the camera module in the front pod cavity, lens aligned with the
-   7mm hole in the front face. A dab of hot glue holds it.
-2. Feed the ribbon out through the slot in the front pod's rear face.
-3. Press `front_lid` into the front pod. Glue the touch-pad metal into its
-   recess and connect its wire.
-4. In the rear pod: XIAO on the bottom, amp stacked on top of it, speaker
-   beside them under the grille holes in the lid.
-5. Route the USB cable out through the side slot.
-6. Press `rear_lid` on.
-7. Clip both pods onto the temple arm, camera pod forward near the hinge.
-8. Tuck the ribbon along the top edge of the arm; a dot of removable
-   adhesive at one or two points keeps it tidy.
+1. Seat the board in the pod cavity, camera lens aligned with the front
+   hole. A dab of hot glue holds it.
+2. Stack the amp module on top of the board.
+3. Fit the speaker under the grille holes in the lid.
+4. Glue the touch-pad metal into its recess in the lid and connect its wire.
+5. Route the USB cable (and battery leads, if used) out through the side
+   slot.
+6. Press the lid on.
+7. Clip the pod onto the temple arm, camera end forward.
 
-## Step 7 — Bring it up in this order
+## Step 6 — Bring it up in this order
 
 Do not try to make everything work at once. Each step below is testable on
 its own, and each one you skip is a bug you'll be hunting at 2am.
@@ -151,10 +121,13 @@ its own, and each one you skip is a bug you'll be hunting at 2am.
    `firmware/src/wake_word.h`) and the touch pad already gets you a working
    demo without it.
 
-## Known rough edges
+## Known rough edges — say these plainly in the pitch
 
-- **Rear pod is 59 × 31 × 23mm**, driven by the 28mm kit speaker. A smaller
-  speaker or a bone-conduction transducer shrinks it considerably.
-- Pods are square-edged. Rounding the outer shells is a cheap next
-  iteration and worth doing before demo night.
-- No strain relief where the ribbon or USB cable exits.
+- **Front-heavy, 59 × 31 × 30mm.** Everything (board, camera, amp, speaker)
+  sits at the front of the temple. It will tug on the glasses. This is the
+  direct, honest cost of building entirely from kit parts with no external
+  sourcing — the "what we'd build next" slide in `hardware/README.md` names
+  exactly what would fix it.
+- Pods are square-edged. Rounding the outer shell is a cheap next iteration
+  and worth doing before demo night.
+- No strain relief where cables exit.

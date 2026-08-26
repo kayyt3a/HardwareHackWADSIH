@@ -76,20 +76,17 @@ BATT_WID = 20;
 BATT_HGT = 6;
 
 /* [Build variant] */
-// true  = ONE pod holding everything, using the camera's own short kit
-//         ribbon. No extra parts needed — this is the build you can finish
-//         today. Bulkier and front-heavy, but it works.
-// false = the two-pod split (camera up front, everything behind the ear).
-//         Needs a longer FPC ribbon, which has to be ordered.
+// COMMITTED BUILD for this event: ONE pod holding everything, using only
+// parts in the Freenove kit + XIAO Sense. No purchases, no shipping risk.
+// The two-pod split and bone conduction are documented as future
+// upgrades (see hardware/README.md) but are NOT part of this build.
 SINGLE_POD = true;
 
 /* [Audio output — pick one] */
-// false = the round speaker from the Freenove kit, sitting INSIDE the pod.
-// true  = a bone-conduction transducer mounted on the pod's INNER face,
-//         pressed against the mastoid bone behind the ear. It leaves the
-//         cavity free, so the rear pod gets dramatically smaller.
-// Build with the kit speaker now; flip this to true when the transducer
-// arrives and reprint just the rear pod.
+// Kept false for this build: the kit speaker is what's actually on hand.
+// BONE_CONDUCTION=true still renders correctly (see cad/bone_conduction/)
+// as a documented future-upgrade reference for the pitch deck, but it is
+// not part of the committed build since it requires an external part.
 BONE_CONDUCTION = false;
 
 /* [Speaker — the round speaker included in the Freenove kit] */

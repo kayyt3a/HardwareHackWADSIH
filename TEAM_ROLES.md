@@ -62,13 +62,17 @@ an eye on API credit burn from day one.
 
 **Owns:** `hardware/`, the CAD, the printer, assembly, how it looks.
 
+**Committed build: one pod, kit parts only, zero purchases.** The two-pod
+split and bone conduction are pitch material (`hardware/README.md`), not
+something being built this event — don't spend week 2/3 time on them.
+
 - **Week 1:** measure everything, update the `.scad` parameters, iterate
   `fit_test` until the clip grips properly, print and dry-fit the single pod.
-- **Week 2:** switch to the two-pod design once the long FPC ribbon arrives.
-  Cable routing and strain relief.
+- **Week 2:** cable routing and strain relief inside the pod; fix whatever
+  the dry-fit revealed.
 - **Week 3:** make it look like something a person would wear — round the
   edges, tidy the seams, sensible filament colour. **The brief explicitly
-  judges this.** Also fit the bone-conduction transducer when it lands.
+  judges this.**
 - **Week 4:** final assembly, plus a spare printed set in case something
   cracks on demo day.
 
@@ -76,8 +80,9 @@ an eye on API credit burn from day one.
 annoying them.
 
 **Watch out for:** book printer slots early — the brief says printing is the
-most common cause of a demo-night scramble. **Order the FPC ribbon and
-transducer in week 1**, not when you need them.
+most common cause of a demo-night scramble. Since it's front-heavy by
+design (kit speaker + board + camera all up front), test wear-comfort early
+rather than discovering it demo week.
 
 ---
 

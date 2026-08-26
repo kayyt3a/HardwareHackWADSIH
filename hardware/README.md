@@ -1,118 +1,101 @@
-# Vocalens — enclosure, prototype 1
+# Vocalens — enclosure
 
-Two clip-on pods that mount to the temple arm of an **existing pair of
-glasses**, rather than a printed-from-scratch frame. A full frame (hinges,
-nose bridge, lens fit) is a much larger and riskier fabrication job, and
-reusing a frame that already fits a real face solves the ergonomics problem
-for free — mounting is the thing the challenge brief calls out as most often
-underestimated.
+**One pod, kit parts only, zero purchases.** This is the committed build for
+this event — not a stopgap. Everything below describes what's actually
+being built; the two-pod split and bone conduction are documented separately
+as future upgrades for the pitch, not part of this build.
 
-## Why two pods, not one
+## What it is
 
-The camera is the only component that *has* to be at the front (it must aim
-forward). The XIAO ESP32S3 Sense's camera module detaches from the board and
-connects back by a short FPC ribbon, so everything else moves to where bulk
-is invisible:
+A single 3D-printed pod that clips onto the temple arm of an **existing
+pair of glasses**, holding the XIAO ESP32S3 Sense (camera still attached),
+the kit's audio amplifier module, and the kit's speaker. Mounted at the
+front of the temple so the camera aims forward.
 
-| Pod | Contents | Approx size | Why there |
-|---|---|---|---|
-| **Front** | Camera module, touch pad | 26 × 14 × 17mm | Must aim forward; kept minimal because it's the part people see |
-| **Rear** | XIAO board, audio amp, speaker | 59 × 31 × 23mm | Behind the ear — where hearing aids and BTE headphones put their bulk, and hair covers it |
+Clipping onto an existing frame rather than fabricating one from scratch
+avoids the hinge/nose-bridge/lens-fit problem entirely — mounting is the
+thing the challenge brief calls out as most often underestimated, and a
+frame that already fits a real face solves that for free.
 
-Rear-pod size is driven by the audio output. Set `BONE_CONDUCTION` at the
-top of the `.scad` to pick:
-
-| `BONE_CONDUCTION` | Audio out | Rear pod |
-|---|---|---|
-| `false` (default) | Kit's 28mm speaker, inside the pod | 59 × 31 × 23mm |
-| `true` | Transducer on the pod's inner face, against the skull | **31 × 22 × 23mm** |
-
-Pre-rendered bone-conduction parts are in `cad/bone_conduction/`. Only the
-rear pod changes — the front pod and fit test are identical either way.
-
-Bone conduction isn't better-sounding (it's thinner, no bass). It wins on
-size, on privacy, and on leaving the ear canal completely open — which
-matters for someone who relies on hearing for spatial awareness.
-
-The ribbon runs along the temple arm between them. For a prototype, tuck it
-along the top edge with a dab of removable adhesive at one or two points.
+**Size:** 59 × 31 × 30mm. Front-heavy — it will tug on the glasses a bit.
+That's an honest, stated limitation of building entirely from kit parts, not
+something to hide: see "For the pitch" below.
 
 ## Files
 
-- `cad/vocalens_pod.scad` — parametric source. Everything is driven by the
-  measurements at the top of the file.
-- `cad/*.stl` — rendered parts, checked manifold/watertight.
+- `cad/vocalens_pod.scad` — parametric source
+- `cad/single_plate.stl` — the whole build: base, lid, fit test, one bed
+- `cad/single_base.stl`, `cad/single_lid.stl` — the same two parts separately
 
-## Print these in this order
+## Print order
 
-**1. `fit_test.stl` first — always.** A 12mm slice of just the clip. Three
-minutes to print. Snap it onto your actual glasses:
+**1. `fit_test.stl` first, always.** Cut from `single_plate.stl` or render
+alone:
+```
+openscad -o fit_test.stl -D 'part="fit_test"' cad/vocalens_pod.scad
+```
+~3 minutes. Snap it onto your actual glasses.
+- Won't go on / splays the arm → increase `SNAP_GAP`, reprint
+- Slides around loosely → decrease `SNAP_GAP`, reprint
+- Rattles in the channel → your `TEMPLE_THICKNESS`/`TEMPLE_WIDTH` don't
+  match your real glasses — measure again
 
-- Won't go on, or splays the arm → reduce `SNAP_GAP`
-- Goes on but slides around → increase `SNAP_GAP`
-- Rattles / too loose in the channel → reduce `TEMPLE_THICKNESS`/`TEMPLE_WIDTH`
-  to match your real measurements
+Only proceed once it grips properly.
 
-Only move on once it grips properly. This one step is the difference between
-one wasted evening and four.
+**2. Then `single_plate.stl`** — base + lid + another fit test, 79 × 67mm,
+comfortably inside the Snapmaker U1's 270 × 270mm bed.
 
-**2. Then everything else.** Slice `plate.stl` — all five parts laid out on
-one bed, 93 × 84mm total. Or print `front_base`, `front_lid`, `rear_base`,
-`rear_lid` individually if you'd rather stage them.
+### Slicer settings (Snapmaker U1, 0.4mm nozzle)
 
-### Suggested slicer settings (Snapmaker U1, 0.4mm nozzle)
+- Layer height 0.16mm
+- 4 perimeters (`WALL` is 1.6mm, sized for exactly this)
+- Print bases cavity-up, as modelled — the temple channel bridges rather
+  than needing supports
+- The lid in `single_plate.stl` is pre-flipped rib-side-up so it sits flat
+  on the bed with no supports; if slicing the lid alone, flip it yourself
+- PLA is fine; PETG if the clip needs to survive more on/off cycles
 
-- Layer height 0.16mm (these are small parts with small features)
-- 4 perimeters — `WALL` is 1.6mm, sized for exactly this
-- Orientation: print bases **cavity-up**, as modelled. The temple channel
-  then bridges rather than needing supports through the middle of the part.
-- Supports: shouldn't be needed in that orientation. If your slicer wants
-  them inside the channel, the channel opening is too narrow — check
-  `SNAP_GAP`.
-- PLA is fine for a prototype. PETG if you want the clip to survive more
-  snap-on/off cycles without fatigue.
+## Measure before you print
 
-## MEASURE BEFORE YOU PRINT
+Every dimension in `vocalens_pod.scad` is a **placeholder**. Real numbers,
+off your actual parts:
 
-The parameters at the top of `vocalens_pod.scad` are **placeholders**. These
-need real numbers off your actual parts:
-
-| Parameter | What to measure |
+| Parameter | Measure |
 |---|---|
-| `TEMPLE_THICKNESS`, `TEMPLE_WIDTH` | The actual glasses you're clipping onto |
-| `CAM_LEN/WID/HGT` | The detached camera module |
-| `XIAO_LEN/WID/HGT` | The board **without** the camera module attached |
+| `TEMPLE_THICKNESS`, `TEMPLE_WIDTH` | The glasses you're clipping onto |
+| `CAM_LEN/WID/HGT` | The camera module, still attached to its ribbon |
+| `XIAO_LEN/WID/HGT` | The board (camera stays attached in this build — `SP_STACK_H` adds `CAM_HGT` automatically, don't double-count it in `XIAO_HGT`) |
 | `SPKR_DIA`, `SPKR_HGT` | The kit's round speaker |
 | `AMP_LEN/WID/HGT` | The kit's Audio Converter & Amplifier module |
 
-## Sourcing
+No separate touch sensor needed: ESP32 capacitive touch runs off a bare
+GPIO pad. The touch pad is a small metal disc or screw head glued into the
+lid's recess and wired back to one pin.
 
-The Freenove kit already contains the speaker, the audio amplifier module,
-the camera, and battery holders — so a working prototype needs **no
-purchases**. See `BUILD_GUIDE.md` for the full parts mapping and Perth
-retailers if you do need something.
+## For the pitch: what we'd build with more time/budget
 
-Two optional items:
-- **A longer FPC ribbon** for the camera, if you want the two-pod split (the
-  kit ribbon is too short to reach behind the ear). A few dollars.
-- **A bone-conduction transducer** (~$15-20). Not stocked in Perth — Jaycar's
-  smallest speaker is 27mm, no better than the kit's. Order from
-  [Core Electronics](https://core-electronics.com.au) or
-  [Little Bird](https://littlebirdelectronics.com.au) (3-5 days to Perth), or
-  same-day: buy the cheapest bone-conduction *headphones* you can find and
-  pull the transducers out — a pair gives you two.
+Say this plainly and proactively — it reads as scoping discipline, not as
+an apology, and it directly answers the brief's "what would you do next."
 
-No separate touch sensor is needed: ESP32 capacitive touch works off a bare
-GPIO pad, so the touch pad is just a small metal disc or screw head glued
-into the recess in `front_lid` and wired back to one pin.
+| Upgrade | What it needs | What it buys |
+|---|---|---|
+| **Two-pod split** — camera up front, board/amp/speaker behind the ear | A ~10cm FPC ribbon (the camera's kit ribbon is too short) | Front pod shrinks to 26×14×17mm; bulk moves to where hair hides it |
+| **Bone-conduction audio** | A transducer (not stocked in Perth; not in either kit) | Rear pod shrinks from 59×31×23mm to ~31×22×23mm; private to the wearer; ears stay open |
+| **Wake-word activation** | Firmware only (ESP-SR), no purchase | Hands-free — no tap needed at all |
 
-## Known limitations of prototype 1
+We deliberately built this prototype from the provided kit with no external
+sourcing, so what you're looking at tonight has zero shipping risk and zero
+budget beyond what the event gave every team. Pre-rendered reference STLs
+for the bone-conduction variant are in `cad/bone_conduction/` if useful for
+a visual in the deck — they were not printed for this build.
 
-- Pods are square-edged and utilitarian. Rounding/chamfering the outer
-  shells is a cheap next iteration and worth doing before demo night — the
-  brief judges whether a device looks like something a person would want to
-  wear.
-- The clip grips by spring tension only. If it proves loose in practice, a
-  strip of thin rubber or heat-shrink inside the channel is a faster fix
-  than reprinting.
-- No strain relief where the ribbon leaves either pod.
+## Known limitations, stated plainly
+
+- **Front-heavy.** The kit speaker (28mm) and board sit up front with the
+  camera. Say this in the pitch rather than let a judge discover it.
+- Pods are square-edged. Rounding the shell is cheap to do before demo
+  night and worth it — the brief judges whether it looks wearable.
+- The clip grips by spring tension only. If loose in practice, a strip of
+  thin rubber or heat-shrink inside the channel is a faster fix than
+  reprinting.
+- No strain relief where cables exit.

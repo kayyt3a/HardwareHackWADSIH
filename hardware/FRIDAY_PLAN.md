@@ -1,20 +1,23 @@
 # Friday prototype — two-day plan
 
 **Goal:** something you can put on your face, tap, and hear it read a label.
-Nothing more. Wake word, bone conduction and the two-pod split are all
-*after* Friday.
+Nothing more.
 
-**Why single pod:** the two-pod design needs a ~10cm FPC ribbon to reach
-behind the ear. You don't have one and can't get one in two days. The single
-pod uses the camera's own kit ribbon and needs zero purchases.
+**This is the committed build, not a stopgap.** The team has decided against
+any external purchases — no bone-conduction transducer, no longer FPC
+ribbon. The single pod, built entirely from the Freenove kit + XIAO Sense,
+is what gets built and demoed. The two-pod split and bone conduction live
+only as a "what we'd build next" slide in the pitch (see
+`hardware/README.md`) — there's nothing to swap to later in this project.
 
 **Files:** `cad/single_plate.stl` — base, lid, fit test. That's the whole
-Friday print.
+print, for Friday and for the final demo.
 
 **Honest expectations.** The pod is 59 × 31 × 30mm and front-heavy; it will
-tug the glasses down your nose. That is fine for Friday — it proves the
-concept works end to end. Slimming it is what the remaining three weeks and
-the ordered parts are for.
+tug the glasses down your nose. Say this plainly in the pitch as the direct,
+stated cost of building entirely from kit parts with zero external sourcing
+— that's a deliberate scope decision, not an oversight, and framed that way
+it reads as discipline rather than a limitation you're hiding.
 
 ---
 
@@ -145,8 +148,13 @@ it is a specific thing the brief says it scores.
 
 ## After Friday (the remaining 3 weeks)
 
-- Order the long FPC ribbon and bone-conduction transducer **this week**
-- Two-pod split → front pod 26 × 14 × 17mm, rear 31 × 22 × 23mm
+No purchases — the enclosure and speaker are done as of this build. Focus
+shifts entirely to hardening what's built and to firmware:
+
 - Wake word (ESP-SR) — highest risk, keep the touch pad as backup regardless
 - Round the enclosure edges; the brief judges whether it looks wearable
+- Reliability passes: run the demo dozens of times, fix what fails
+- Battery power instead of USB tether
+- Rehearse the pitch's "what we'd build next" answer — two-pod split and
+  bone conduction, from `hardware/README.md` — so it's ready when asked
 - Battery, so it isn't USB-tethered
