@@ -62,14 +62,16 @@ an eye on API credit burn from day one.
 
 **Owns:** `hardware/`, the CAD, the printer, assembly, how it looks.
 
-**Committed build: one pod, kit parts only, zero purchases.** The two-pod
-split and bone conduction are pitch material (`hardware/README.md`), not
-something being built this event — don't spend week 2/3 time on them.
+**Committed build: two pods, kit parts only, zero purchases.** Board+camera
+up front, amp+speaker behind the ear, connected by the kit's own jumper
+wires instead of a bought FPC ribbon. Bone conduction and a hidden/tidied
+cable are pitch material (`hardware/README.md`), not something being built
+this event — don't spend week 2/3 time on them.
 
 - **Week 1:** measure everything, update the `.scad` parameters, iterate
-  `fit_test` until the clip grips properly, print and dry-fit the single pod.
-- **Week 2:** cable routing and strain relief inside the pod; fix whatever
-  the dry-fit revealed.
+  `fit_test` until the clip grips properly, print and dry-fit both pods.
+- **Week 2:** cable routing and strain relief for the jumper-wire run
+  between pods; fix whatever the dry-fit revealed.
 - **Week 3:** make it look like something a person would wear — round the
   edges, tidy the seams, sensible filament colour. **The brief explicitly
   judges this.**

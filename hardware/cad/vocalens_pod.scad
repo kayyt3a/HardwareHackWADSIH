@@ -182,6 +182,63 @@ module pod_lid(length, content_w, has_touch_pad = false, touch_from_end = 8,
 }
 
 // ---------------------------------------------------------------------
+// TWO-POD, KIT-ONLY SPLIT — no FPC ribbon needed.
+//
+// The camera stays attached to the board (its stock ribbon is never
+// touched), so this pod is heavier than a camera-only front pod would be
+// -- but the speaker (the single biggest thing in this whole build) moves
+// to a second pod behind the ear, connected by ordinary jumper wires from
+// the kit (65 M-M + 20 F-F + 20 F-M -- plenty for the 5 wires needed:
+// BCLK, LRC, DIN, 3V3, GND). No purchase, no fragile flex cable.
+//
+// FRONT POD: XIAO board + camera (undisturbed) + touch pad.
+// REAR POD:  amp + speaker only.
+// ---------------------------------------------------------------------
+FB_STACK_H = XIAO_HGT + CAM_HGT;
+FB_LEN = XIAO_LEN + 2 * WALL + 10;   // board length + room for touch pad
+FB_W = max(XIAO_WID, CAM_WID);
+
+module frontboard_base() {
+  fw = body_w(FB_W);
+  pod_body(FB_LEN, FB_STACK_H, FB_W) {
+    // camera lens opening — front face
+    translate([-1, fw / 2, cav_floor() + FB_STACK_H / 2])
+      rotate([0, 90, 0])
+        cylinder(h = WALL + 2, d = 8);
+    // USB-C access — side face
+    translate([FB_LEN - 14, -1, cav_floor() + 2])
+      cube([10, WALL + 2, 3.5]);
+    // jumper-wire exit to the rear pod — rear face, a generous slot since
+    // these are round wires, not a flat ribbon
+    translate([FB_LEN - WALL - EPS, fw / 2 - 4, cav_floor() + 1])
+      cube([WALL + 2, 8, 3]);
+  }
+}
+
+module frontboard_lid() {
+  pod_lid(FB_LEN, FB_W, has_touch_pad = true, touch_from_end = 7);
+}
+
+// amp sits flat beside the speaker rather than stacked on it, since
+// nothing else needs to share this pod's height
+RA_LEN = AMP_LEN + SPKR_DIA + 2 * WALL + 4;
+RA_W = max(AMP_WID, SPKR_DIA);
+RA_H = max(AMP_HGT, SPKR_HGT);
+
+module rearaudio_base() {
+  rw = body_w(RA_W);
+  pod_body(RA_LEN, RA_H, RA_W) {
+    // jumper-wire entry from the front pod — front face
+    translate([-1, rw / 2 - 4, cav_floor() + 1])
+      cube([WALL + 2, 8, 3]);
+  }
+}
+
+module rearaudio_lid() {
+  pod_lid(RA_LEN, RA_W, sound_holes = true, sound_from_end = 6);
+}
+
+// ---------------------------------------------------------------------
 // SINGLE POD — everything in one box, camera still attached to the board.
 // Mount it at the FRONT of the temple so the camera aims forward.
 // ---------------------------------------------------------------------
@@ -309,6 +366,24 @@ else if (part == "rear_lid") rear_lid();
 else if (part == "fit_test") fit_test();
 else if (part == "single_base") single_base();
 else if (part == "single_lid") single_lid();
+else if (part == "frontboard_base") frontboard_base();
+else if (part == "frontboard_lid") frontboard_lid();
+else if (part == "rearaudio_base") rearaudio_base();
+else if (part == "rearaudio_lid") rearaudio_lid();
+else if (part == "split_plate") {
+  // The kit-only two-pod build: front (board+camera+touch), rear
+  // (amp+speaker), connected by jumper wires. No purchases.
+  fw = body_w(FB_W);
+  rw = body_w(RA_W);
+  flw = fw - 2 * WALL - 2 * CLEARANCE;
+  rlw = rw - 2 * WALL - 2 * CLEARANCE;
+  gap = 8;
+  translate([0, 0, 0]) frontboard_base();
+  translate([FB_LEN + gap, 0, 0]) rearaudio_base();
+  translate([0, fw + gap + flw, WALL]) rotate([180, 0, 0]) frontboard_lid();
+  translate([FB_LEN + gap, rw + gap + rlw, WALL]) rotate([180, 0, 0]) rearaudio_lid();
+  translate([0, max(fw + gap + flw, rw + gap + rlw) + gap + 6, 0]) fit_test();
+}
 else if (part == "single_plate") {
   // The one-pod build: three parts, everything you need for Friday.
   pw = body_w(SP_W);

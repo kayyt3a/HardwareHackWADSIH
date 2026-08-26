@@ -4,18 +4,23 @@
 Nothing more.
 
 **This is the committed build, not a stopgap.** The team has decided against
-any external purchases — no bone-conduction transducer, no longer FPC
-ribbon. The single pod, built entirely from the Freenove kit + XIAO Sense,
-is what gets built and demoed. The two-pod split and bone conduction live
-only as a "what we'd build next" slide in the pitch (see
-`hardware/README.md`) — there's nothing to swap to later in this project.
+any external purchases — no bone-conduction transducer, no FPC ribbon.
+Two pods, connected by the kit's own jumper wires instead of a ribbon: the
+XIAO+camera up front, the amp+speaker behind the ear. Bone conduction and a
+tidied/hidden cable stay a "what we'd build next" slide in the pitch (see
+`hardware/README.md`).
 
-**Files:** `cad/single_plate.stl` — base, lid, fit test. That's the whole
-print, for Friday and for the final demo.
+**Files:** `cad/split_plate.stl` — both pods, both lids, fit test. That's
+the whole print, for Friday and for the final demo.
 
-**Honest expectations.** The pod is 59 × 31 × 30mm and front-heavy; it will
-tug the glasses down your nose. Say this plainly in the pitch as the direct,
-stated cost of building entirely from kit parts with zero external sourcing
+**Fallback if printing time runs short:** `cad/single_plate.stl` — one pod,
+everything in it, no jumper-wire run to route. Same electronics, same
+firmware, just one enclosure instead of two. Switching to this costs you
+nothing at the firmware/server level if Thursday goes badly.
+
+**Honest expectations.** The wires between the pods run exposed along the
+temple arm — not hidden, not strain-relieved. Say this plainly in the pitch
+as the direct, stated cost of a two-pod split with zero external sourcing
 — that's a deliberate scope decision, not an oversight, and framed that way
 it reads as discipline rather than a limitation you're hiding.
 
@@ -49,7 +54,8 @@ evening.
      laptop to `/read_label` with curl. Confirm you get audio back. **This
      de-risks the whole AI half before hardware is involved.**
 3. **Wire the amp + speaker** (jumper wires, no soldering unless the speaker
-   leads need it):
+   leads need it). Use SHORT wires on the bench for now — you'll swap to
+   temple-length ones once both pods exist, on Thursday:
 
    | Amp | XIAO | |
    |---|---|---|
@@ -76,13 +82,16 @@ when you touch a wire and speaks the answer. Ugly. Working.
    - Won't go on / splays the arm → increase `SNAP_GAP`, reprint
    - Slides around → decrease `SNAP_GAP`, reprint
    - Expect 2-3 iterations. This is normal and it is cheap.
-4. Once the clip grips: re-render and print `single_plate.stl`.
+4. Once the clip grips: re-render and print `split_plate.stl` (both pods).
    ```
-   openscad -o single_plate.stl -D 'part="single_plate"' cad/vocalens_pod.scad
+   openscad -o split_plate.stl -D 'part="split_plate"' cad/vocalens_pod.scad
    ```
+   Running behind schedule? Print `single_plate.stl` instead — one pod, no
+   jumper-wire run between pods to fuss over. Decide this by end of
+   Wednesday, not Thursday night.
 
 **End of Wednesday, Track B:** a clip that grips your glasses properly, and
-a pod printing overnight.
+pod(s) printing overnight.
 
 ---
 
@@ -107,11 +116,15 @@ a pod printing overnight.
 ### Both tracks (afternoon)
 
 8. **Assemble for real.**
-   - Board in the pod, camera lens aligned with the hole, dab of hot glue
-   - Amp stacked on the board, speaker under the grille holes
-   - Touch-pad metal glued into the lid recess, wire connected
-   - USB cable out through the side slot
-   - Press the lid on, clip the pod to the temple arm
+   - Front pod: board (camera attached) glued in, lens aligned with the
+     hole; touch-pad metal glued into the lid recess and wired; USB cable
+     out through the side slot
+   - Rear pod: amp and speaker seated side by side, speaker under the
+     grille holes
+   - Swap the bench's short jumper wires for temple-length ones between the
+     pods, re-test before clipping anything on
+   - Press both lids on, clip both pods to the temple arm, route the wires
+     along the top edge with a dot of removable adhesive
 9. **Wear it. Test it. Ten more times.**
 
 ---
