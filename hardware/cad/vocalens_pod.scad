@@ -62,9 +62,10 @@ CAM_LEN = 11;   // along the temple
 CAM_WID = 11;   // across (this is what sets front-pod width)
 CAM_HGT = 7;    // protrusion from the temple
 
-/* [XIAO ESP32S3 Sense board — lives in the REAR pod] */
-// Bare XIAO is ~21 x 17.5mm; height is the board + Sense expansion stack
-// WITHOUT the camera module, since that's now up front.
+/* [XIAO ESP32S3 Sense board] */
+// Bare XIAO is ~21 x 17.5mm. XIAO_HGT is the board + Sense expansion stack
+// WITHOUT the camera module. In SINGLE_POD mode the camera stays attached,
+// so its height is added automatically below.
 XIAO_LEN = 23;
 XIAO_WID = 19;
 XIAO_HGT = 8;
@@ -73,6 +74,14 @@ XIAO_HGT = 8;
 BATT_LEN = 30;
 BATT_WID = 20;
 BATT_HGT = 6;
+
+/* [Build variant] */
+// true  = ONE pod holding everything, using the camera's own short kit
+//         ribbon. No extra parts needed — this is the build you can finish
+//         today. Bulkier and front-heavy, but it works.
+// false = the two-pod split (camera up front, everything behind the ear).
+//         Needs a longer FPC ribbon, which has to be ordered.
+SINGLE_POD = true;
 
 /* [Audio output — pick one] */
 // false = the round speaker from the Freenove kit, sitting INSIDE the pod.
@@ -176,6 +185,41 @@ module pod_lid(length, content_w, has_touch_pad = false, touch_from_end = 8,
 }
 
 // ---------------------------------------------------------------------
+// SINGLE POD — everything in one box, camera still attached to the board.
+// Mount it at the FRONT of the temple so the camera aims forward.
+// ---------------------------------------------------------------------
+SP_STACK_H = XIAO_HGT + CAM_HGT + AMP_HGT;   // board + camera + amp stacked
+SP_LEN = max(XIAO_LEN, AMP_LEN) + (BONE_CONDUCTION ? 0 : SPKR_DIA) + 2 * WALL + 5;
+SP_W   = BONE_CONDUCTION ? max(XIAO_WID, AMP_WID) : max(XIAO_WID, AMP_WID, SPKR_DIA);
+
+module single_base() {
+  pw = body_w(SP_W);
+  pod_body(SP_LEN, SP_STACK_H, SP_W) {
+    // camera lens opening — front face
+    translate([-1, pw / 2, cav_floor() + SP_STACK_H / 2])
+      rotate([0, 90, 0])
+        cylinder(h = WALL + 2, d = 8);
+
+    // USB-C access — side face
+    translate([SP_LEN - 15, -1, cav_floor() + 2])
+      cube([11, WALL + 2, 4]);
+
+    // bone-conduction pad on the inner face, when fitted
+    if (BONE_CONDUCTION) {
+      translate([(SP_LEN - BC_LEN) / 2, -EPS, cav_floor() - 1])
+        cube([BC_LEN, 1.0, BC_WID]);
+      translate([SP_LEN / 2, WALL / 2, cav_floor() + 2])
+        rotate([90, 0, 0]) cylinder(h = WALL + 2, d = 3, center = true);
+    }
+  }
+}
+
+module single_lid() {
+  pod_lid(SP_LEN, SP_W, has_touch_pad = true, touch_from_end = 7,
+          sound_holes = !BONE_CONDUCTION, sound_from_end = 6);
+}
+
+// ---------------------------------------------------------------------
 // FRONT POD — camera module + touch pad ONLY. Kept deliberately minimal:
 // this is the part people see.
 // ---------------------------------------------------------------------
@@ -266,6 +310,16 @@ else if (part == "front_lid") front_lid();
 else if (part == "rear_base") rear_base();
 else if (part == "rear_lid") rear_lid();
 else if (part == "fit_test") fit_test();
+else if (part == "single_base") single_base();
+else if (part == "single_lid") single_lid();
+else if (part == "single_plate") {
+  // The one-pod build: three parts, everything you need for Friday.
+  pw = body_w(SP_W);
+  lw = pw - 2 * WALL - 2 * CLEARANCE;
+  translate([0, 0, 0]) single_base();
+  translate([0, pw + 8 + lw, WALL]) rotate([180, 0, 0]) single_lid();
+  translate([SP_LEN + 8, 0, 0]) fit_test();
+}
 else if (part == "plate") {
   // Everything on one bed, spaced 8mm apart. This is the single file to
   // slice if you just want to print the whole thing in one go.
