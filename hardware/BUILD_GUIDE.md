@@ -58,7 +58,11 @@ wasted evening and four.
 ## Step 3 — Print both pods
 
 Slice `cad/split_plate.stl` — front pod, rear pod, both lids, and a spare
-fit test, 101 × 95mm total, comfortably inside the Snapmaker U1's 270mm bed.
+fit test, 113 × 48mm total, comfortably inside the Snapmaker U1's 270mm bed.
+
+Both pods are intentionally thin top-to-bottom (~10mm) and extend outward
+from the head instead — see `hardware/README.md` for why that orientation
+is what keeps this off the wearer's scalp instead of resting on top of it.
 
 **Snapmaker U1 settings:**
 - Layer height 0.16mm
