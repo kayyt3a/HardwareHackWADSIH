@@ -48,7 +48,21 @@
 WALL = 1.6;        // 4 perimeters at 0.4mm nozzle — don't go below 1.2
 CLEARANCE = 0.3;   // fit tolerance between mating FDM parts
 EPS = 0.01;        // overlap to avoid coplanar faces in unions
+EDGE_RADIUS = 1.0; // outer vertical-corner rounding, softens the "square
+                    // box" look. Must stay comfortably under WALL or the
+                    // rounding arc eats into the cavity at the corners.
 $fn = 48;
+
+// A rectangle rounded on its vertical corners only (top/bottom stay flat) —
+// cheap, and doesn't risk collapsing thin lids the way rounding every edge
+// of a 1.6mm-thick slab would. Used for every outer shell in this file so
+// the pods read as a soft-cornered bar rather than a printed brick.
+module rounded_prism(l, w, h, r) {
+  linear_extrude(height = h)
+    offset(r = r)
+      offset(delta = -r)
+        square([l, w]);
+}
 
 /* [Temple arm — MEASURE YOUR ACTUAL GLASSES] */
 TEMPLE_THICKNESS = 4.5;  // temple arm thickness (side to side), mm
@@ -128,7 +142,7 @@ module pod_body(length, cav_h, content_w) {
   BODY_W = body_w(content_w);
   total_h = WALL + CH_H + WALL + cav_h + WALL;
   difference() {
-    cube([length, BODY_W, total_h]);
+    rounded_prism(length, BODY_W, total_h, EDGE_RADIUS);
 
     // temple channel, running the full length, open at the bottom face
     translate([-EPS, WALL, WALL])
@@ -162,7 +176,7 @@ module pod_lid(length, content_w, has_touch_pad = false, touch_from_end = 8,
   lid_w = body_w(content_w) - 2 * WALL - 2 * CLEARANCE;
   difference() {
     union() {
-      cube([lid_l, lid_w, WALL]);
+      rounded_prism(lid_l, lid_w, WALL, min(EDGE_RADIUS, WALL / 2));
       // friction ribs on the underside
       for (rx = [3, lid_l - 4])
         translate([rx, 0, -1.0])
