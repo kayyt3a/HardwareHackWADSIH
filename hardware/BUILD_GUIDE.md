@@ -149,6 +149,7 @@ its own, and each one you skip is a bug you'll be hunting at 2am.
   hidden, not strain-relieved. Direct, honest cost of a two-pod split with
   zero external sourcing — a hidden cable or sheath is named as future work
   in `hardware/README.md`.
-- Pods are square-edged. Rounding the outer shell is a cheap next iteration
-  and worth doing before demo night.
+- Outer corners are lightly rounded (1mm) but the overall shape is still a
+  utilitarian bar, not a finished consumer product. Further shaping is a
+  cheap next iteration and worth doing before demo night.
 - No strain relief where any cable exits either pod.
