@@ -92,7 +92,16 @@ Only proceed once it grips properly.
   than needing supports
 - Both lids in `split_plate.stl` are pre-flipped rib-side-up so they sit
   flat on the bed with no supports; if slicing a lid alone, flip it yourself
-- PLA is fine; PETG if the clip needs to survive more on/off cycles
+- **Material: print bases in TPU, lids in PETG.** The base is the part
+  that flexes every time the pod is clipped on/off — TPU doesn't fatigue or
+  crack under repeated flex the way PLA/PETG do, and it's more forgiving of
+  small errors in `SNAP_GAP`. The lid doesn't flex; it just needs to hold
+  its shape, so keep it rigid (PETG). This needs no CAD changes — it's a
+  per-part material choice, not a geometry change. TPU needs its own
+  slicer profile (slower speed, less retraction) — test on a spare small
+  part first if the U1 doesn't already have one dialled in.
+- Use PLA only for the disposable `fit_test.stl` iterations while tuning
+  `SNAP_GAP` — fastest to print, and you'll reprint it several times
 
 ## Measure before you print
 
@@ -143,7 +152,10 @@ a visual in the deck — they were not printed for this build.
   than a flush-fitting accessory.
 - Corners are lightly rounded (1mm) but the overall shape is still a
   utilitarian bar, not a finished consumer product.
-- The clip grips by spring tension only. If loose in practice, a strip of
-  thin rubber or heat-shrink inside the channel is a faster fix than
-  reprinting.
+- The clip grips by spring tension only, from the base material itself
+  (TPU is the intended material for exactly this reason — see slicer
+  settings above). If a PLA/PETG-printed base still feels loose in
+  practice, reprinting the base in TPU is the real fix; there isn't
+  meaningful room in the channel's tolerance to add a separate liner
+  without resizing it.
 - No strain relief where cables exit either pod.

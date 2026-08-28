@@ -70,7 +70,14 @@ is what keeps this off the wearer's scalp instead of resting on top of it.
 - Print as modelled, cavity-up — no supports needed in that orientation
 - Both lids in the plate are pre-flipped rib-side-up so they sit flat with
   no supports
-- PLA is fine; PETG if you want the clip to survive more on/off cycles
+- **Print bases in TPU, lids in PETG** — the base is what flexes on every
+  clip-on/off, TPU handles that fatigue far better than rigid filament and
+  forgives small `SNAP_GAP` errors; the lid just needs to hold its shape.
+  No CAD changes needed, just a material choice per part. TPU wants its own
+  slicer profile (slower, less retraction) — test it on something small
+  first if that's not already dialled in on the U1.
+- Use PLA for `fit_test.stl` iterations only — fastest print, and you'll
+  redo it a few times while tuning `SNAP_GAP`
 
 ## Step 4 — Wire it up
 
