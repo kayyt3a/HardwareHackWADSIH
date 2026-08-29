@@ -1,0 +1,544 @@
+<meta charset="utf-8">
+<title>Vocalens — What Am I Building?</title>
+<style>
+  @page { size: A4; margin: 12mm; }
+  * { box-sizing: border-box; }
+  body { font-family:"DejaVu Sans",Arial,sans-serif; color:#1a2530; margin:0;
+         font-size:10.2pt; line-height:1.45;
+         -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .page { page-break-after:always; position:relative; height:268mm; }
+  .page:last-child { page-break-after:auto; }
+  h1 { font-size:27pt; margin:0 0 1mm; color:#0B4F6C; letter-spacing:-0.5px; }
+  h2 { font-size:15pt; margin:0; color:#0B4F6C; }
+  h3 { font-size:10.5pt; margin:3.5mm 0 1.5mm; color:#137A7F;
+       text-transform:uppercase; letter-spacing:.6px; }
+  .stephead { display:flex; align-items:center; gap:4mm; border-bottom:2.5px solid #0B4F6C;
+              padding-bottom:2mm; margin-bottom:3mm; }
+  .num { flex:0 0 12mm; height:12mm; border-radius:50%; background:#F2A65A; color:#0B4F6C;
+         font-size:17pt; font-weight:700; display:flex; align-items:center; justify-content:center; }
+  .sub { font-size:9pt; color:#5a6b78; }
+  .cap { font-size:8.5pt; color:#5a6b78; font-style:italic; text-align:center; margin-top:1mm; }
+  .fig { text-align:center; margin:2.5mm 0; }
+  .tip  { background:#eef4f6; border-left:4px solid #0B4F6C; padding:2.6mm 3.5mm; margin:2.6mm 0; font-size:9.6pt; }
+  .warn { background:#fdf3e7; border-left:4px solid #F2A65A; padding:2.6mm 3.5mm; margin:2.6mm 0; font-size:9.6pt; }
+  .warn b { color:#a4622a; }
+  .stop { background:#fdecec; border-left:4px solid #c0392b; padding:2.6mm 3.5mm; margin:2.6mm 0; font-size:9.6pt; }
+  .stop b { color:#c0392b; }
+  .go   { background:#eef7ef; border-left:4px solid #3f9e54; padding:2.6mm 3.5mm; margin:2.6mm 0; font-size:9.6pt; }
+  .go b { color:#2f7a41; }
+  code { font-family:"DejaVu Sans Mono",monospace; font-size:8.9pt; background:#eaf0f2;
+         padding:.2mm 1.2mm; border-radius:1.5mm; }
+  table { width:100%; border-collapse:collapse; font-size:9.3pt; margin:2.4mm 0; }
+  th { background:#0B4F6C; color:#fff; text-align:left; padding:1.8mm 2.5mm;
+       font-size:8.5pt; letter-spacing:.5px; }
+  td { padding:1.7mm 2.5mm; border-bottom:1px solid #dde5e8; vertical-align:top; }
+  tr:nth-child(even) td { background:#f7fafb; }
+  .foot { position:absolute; bottom:0; left:0; right:0; font-size:7.5pt; color:#8b9aa5;
+          border-top:1px solid #dde5e8; padding-top:1.5mm; display:flex; justify-content:space-between; }
+  ol.steps { padding-left:0; list-style:none; counter-reset:s; margin:2.5mm 0; }
+  ol.steps > li { counter-increment:s; position:relative; padding-left:7.5mm; margin:2.2mm 0; }
+  ol.steps > li::before { content:counter(s); position:absolute; left:0; top:.2mm;
+        width:5.2mm; height:5.2mm; background:#137A7F; color:#fff; border-radius:50%;
+        font-size:8pt; font-weight:700; display:flex; align-items:center; justify-content:center; }
+</style>
+
+<!-- ==================== P1 : WHAT IS THIS THING ==================== -->
+<div class="page">
+  <div style="background:#0B4F6C;color:#fff;padding:7mm;margin:-1mm -1mm 4mm;">
+    <div style="font-size:8.5pt;letter-spacing:3px;opacity:.75;">VOCALENS · PLAIN ENGLISH</div>
+    <h1 style="color:#fff;font-size:31pt;">What Am I Building?</h1>
+    <div style="font-size:11pt;color:#F2A65A;">The whole thing, from zero, no assumed knowledge</div>
+  </div>
+
+  <h3>In one sentence</h3>
+  <p style="font-size:11.5pt;line-height:1.5;margin:1mm 0 3mm;">
+    <b>You clip two small plastic boxes onto the arm of a pair of glasses you already own.
+    One box has a camera. The other has a speaker. You tap it, it photographs whatever
+    you're looking at, and it reads the writing out loud to you.</b>
+  </p>
+
+  <div class="fig">
+    <svg width="690" height="248" viewBox="0 0 690 248">
+      <rect x="0" y="0" width="690" height="248" rx="6" fill="#f7fafb" stroke="#dde5e8" stroke-width="1.5"/>
+      <circle cx="146" cy="34" r="11" fill="#137A7F"/><text x="146" y="38.5" font-size="11" fill="#fff" text-anchor="middle" font-weight="bold">1</text>
+      <text x="146" y="58" font-size="9.5" fill="#0B4F6C" text-anchor="middle" font-weight="bold">You look at a label</text>
+      <circle cx="346" cy="34" r="11" fill="#137A7F"/><text x="346" y="38.5" font-size="11" fill="#fff" text-anchor="middle" font-weight="bold">2</text>
+      <text x="346" y="58" font-size="9.5" fill="#0B4F6C" text-anchor="middle" font-weight="bold">Photo goes to the laptop</text>
+      <circle cx="509" cy="34" r="11" fill="#137A7F"/><text x="509" y="38.5" font-size="11" fill="#fff" text-anchor="middle" font-weight="bold">3</text>
+      <text x="509" y="58" font-size="9.5" fill="#0B4F6C" text-anchor="middle" font-weight="bold">An AI reads it</text>
+      <circle cx="644" cy="34" r="11" fill="#F2A65A"/><text x="644" y="38.5" font-size="11" fill="#0B4F6C" text-anchor="middle" font-weight="bold">4</text>
+      <text x="644" y="58" font-size="9.5" fill="#0B4F6C" text-anchor="middle" font-weight="bold">You hear it</text>
+
+      <!-- 1 label -->
+      
+
+      <!-- person head simplified -->
+      <circle cx="86" cy="120" r="34" fill="#c9d4da"/>
+      <path d="M52 120 L120 120" stroke="#8b9aa5" stroke-width="4"/>
+      <rect x="52" y="112" width="26" height="17" rx="3" fill="none" stroke="#5a6b78" stroke-width="2.5"/>
+      <rect x="94" y="112" width="26" height="17" rx="3" fill="none" stroke="#5a6b78" stroke-width="2.5"/>
+      <path d="M120 116 L150 110" stroke="#5a6b78" stroke-width="4"/>
+      <rect x="128" y="98" width="26" height="12" rx="3" fill="#137A7F"/>
+      <circle cx="141" cy="104" r="3.4" fill="#F2A65A"/>
+      <text x="86" y="176" font-size="9" fill="#5a6b78" text-anchor="middle">camera on the temple arm</text>
+
+      <!-- bottle -->
+      <rect x="186" y="92" width="44" height="66" rx="4" fill="#fff" stroke="#5a6b78" stroke-width="2"/>
+      <rect x="196" y="80" width="24" height="14" rx="2" fill="#8b9aa5"/>
+      <rect x="192" y="108" width="32" height="4" fill="#c9d4da"/>
+      <rect x="192" y="116" width="32" height="4" fill="#c9d4da"/>
+      <rect x="192" y="124" width="24" height="4" fill="#c9d4da"/>
+      <text x="208" y="176" font-size="9" fill="#5a6b78" text-anchor="middle">tiny print</text>
+
+      <path d="M244 122 L288 122" stroke="#137A7F" stroke-width="3" marker-end="url(#ax)"/>
+
+      <!-- 2 -->
+      
+
+      <rect x="298" y="92" width="96" height="60" rx="4" fill="#0B4F6C"/>
+      <rect x="306" y="100" width="80" height="44" rx="2" fill="#16394a"/>
+      <text x="346" y="120" font-size="8" fill="#8fb8c9" text-anchor="middle">your</text>
+      <text x="346" y="132" font-size="8" fill="#8fb8c9" text-anchor="middle">laptop</text>
+      <path d="M290 156 L402 156 L394 152 L298 152 Z" fill="#5a6b78"/>
+      <text x="346" y="176" font-size="9" fill="#5a6b78" text-anchor="middle">over WiFi</text>
+
+      <path d="M410 122 L454 122" stroke="#137A7F" stroke-width="3" marker-end="url(#ax)"/>
+
+      <!-- 3 -->
+      
+
+      <rect x="464" y="92" width="90" height="60" rx="6" fill="#137A7F"/>
+      <text x="509" y="118" font-size="9" fill="#fff" text-anchor="middle">AI reads</text>
+      <text x="509" y="132" font-size="9" fill="#fff" text-anchor="middle">the label</text>
+      <text x="509" y="176" font-size="9" fill="#5a6b78" text-anchor="middle">turns it into speech</text>
+
+      <path d="M570 122 L610 122" stroke="#137A7F" stroke-width="3" marker-end="url(#ax)"/>
+
+      <!-- 4 speaker -->
+      <circle cx="644" cy="122" r="30" fill="#F2A65A"/>
+      <circle cx="644" cy="122" r="14" fill="#0B4F6C"/>
+      <text x="644" y="176" font-size="9" fill="#5a6b78" text-anchor="middle">speaker behind</text>
+      <text x="644" y="187" font-size="9" fill="#5a6b78" text-anchor="middle">your ear</text>
+
+      <!-- bubble -->
+      <rect x="150" y="200" width="390" height="34" rx="6" fill="#0B4F6C"/>
+      <text x="345" y="222" font-size="11" fill="#fff" text-anchor="middle">"Paracetamol, 500 milligrams. Expires June 2027."</text>
+      <defs><marker id="ax" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#137A7F"/></marker></defs>
+    </svg>
+    <div class="cap">The entire product. Four steps, about five seconds.</div>
+  </div>
+
+  <div class="go">
+    <b>The board on your desk is not clever.</b> It only takes a photo, sends it,
+    and plays the sound that comes back. All the thinking happens on your laptop.
+    That's deliberate — it means you can fix and improve the smart part without
+    ever re-flashing the hardware.
+  </div>
+
+  <h3>Why glasses and not a handheld gadget</h3>
+  <p style="margin:1mm 0;">
+    Because people put handheld things down and lose them. Glasses are already on
+    your face — you can't misplace the thing you're wearing. That's the entire
+    product thesis in one line, and it's what you say on stage.
+  </p>
+
+  <h3>The three things that make it more than a camera</h3>
+  <table>
+    <tr><th style="width:44mm;">Feature</th><th>What it does for the person wearing it</th></tr>
+    <tr><td><b>It reads barcodes first</b></td><td>If there's a barcode, it looks the product up in a database instead of asking the AI. Faster, free, and more accurate on packaged goods.</td></tr>
+    <tr><td><b>It remembers a little about you</b></td><td>Either your dosage-relevant facts, or things you asked it to remember. Which one depends on a single setting.</td></tr>
+    <tr><td><b>It admits when it can't see</b></td><td>On a bad photo it says "I can't see that clearly" rather than guessing. For someone who can't check the answer, that matters more than being usually right.</td></tr>
+  </table>
+
+  <div class="foot"><span>Plain English guide</span><span>Page 1</span></div>
+</div>
+
+<!-- ==================== P2 : THE PARTS ==================== -->
+<div class="page">
+  <div class="stephead">
+    <div class="num">1</div>
+    <div><h2>The parts, and what each one does</h2><div class="sub">Every physical thing in the build</div></div>
+  </div>
+
+  <div class="fig">
+    <svg width="690" height="230" viewBox="0 0 690 230">
+      <!-- FRONT POD CARD -->
+      <rect x="0" y="0" width="336" height="230" rx="6" fill="#f7fafb" stroke="#dde5e8" stroke-width="1.5"/>
+      <rect x="0" y="0" width="336" height="26" rx="6" fill="#137A7F"/><rect x="0" y="14" width="336" height="12" fill="#137A7F"/>
+      <text x="168" y="19" font-size="11" fill="#fff" text-anchor="middle" font-weight="bold">FRONT POD — near the hinge</text>
+
+      <rect x="34" y="52" width="72" height="56" rx="4" fill="#0B4F6C"/>
+      <circle cx="70" cy="80" r="17" fill="#2b3a45"/><circle cx="70" cy="80" r="9" fill="#F2A65A"/><circle cx="70" cy="80" r="3.5" fill="#0B4F6C"/>
+      <text x="70" y="126" font-size="9.5" fill="#0B4F6C" text-anchor="middle" font-weight="bold">CAMERA</text>
+      <text x="70" y="140" font-size="8.5" fill="#5a6b78" text-anchor="middle">the eye</text>
+
+      <rect x="140" y="52" width="112" height="56" rx="4" fill="#0B4F6C"/>
+      <text x="196" y="78" font-size="8.5" fill="#fff" text-anchor="middle">XIAO ESP32S3</text>
+      <text x="196" y="92" font-size="8.5" fill="#fff" text-anchor="middle">Sense</text>
+      <text x="196" y="126" font-size="9.5" fill="#0B4F6C" text-anchor="middle" font-weight="bold">THE BOARD</text>
+      <text x="196" y="140" font-size="8.5" fill="#5a6b78" text-anchor="middle">camera + WiFi</text>
+
+      <circle cx="290" cy="80" r="20" fill="#c9ccd0" stroke="#8b9aa5" stroke-width="2"/>
+      <text x="290" y="126" font-size="9.5" fill="#0B4F6C" text-anchor="middle" font-weight="bold">TOUCH PAD</text>
+      <text x="290" y="140" font-size="8.5" fill="#5a6b78" text-anchor="middle">a coin you tap</text>
+
+      <text x="168" y="172" font-size="9.5" fill="#5a6b78" text-anchor="middle">This pod SEES. It takes the picture</text>
+      <text x="168" y="188" font-size="9.5" fill="#5a6b78" text-anchor="middle">and sends it over WiFi.</text>
+      <text x="168" y="212" font-size="9" fill="#137A7F" text-anchor="middle" font-weight="bold">48 × 10 × 29 mm</text>
+
+      <!-- REAR POD CARD -->
+      <rect x="354" y="0" width="336" height="230" rx="6" fill="#f7fafb" stroke="#dde5e8" stroke-width="1.5"/>
+      <rect x="354" y="0" width="336" height="26" rx="6" fill="#0B4F6C"/><rect x="354" y="14" width="336" height="12" fill="#0B4F6C"/>
+      <text x="522" y="19" font-size="11" fill="#fff" text-anchor="middle" font-weight="bold">REAR POD — behind the ear</text>
+
+      <rect x="400" y="52" width="100" height="56" rx="4" fill="#0B4F6C"/>
+      <text x="450" y="85" font-size="9" fill="#fff" text-anchor="middle">AMPLIFIER</text>
+      <text x="450" y="126" font-size="9.5" fill="#0B4F6C" text-anchor="middle" font-weight="bold">THE AMP</text>
+      <text x="450" y="140" font-size="8.5" fill="#5a6b78" text-anchor="middle">makes it loud enough</text>
+
+      <circle cx="580" cy="80" r="30" fill="#0B4F6C"/><circle cx="580" cy="80" r="15" fill="#F2A65A"/>
+      <text x="580" y="126" font-size="9.5" fill="#0B4F6C" text-anchor="middle" font-weight="bold">SPEAKER</text>
+      <text x="580" y="140" font-size="8.5" fill="#5a6b78" text-anchor="middle">the mouth</text>
+
+      <text x="522" y="172" font-size="9.5" fill="#5a6b78" text-anchor="middle">This pod SPEAKS. It plays the answer</text>
+      <text x="522" y="188" font-size="9.5" fill="#5a6b78" text-anchor="middle">the laptop sends back.</text>
+      <text x="522" y="212" font-size="9" fill="#137A7F" text-anchor="middle" font-weight="bold">57 × 10 × 38 mm</text>
+    </svg>
+    <div class="cap">Two boxes. One sees, one speaks. Five wires join them along the arm.</div>
+  </div>
+
+  <h3>Why two boxes instead of one</h3>
+  <p style="margin:1mm 0 2mm;">
+    If you put all five components in one box it becomes a big lump sitting on the
+    side of your head. Splitting them means each box is small and thin. The camera
+    has to be at the <b>front</b> (that's where you look) and the speaker wants to
+    be near your <b>ear</b>. So the split matches where things naturally belong.
+  </p>
+
+  <table>
+    <tr><th style="width:24mm;">Wire colour</th><th>What it carries</th><th style="width:52mm;">In plain words</th></tr>
+    <tr><td><b>Red</b></td><td>3.3&nbsp;volts of power</td><td>Feeds the amp</td></tr>
+    <tr><td><b>Black</b></td><td>Ground</td><td>The return path — every circuit needs one</td></tr>
+    <tr><td><b>Yellow</b></td><td>Bit clock</td><td rowspan="3" style="vertical-align:middle;">Three wires that together carry digital sound from the board to the amp</td></tr>
+    <tr><td><b>Green</b></td><td>Word select</td></tr>
+    <tr><td><b>Blue</b></td><td>Data</td></tr>
+    <tr><td><b>White</b></td><td>Touch signal</td><td>Stays inside the front pod — tells the board you tapped it</td></tr>
+  </table>
+
+  <div class="tip">
+    <b>Don't worry about what "bit clock" means.</b> Those three wires are a
+    standard called I2S. You never have to understand it — you just have to connect
+    yellow-to-yellow, green-to-green, blue-to-blue. The code handles the rest.
+  </div>
+
+  <div class="foot"><span>The parts</span><span>Page 2</span></div>
+</div>
+
+<!-- ==================== P3 : THE MOUNTING PROBLEM ==================== -->
+<div class="page">
+  <div class="stephead">
+    <div class="num">2</div>
+    <div><h2>The problem your sketch solves</h2><div class="sub">Why the mount is being redesigned</div></div>
+  </div>
+
+  <h3>What we had before</h3>
+  <p style="margin:1mm 0 2mm;">
+    The box and the clip were <b>the same part</b>. The TPU box had a C-shaped
+    channel moulded into its underside, sized to grip one exact thickness of temple
+    arm. Change glasses, and the box no longer fits — you reprint the whole box.
+  </p>
+
+  <div class="fig">
+    <svg width="690" height="212" viewBox="0 0 690 212">
+      <!-- OLD -->
+      <rect x="0" y="0" width="336" height="212" rx="6" fill="#fdf5f4" stroke="#e8c4bf" stroke-width="1.5"/>
+      <rect x="0" y="0" width="336" height="26" rx="6" fill="#c0392b"/><rect x="0" y="14" width="336" height="12" fill="#c0392b"/>
+      <text x="168" y="19" font-size="11" fill="#fff" text-anchor="middle" font-weight="bold">OLD — box IS the clip</text>
+
+      <rect x="86" y="48" width="164" height="56" rx="4" fill="#137A7F"/>
+      <text x="168" y="80" font-size="9.5" fill="#fff" text-anchor="middle">TPU box + clip in one</text>
+      <path d="M120 104 L120 128 L216 128 L216 104" fill="none" stroke="#137A7F" stroke-width="9"/>
+      <rect x="130" y="108" width="76" height="16" rx="3" fill="#c9d4da"/>
+      <text x="168" y="152" font-size="9" fill="#5a6b78" text-anchor="middle">channel sized to ONE arm thickness</text>
+      <text x="168" y="174" font-size="9.5" fill="#c0392b" text-anchor="middle" font-weight="bold">wrong size → reprint the whole box</text>
+      <text x="168" y="192" font-size="9" fill="#c0392b" text-anchor="middle">3–4 hours per attempt</text>
+
+      <!-- NEW -->
+      <rect x="354" y="0" width="336" height="212" rx="6" fill="#f2f9f4" stroke="#3f9e54" stroke-width="1.5"/>
+      <rect x="354" y="0" width="336" height="26" rx="6" fill="#3f9e54"/><rect x="354" y="14" width="336" height="12" fill="#3f9e54"/>
+      <text x="522" y="19" font-size="11" fill="#fff" text-anchor="middle" font-weight="bold">NEW — your sketch</text>
+
+      <rect x="440" y="48" width="164" height="46" rx="4" fill="#8b9aa5"/>
+      <text x="522" y="76" font-size="9.5" fill="#fff" text-anchor="middle">PETG box (rigid)</text>
+      <rect x="496" y="94" width="52" height="12" rx="2" fill="#5a6b78"/>
+      <text x="614" y="103" font-size="8.5" fill="#5a6b78">rail</text>
+      <rect x="440" y="112" width="164" height="34" rx="16" fill="#137A7F"/>
+      <rect x="490" y="118" width="64" height="22" rx="8" fill="#c9d4da"/>
+      <text x="522" y="134" font-size="8" fill="#5a6b78" text-anchor="middle">arm</text>
+      <text x="420" y="134" font-size="8.5" fill="#137A7F" text-anchor="end">TPU ring</text>
+      <text x="522" y="170" font-size="9.5" fill="#2f7a41" text-anchor="middle" font-weight="bold">ring squishes onto ANY arm</text>
+      <text x="522" y="190" font-size="9" fill="#2f7a41" text-anchor="middle">wrong size → reprint a 10-minute ring</text>
+    </svg>
+    <div class="cap">The change: stop asking one part to do two jobs.</div>
+  </div>
+
+  <div class="go">
+    <b>This is the real win, and it's worth saying out loud in the pitch.</b>
+    The box never touches the glasses. The ring does all the gripping. So the
+    expensive part — the one with electronics glued into it — never has to change
+    when the glasses change. You print rings, not pods.
+  </div>
+
+  <h3>Why the two different plastics</h3>
+  <table>
+    <tr><th style="width:26mm;">Material</th><th style="width:34mm;">Feels like</th><th>Used for, and why</th></tr>
+    <tr><td><b>TPU</b></td><td>A rubber shoe sole — bends, springs back</td>
+        <td><b>The ring.</b> It has to stretch over the arm and squeeze. Rigid plastic would snap or stay loose; TPU grips a range of sizes and survives being pulled on and off hundreds of times.</td></tr>
+    <tr><td><b>PETG</b></td><td>A fizzy-drink bottle — firm, slightly tough</td>
+        <td><b>The box.</b> It must hold its shape so components don't rattle and the lid stays shut. It never flexes, so it never fatigues.</td></tr>
+    <tr><td><b>PLA</b></td><td>Hard and a bit brittle</td>
+        <td><b>Test prints only.</b> Fastest and cheapest to print — use it while you're iterating, not in the final build.</td></tr>
+  </table>
+
+  <div class="warn">
+    <b>Soft and rigid is the whole trick.</b> Every clip-on product works this way —
+    the springy part grips, the stiff part holds the electronics. If you only take
+    one idea from this page, take that one.
+  </div>
+
+  <h3>What the ring buys you, in practice</h3>
+  <table>
+    <tr><th style="width:56mm;">Situation</th><th>Old design</th><th>Ring design</th></tr>
+    <tr><td>A judge wants to try it on their own glasses</td><td style="color:#c0392b;">Won't fit</td><td style="color:#2f7a41;">Slide on a spare ring</td></tr>
+    <tr><td>The clip is slightly too loose</td><td style="color:#c0392b;">Reprint the pod (3–4 hrs)</td><td style="color:#2f7a41;">Reprint a ring (10 min)</td></tr>
+    <tr><td>A teammate wants to test-wear it</td><td style="color:#c0392b;">Only if same glasses</td><td style="color:#2f7a41;">Their own ring, same pod</td></tr>
+    <tr><td>The mount cracks the night before</td><td style="color:#c0392b;">Electronics stuck in a broken pod</td><td style="color:#2f7a41;">Swap the ring, pod untouched</td></tr>
+  </table>
+
+  <div class="tip">
+    <b>That last row is the one that should sell you on it.</b> With the old design
+    the thing that flexes most is also the thing your electronics are glued into.
+    The ring design moves all the flexing into a part that costs ten minutes to replace.
+  </div>
+
+  <div class="foot"><span>The mounting problem</span><span>Page 3</span></div>
+</div>
+
+<!-- ==================== P4 : HOW THE INTERLOCK WORKS ==================== -->
+<div class="page">
+  <div class="stephead">
+    <div class="num">3</div>
+    <div><h2>The beam interlock, step by step</h2><div class="sub">How the ring and the box hold hands</div></div>
+  </div>
+
+  <p style="margin:1mm 0 2mm;">
+    An interlock is just <b>a shape that slides into a matching shape and then
+    can't be pulled straight out</b>. Think of a Lego brick, or a drawer runner.
+    Ours is a wedge — wide at the top, narrow at the bottom.
+  </p>
+
+  <div class="fig">
+    <svg width="690" height="250" viewBox="0 0 690 250">
+      <!-- A: shapes -->
+      <rect x="0" y="0" width="222" height="250" rx="6" fill="#f7fafb" stroke="#dde5e8" stroke-width="1.5"/>
+      <circle cx="20" cy="20" r="11" fill="#137A7F"/><text x="20" y="24.5" font-size="11" fill="#fff" text-anchor="middle" font-weight="bold">A</text>
+      <text x="38" y="24.5" font-size="10.5" fill="#0B4F6C" font-weight="bold">Two shapes</text>
+
+      <text x="111" y="52" font-size="9" fill="#5a6b78" text-anchor="middle">cut through, seen end-on</text>
+      <rect x="46" y="66" width="130" height="34" rx="3" fill="#8b9aa5"/>
+      <path d="M86 100 L136 100 L128 124 L94 124 Z" fill="#5a6b78"/>
+      <text x="111" y="142" font-size="9" fill="#5a6b78" text-anchor="middle">PETG box, wedge underneath</text>
+
+      <rect x="46" y="176" width="130" height="42" rx="6" fill="#137A7F"/>
+      <path d="M86 176 L136 176 L128 200 L94 200 Z" fill="#f7fafb"/>
+      <text x="111" y="236" font-size="9" fill="#5a6b78" text-anchor="middle">TPU ring, matching groove</text>
+
+      <!-- B: slide -->
+      <rect x="234" y="0" width="222" height="250" rx="6" fill="#f7fafb" stroke="#dde5e8" stroke-width="1.5"/>
+      <circle cx="254" cy="20" r="11" fill="#137A7F"/><text x="254" y="24.5" font-size="11" fill="#fff" text-anchor="middle" font-weight="bold">B</text>
+      <text x="272" y="24.5" font-size="10.5" fill="#0B4F6C" font-weight="bold">Slide together</text>
+
+      <text x="345" y="52" font-size="9" fill="#5a6b78" text-anchor="middle">from the side, along the arm</text>
+      <rect x="264" y="150" width="164" height="44" rx="6" fill="#137A7F"/>
+      <rect x="300" y="150" width="56" height="10" fill="#f7fafb"/>
+      <rect x="286" y="76" width="130" height="32" rx="3" fill="#8b9aa5"/>
+      <path d="M320 108 L364 108 L358 128 L326 128 Z" fill="#5a6b78"/>
+      <path d="M345 134 L345 146" stroke="#3f9e54" stroke-width="3" marker-end="url(#gg)"/>
+      <text x="345" y="216" font-size="9" fill="#2f7a41" text-anchor="middle" font-weight="bold">push down until it clicks</text>
+      <text x="345" y="234" font-size="9" fill="#5a6b78" text-anchor="middle">TPU flexes, then grips</text>
+
+      <!-- C: locked -->
+      <rect x="468" y="0" width="222" height="250" rx="6" fill="#f2f9f4" stroke="#3f9e54" stroke-width="1.5"/>
+      <circle cx="488" cy="20" r="11" fill="#3f9e54"/><text x="488" y="24.5" font-size="11" fill="#fff" text-anchor="middle" font-weight="bold">C</text>
+      <text x="506" y="24.5" font-size="10.5" fill="#2f7a41" font-weight="bold">Locked</text>
+
+      <text x="579" y="52" font-size="9" fill="#5a6b78" text-anchor="middle">wedge can't lift out</text>
+      <rect x="514" y="96" width="130" height="32" rx="3" fill="#8b9aa5"/>
+      <rect x="514" y="128" width="130" height="44" rx="6" fill="#137A7F"/>
+      <path d="M548 128 L592 128 L586 148 L554 148 Z" fill="#5a6b78"/>
+      <path d="M579 92 L579 74" stroke="#c0392b" stroke-width="3" marker-end="url(#rr)"/>
+      <text x="579" y="68" font-size="9" fill="#c0392b" text-anchor="middle" font-weight="bold">pulling up does nothing</text>
+      <text x="579" y="196" font-size="9" fill="#5a6b78" text-anchor="middle">the wedge is wider than its slot mouth</text>
+      <text x="579" y="218" font-size="9" fill="#2f7a41" text-anchor="middle" font-weight="bold">to remove: slide it back off sideways</text>
+
+      <defs>
+        <marker id="gg" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#3f9e54"/></marker>
+        <marker id="rr" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#c0392b"/></marker>
+      </defs>
+    </svg>
+    <div class="cap">A wedge in a matching groove. Slides on sideways, won't pull off upwards.</div>
+  </div>
+
+  <div class="tip">
+    <b>Why a wedge and not a straight peg?</b> A straight peg only holds by friction,
+    and friction on a printed part fades as it wears. A wedge holds <i>mechanically</i>
+    — the shape itself blocks the exit. It stays tight even when it's worn smooth.
+  </div>
+
+  <h3>Why this direction matters</h3>
+  <p style="margin:1mm 0 2mm;">
+    The slide-on direction runs <b>along the temple arm</b>, front to back. That's
+    deliberate: gravity and knocks push the pod <b>down and outward</b>, and the
+    interlock resists exactly those. The only direction that releases it is the one
+    nothing pushes it in by accident.
+  </p>
+
+  <div class="warn">
+    <b>The one number to get right:</b> the gap between wedge and groove. Too tight
+    and it won't go on; too loose and the pod wobbles. Start at <code>0.3 mm</code>
+    of clearance — and because the ring is TPU, it forgives a lot. That forgiveness
+    is exactly why the soft part is the one with the groove.
+  </div>
+
+  <h3>About the word "foam"</h3>
+  <p style="margin:1mm 0 2mm;">
+    Your sketch says <i>foam ring</i>. There are two ways to get that, and they're
+    both fine — worth knowing the difference before you print:
+  </p>
+  <table>
+    <tr><th style="width:52mm;">Approach</th><th>What it means</th></tr>
+    <tr><td><b>Printed soft TPU</b> <span style="color:#2f7a41;">(recommended)</span></td>
+        <td>Print the ring in TPU at low infill with a soft pattern. It comes off the printer already squishy. One part, nothing to glue, nothing to fall off.</td></tr>
+    <tr><td><b>TPU ring + stick-on foam</b></td>
+        <td>Print a thinner TPU ring and line the inside with a strip of adhesive foam tape. Grips even harder and is more forgiving of odd-shaped arms — but the tape is one more thing that can peel off mid-demo.</td></tr>
+  </table>
+
+  <div class="tip">
+    <b>Start with printed TPU.</b> Add foam tape only if the ring turns out to slip
+    on the actual glasses. Fewer parts is fewer things that fail on stage.
+  </div>
+
+  <div class="foot"><span>The interlock</span><span>Page 4</span></div>
+</div>
+
+<!-- ==================== P5 : WHERE THINGS STAND ==================== -->
+<div class="page">
+  <div class="stephead">
+    <div class="num">4</div>
+    <div><h2>Where things actually stand</h2><div class="sub">Read this before you print anything else</div></div>
+  </div>
+
+  <div class="stop">
+    <b>Important, and I want to be straight with you:</b> the STL files sitting in
+    <code>hardware/cad/</code> right now are the <b>OLD</b> design — box-with-built-in-clip.
+    They do not have a ring or an interlock. Nothing on pages 3 and 4 of this
+    document exists as a printable file yet.
+  </div>
+
+  <table>
+    <tr><th style="width:52mm;">Thing</th><th style="width:26mm;">Status</th><th>What that means for you</th></tr>
+    <tr><td><b>Server + AI</b></td><td style="color:#2f7a41;"><b>Done</b></td><td>Works today, no hardware needed. Test it now.</td></tr>
+    <tr><td><b>Firmware skeleton</b></td><td style="color:#2f7a41;"><b>Done</b></td><td>Wake word still stubbed — that's planned, not broken.</td></tr>
+    <tr><td><b>Old pod STLs</b></td><td style="color:#a4622a;"><b>Printable</b></td><td>Will work, but only on one arm size, and needs fit-test tuning.</td></tr>
+    <tr><td><b>Ring + interlock</b></td><td style="color:#c0392b;"><b>Not built</b></td><td>Your sketch. Needs new CAD before it can be printed.</td></tr>
+  </table>
+
+  <h3>So what do you do about it</h3>
+  <p style="margin:1mm 0 2mm;">
+    You have two sane options. Neither is wrong — it depends on how much time you
+    have before demo night.
+  </p>
+
+  <div class="fig">
+    <svg width="690" height="178" viewBox="0 0 690 178">
+      <rect x="0" y="0" width="336" height="178" rx="6" fill="#f7fafb" stroke="#dde5e8" stroke-width="1.5"/>
+      <rect x="0" y="0" width="336" height="26" rx="6" fill="#8b9aa5"/><rect x="0" y="14" width="336" height="12" fill="#8b9aa5"/>
+      <text x="168" y="19" font-size="11" fill="#fff" text-anchor="middle" font-weight="bold">OPTION A — print the old design now</text>
+      <text x="168" y="52" font-size="9.5" fill="#5a6b78" text-anchor="middle">Gets a physical thing on your face today.</text>
+      <text x="168" y="72" font-size="9.5" fill="#5a6b78" text-anchor="middle">You already have the files.</text>
+      <text x="168" y="100" font-size="9.5" fill="#a4622a" text-anchor="middle" font-weight="bold">Cost: fit-test tuning, one arm size only</text>
+      <text x="168" y="130" font-size="9.5" fill="#0B4F6C" text-anchor="middle" font-weight="bold">Best if demo night is close</text>
+      <text x="168" y="156" font-size="9" fill="#5a6b78" text-anchor="middle">and you need something that definitely exists</text>
+
+      <rect x="354" y="0" width="336" height="178" rx="6" fill="#f2f9f4" stroke="#3f9e54" stroke-width="1.5"/>
+      <rect x="354" y="0" width="336" height="26" rx="6" fill="#3f9e54"/><rect x="354" y="14" width="336" height="12" fill="#3f9e54"/>
+      <text x="522" y="19" font-size="11" fill="#fff" text-anchor="middle" font-weight="bold">OPTION B — build the ring design</text>
+      <text x="522" y="52" font-size="9.5" fill="#5a6b78" text-anchor="middle">I write the new CAD, you print rings.</text>
+      <text x="522" y="72" font-size="9.5" fill="#5a6b78" text-anchor="middle">Fits any glasses, including a judge's.</text>
+      <text x="522" y="100" font-size="9.5" fill="#a4622a" text-anchor="middle" font-weight="bold">Cost: new CAD, new test prints</text>
+      <text x="522" y="130" font-size="9.5" fill="#2f7a41" text-anchor="middle" font-weight="bold">Best if you have a few days</text>
+      <text x="522" y="156" font-size="9" fill="#5a6b78" text-anchor="middle">and it's the better story on stage</text>
+    </svg>
+    <div class="cap">You can also do both — print the old pods to keep testing while the new CAD is written.</div>
+  </div>
+
+  <div class="go">
+    <b>My honest recommendation: do both, in that order.</b> Print the old design
+    this week so you always have a working physical prototype to fall back on. Then
+    build the ring version as the upgrade. A hackathon is won by the team that has
+    <i>something that works</i>, not the team with the best design that didn't get
+    printed in time.
+  </div>
+
+  <div class="tip">
+    <b>Nothing you've done is wasted either way.</b> The electronics, the wiring, the
+    server, the box dimensions — all identical between the two. The only thing that
+    changes is how the box attaches to the glasses.
+  </div>
+
+  <div class="foot"><span>Where things stand</span><span>Page 5</span></div>
+</div>
+
+<!-- ==================== P6 : GLOSSARY ==================== -->
+<div class="page">
+  <div class="stephead">
+    <div class="num">?</div>
+    <div><h2>Every word explained</h2><div class="sub">Nothing here is assumed knowledge</div></div>
+  </div>
+
+  <table>
+    <tr><th style="width:44mm;">Word</th><th>What it actually means</th></tr>
+    <tr><td><b>Pod</b></td><td>One of the two small printed boxes. Front pod = camera. Rear pod = speaker.</td></tr>
+    <tr><td><b>Temple arm</b></td><td>The bit of the glasses that goes over your ear.</td></tr>
+    <tr><td><b>XIAO ESP32S3 Sense</b></td><td>The little computer board. Has WiFi and a camera socket. About the size of a stamp.</td></tr>
+    <tr><td><b>Firmware</b></td><td>The program that runs <i>on the board</i> (as opposed to on your laptop).</td></tr>
+    <tr><td><b>Flash</b></td><td>To copy the firmware onto the board over USB. "Flashing the board" = installing the program.</td></tr>
+    <tr><td><b>Server</b></td><td>The program running on your laptop that receives photos and answers them.</td></tr>
+    <tr><td><b>Endpoint</b></td><td>One specific thing the server can do, named like a web address. <code>/read_label</code> is an endpoint.</td></tr>
+    <tr><td><b>curl</b></td><td>A command that sends something to the server from your terminal. Lets you test with no hardware.</td></tr>
+    <tr><td><b>I2S</b></td><td>The three-wire standard for sending digital sound. Yellow, green, blue.</td></tr>
+    <tr><td><b>Amp / amplifier</b></td><td>Turns a weak digital sound signal into one strong enough to drive a speaker.</td></tr>
+    <tr><td><b>Capacitive touch</b></td><td>The board can sense a finger near a metal pad. No button needed — just a wire and a coin.</td></tr>
+    <tr><td><b>PSRAM</b></td><td>Extra memory the camera needs. Must be set to "OPI PSRAM" or the camera won't start.</td></tr>
+    <tr><td><b>Wake word</b></td><td>Saying "Hey Vocalens" to trigger it instead of tapping. Hardest part — saved for last.</td></tr>
+    <tr><td><b>STL</b></td><td>A 3D model file. What you hand to the printer software.</td></tr>
+    <tr><td><b>OpenSCAD / <code>.scad</code></b></td><td>Where the 3D model is <i>written as code</i>. Change a number, re-export the STL.</td></tr>
+    <tr><td><b>Slicer</b></td><td>Software that turns an STL into printer instructions. You set layer height and material here.</td></tr>
+    <tr><td><b>TPU / PETG / PLA</b></td><td>Rubbery / firm / hard-and-brittle. See page 3.</td></tr>
+    <tr><td><b>Interlock</b></td><td>A shape that slides into a matching shape and then can't be pulled out.</td></tr>
+    <tr><td><b>Fit test</b></td><td>A tiny 3-minute print used only to check the clip grips before printing a whole pod.</td></tr>
+    <tr><td><b>Dry-fit</b></td><td>Putting parts together loosely, with no glue, just to check they fit.</td></tr>
+    <tr><td><b>Vision model / VLM</b></td><td>An AI that looks at a picture and describes it. The thing that actually reads the label.</td></tr>
+    <tr><td><b>Barcode fast path</b></td><td>If there's a barcode, look it up in a database instead of asking the AI. Faster and free.</td></tr>
+    <tr><td><b>Profile</b></td><td>The saved info about one user — either dosage facts, or reminders. Never both.</td></tr>
+    <tr><td><b>Guardrail</b></td><td>The rule stopping the AI giving medical advice. It reads labels; it never says what to take.</td></tr>
+  </table>
+
+  <div class="go">
+    <b>If you remember nothing else:</b> the glasses hold two boxes, the boxes talk to
+    your laptop, the laptop does the thinking, and the answer comes back as speech.
+    Everything else on these six pages is detail underneath that one sentence.
+  </div>
+
+  <div class="foot"><span>Glossary</span><span>Page 6</span></div>
+</div>
