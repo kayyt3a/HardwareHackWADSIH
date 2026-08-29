@@ -1,0 +1,616 @@
+<meta charset="utf-8">
+<title>Vocalens Assembly Booklet</title>
+<style>
+  @page { size: A4; margin: 14mm 14mm 12mm 14mm; }
+  * { box-sizing: border-box; }
+  body {
+    font-family: "DejaVu Sans", "Helvetica Neue", Arial, sans-serif;
+    color: #1a2530; margin: 0; font-size: 10.2pt; line-height: 1.45;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+  .page { page-break-after: always; position: relative; height: 262mm; }
+  .page:last-child { page-break-after: auto; }
+
+  h1 { font-size: 30pt; margin: 0 0 2mm; letter-spacing: -0.5px; color: #0B4F6C; }
+  h2 { font-size: 15pt; margin: 0; color: #0B4F6C; }
+  h3 { font-size: 11.5pt; margin: 3.5mm 0 1.5mm; color: #137A7F;
+       text-transform: uppercase; letter-spacing: 0.6px; }
+
+  /* ---- step header ---- */
+  .stephead { display: flex; align-items: flex-start; gap: 4mm;
+              border-bottom: 2.5px solid #0B4F6C; padding-bottom: 2.5mm; margin-bottom: 4mm; }
+  .num { flex: 0 0 13mm; height: 13mm; border-radius: 50%; background: #F2A65A;
+         color: #0B4F6C; font-size: 19pt; font-weight: 700; display: flex;
+         align-items: center; justify-content: center; margin-top: -1mm; }
+  .stephead .sub { font-size: 9pt; color: #5a6b78; margin-top: 0.8mm; }
+  .time { margin-left: auto; font-size: 8.5pt; color: #fff; background: #137A7F;
+          padding: 1.2mm 3mm; border-radius: 3mm; white-space: nowrap; align-self: center; }
+
+  /* ---- boxes ---- */
+  .parts { background: #f3f7f8; border-left: 4px solid #137A7F;
+           padding: 3mm 4mm; margin: 0 0 4mm; }
+  .parts b { color: #0B4F6C; font-size: 9pt; text-transform: uppercase; letter-spacing: 0.6px; }
+  .parts ul { margin: 1.5mm 0 0; padding-left: 5mm; }
+  .parts li { margin: 0.8mm 0; }
+  .qty { display: inline-block; background: #0B4F6C; color: #fff; font-weight: 700;
+         font-size: 8pt; padding: 0.3mm 1.8mm; border-radius: 2mm; margin-right: 1.5mm; }
+
+  .warn { background: #fdf3e7; border-left: 4px solid #F2A65A; padding: 2.6mm 4mm; margin: 3mm 0; }
+  .warn b { color: #a4622a; }
+  .stop { background: #fdecec; border-left: 4px solid #c0392b; padding: 3mm 4mm; margin: 4mm 0; }
+  .stop b { color: #c0392b; }
+  .tip  { background: #eef4f6; border-left: 4px solid #0B4F6C; padding: 2.6mm 4mm; margin: 3mm 0; }
+
+  table { width: 100%; border-collapse: collapse; margin: 2.4mm 0; font-size: 9.4pt; }
+  th { background: #0B4F6C; color: #fff; text-align: left; padding: 2mm 2.5mm;
+       font-size: 8.5pt; text-transform: uppercase; letter-spacing: 0.5px; }
+  td { padding: 1.55mm 2.5mm; border-bottom: 1px solid #dde5e8; vertical-align: middle; }
+  tr:nth-child(even) td { background: #f7fafb; }
+  code { font-family: "DejaVu Sans Mono", monospace; font-size: 9pt;
+         background: #eaf0f2; padding: 0.3mm 1.2mm; border-radius: 1.5mm; }
+
+  .sw { display: inline-block; width: 3.6mm; height: 3.6mm; border-radius: 50%;
+        border: 1px solid #7a8c99; vertical-align: -0.6mm; margin-right: 1.8mm; }
+
+  ol.steps { padding-left: 0; list-style: none; counter-reset: s; margin: 3mm 0; }
+  ol.steps > li { counter-increment: s; position: relative; padding-left: 8mm; margin: 2.6mm 0; }
+  ol.steps > li::before { content: counter(s); position: absolute; left: 0; top: 0.2mm;
+        width: 5.4mm; height: 5.4mm; background: #137A7F; color: #fff; border-radius: 50%;
+        font-size: 8pt; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+
+  .fig { text-align: center; margin: 3mm 0; }
+  .cap { font-size: 8.5pt; color: #5a6b78; font-style: italic; margin-top: 1.5mm; }
+  .foot { position: absolute; bottom: 0; left: 0; right: 0; font-size: 7.5pt;
+          color: #8b9aa5; border-top: 1px solid #dde5e8; padding-top: 1.5mm;
+          display: flex; justify-content: space-between; }
+  .two { display: flex; gap: 5mm; }
+  .two > * { flex: 1; }
+</style>
+
+<!-- ============================== COVER ============================== -->
+<div class="page">
+  <div style="background:#0B4F6C;color:#fff;padding:9mm 8mm;margin:-2mm -2mm 6mm;">
+    <div style="font-size:9pt;letter-spacing:3px;opacity:.75;">FOURSIGHT · HARDWARE HACK 2026</div>
+    <h1 style="color:#fff;font-size:38pt;margin:2mm 0 1mm;">Vocalens</h1>
+    <div style="font-size:14pt;color:#F2A65A;font-weight:600;">Assembly Booklet</div>
+    <div style="font-size:10pt;opacity:.85;margin-top:3mm;max-width:120mm;">
+      Two clip-on pods, six wires, zero purchases. Build it in the order
+      printed here and every step is testable before you commit to the next.
+    </div>
+  </div>
+
+  <div class="fig">
+    <svg width="470" height="215" viewBox="0 0 470 215">
+      <!-- glasses temple arm -->
+      <path d="M40 118 L400 118 Q432 118 436 146 L438 172" stroke="#8b9aa5"
+            stroke-width="9" fill="none" stroke-linecap="round"/>
+      <path d="M40 118 L40 96" stroke="#8b9aa5" stroke-width="9" stroke-linecap="round"/>
+      <text x="215" y="140" font-size="10" fill="#8b9aa5" text-anchor="middle">temple arm of your own glasses</text>
+
+      <!-- front pod -->
+      <rect x="58" y="62" width="118" height="46" rx="6" fill="#137A7F"/>
+      <rect x="66" y="70" width="30" height="30" rx="4" fill="#0B4F6C"/>
+      <circle cx="81" cy="85" r="8" fill="#F2A65A"/><circle cx="81" cy="85" r="3.5" fill="#0B4F6C"/>
+      <rect x="104" y="70" width="64" height="30" rx="4" fill="#0B4F6C"/>
+      <text x="136" y="90" font-size="9" fill="#fff" text-anchor="middle">XIAO</text>
+      <text x="117" y="54" font-size="10.5" fill="#0B4F6C" text-anchor="middle" font-weight="bold">FRONT POD</text>
+      <text x="117" y="42" font-size="8" fill="#5a6b78" text-anchor="middle">camera + board + touch pad</text>
+
+      <!-- rear pod -->
+      <rect x="300" y="62" width="128" height="46" rx="6" fill="#137A7F"/>
+      <rect x="308" y="70" width="46" height="30" rx="4" fill="#0B4F6C"/>
+      <text x="331" y="89" font-size="8" fill="#fff" text-anchor="middle">AMP</text>
+      <circle cx="392" cy="85" r="16" fill="#0B4F6C"/><circle cx="392" cy="85" r="8" fill="#F2A65A"/>
+      <text x="364" y="54" font-size="10.5" fill="#0B4F6C" text-anchor="middle" font-weight="bold">REAR POD</text>
+      <text x="364" y="42" font-size="8" fill="#5a6b78" text-anchor="middle">amp + speaker</text>
+
+      <!-- wire run -->
+      <g stroke-width="1.8" fill="none">
+        <path d="M176 74 L300 74" stroke="#d64545"/>
+        <path d="M176 79 L300 79" stroke="#2b2b2b"/>
+        <path d="M176 84 L300 84" stroke="#e0b93a"/>
+        <path d="M176 89 L300 89" stroke="#3f9e54"/>
+        <path d="M176 94 L300 94" stroke="#3b7dd8"/>
+      </g>
+      <text x="238" y="108" font-size="8.5" fill="#5a6b78" text-anchor="middle">5 jumper wires (I2S + power)</text>
+
+      <!-- ear -->
+      <path d="M441 150 q16 4 14 22 q-2 16 -16 18" stroke="#c9d4da" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <text x="452" y="205" font-size="8" fill="#8b9aa5" text-anchor="end">ear</text>
+    </svg>
+    <div class="cap">The finished device, worn. Front pod near the hinge, rear pod behind the ear.</div>
+  </div>
+
+  <h3>What this booklet assumes you already have</h3>
+  <div class="two">
+    <div class="parts">
+      <b>Printed (Step 0)</b>
+      <ul>
+        <li><span class="qty">×1</span><code>frontboard_base</code> — TPU</li>
+        <li><span class="qty">×1</span><code>frontboard_lid</code> — PETG</li>
+        <li><span class="qty">×1</span><code>rearaudio_base</code> — TPU</li>
+        <li><span class="qty">×1</span><code>rearaudio_lid</code> — PETG</li>
+        <li><span class="qty">×1</span><code>fit_test</code> — PLA, already tuned</li>
+      </ul>
+    </div>
+    <div class="parts">
+      <b>Electronics</b>
+      <ul>
+        <li><span class="qty">×1</span>XIAO ESP32S3 <b>Sense</b></li>
+        <li><span class="qty">×1</span>OV2640 camera + ribbon</li>
+        <li><span class="qty">×1</span>Audio Converter &amp; Amplifier</li>
+        <li><span class="qty">×1</span>Speaker (round, ~28mm)</li>
+        <li><span class="qty">×1</span>Pair of glasses to clip onto</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="stop">
+    <b>Do not start until <code>fit_test</code> grips your glasses properly.</b>
+    Everything downstream assumes the snap-fit is tuned. If the clip is loose or
+    splays the arm, go back and adjust <code>SNAP_GAP</code> in
+    <code>vocalens_pod.scad</code> and reprint — it's a three-minute print and it
+    saves you an evening.
+  </div>
+
+  <div class="foot"><span>Vocalens Assembly Booklet</span><span>Cover</span></div>
+</div>
+
+<!-- ============================== PAGE: BOARD PREP ============================== -->
+<div class="page">
+  <div class="stephead">
+    <div class="num">1</div>
+    <div><h2>Prepare the board</h2><div class="sub">Read this page before you solder anything</div></div>
+    <div class="time">20 min</div>
+  </div>
+
+  <h3>The 7-pin headers: don't fit them</h3>
+  <p>
+    The XIAO ESP32S3 Sense is <b>two boards</b>: the XIAO itself, and the Sense
+    expansion board underneath carrying the camera connector, PDM microphone and
+    microSD slot, mated through a board-to-board connector. The supplied 2×7
+    headers insert from the top and their pins protrude <b>downward</b> — into
+    exactly the space the expansion board occupies. That's why they won't go in.
+    It isn't user error and nothing is broken.
+  </p>
+
+  <div class="fig">
+    <svg width="372" height="122" viewBox="0 0 440 150">
+      <!-- LEFT: the problem -->
+      <text x="105" y="14" font-size="10" font-weight="bold" fill="#c0392b" text-anchor="middle">✕  WON'T FIT</text>
+      <rect x="40" y="34" width="130" height="13" rx="2" fill="#0B4F6C"/>
+      <text x="105" y="44" font-size="7.5" fill="#fff" text-anchor="middle">XIAO ESP32S3</text>
+      <rect x="40" y="52" width="130" height="15" rx="2" fill="#137A7F"/>
+      <text x="105" y="63" font-size="7.5" fill="#fff" text-anchor="middle">Sense expansion board</text>
+      <!-- header trying to go in -->
+      <rect x="48" y="18" width="14" height="9" fill="#2b2b2b"/>
+      <g stroke="#c0392b" stroke-width="2">
+        <line x1="52" y1="27" x2="52" y2="60"/><line x1="58" y1="27" x2="58" y2="60"/>
+      </g>
+      <path d="M78 24 L68 34" stroke="#c0392b" stroke-width="1.5" fill="none" marker-end="url(#ar)"/>
+      <text x="82" y="24" font-size="7.5" fill="#c0392b">pins collide</text>
+      <text x="105" y="86" font-size="7.5" fill="#5a6b78" text-anchor="middle">no clearance below</text>
+
+      <!-- RIGHT: the fix -->
+      <text x="330" y="14" font-size="10" font-weight="bold" fill="#137A7F" text-anchor="middle">✓  DO THIS INSTEAD</text>
+      <rect x="265" y="34" width="130" height="13" rx="2" fill="#0B4F6C"/>
+      <text x="330" y="44" font-size="7.5" fill="#fff" text-anchor="middle">XIAO ESP32S3</text>
+      <rect x="265" y="52" width="130" height="15" rx="2" fill="#137A7F"/>
+      <text x="330" y="63" font-size="7.5" fill="#fff" text-anchor="middle">Sense expansion board</text>
+      <!-- wires soldered to edge pads -->
+      <g stroke-width="1.8" fill="none">
+        <path d="M265 38 L246 26" stroke="#d64545"/>
+        <path d="M265 41 L246 32" stroke="#2b2b2b"/>
+        <path d="M395 38 L414 26" stroke="#e0b93a"/>
+        <path d="M395 41 L414 32" stroke="#3f9e54"/>
+        <path d="M395 44 L414 38" stroke="#3b7dd8"/>
+      </g>
+      <text x="330" y="86" font-size="7.5" fill="#137A7F" text-anchor="middle">wires soldered straight to the edge pads</text>
+      <text x="330" y="99" font-size="7.5" fill="#5a6b78" text-anchor="middle">lower profile · 6 wires instead of 14 pins</text>
+
+      <defs><marker id="ar" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+        <path d="M0,0 L6,3 L0,6 z" fill="#c0392b"/></marker></defs>
+    </svg>
+    <div class="cap">Left: why the headers jam. Right: what to do instead.</div>
+  </div>
+
+  <div class="tip">
+    <b>Why skip the headers at all?</b> You need six connections, not fourteen —
+    and the pods are only <b>10&nbsp;mm tall</b>. That number is the entire reason
+    they clear the wearer's head. A header strip plus its socket spends a chunk of
+    that budget on pins you'll never use. Solder to the castellated pads instead.
+  </div>
+
+  <h3>If you do need to separate the two boards</h3>
+  <ol class="steps">
+    <li>Unplug the camera ribbon first — release the dark flip-latch on the connector, then slide the ribbon out. Never pull it while latched.</li>
+    <li>Pry <b>evenly from the two short ends</b>, a little at a time, alternating.</li>
+    <li>Do not twist, and never lever against the camera connector — the most fragile thing on the board.</li>
+  </ol>
+
+  <div class="warn">
+    <b>Before you power anything on:</b> set <code>PSRAM</code> to <b>OPI PSRAM</b>
+    in your build settings. If you skip this the camera silently fails to
+    initialise and you will lose an hour to a bug that isn't in your code.
+  </div>
+
+  <h3>Tin the six pads now</h3>
+  <p>
+    Blob a little solder on each of the six pads before attaching any wires —
+    it turns every later joint into a one-second touch rather than a
+    three-handed wrestle inside a 10&nbsp;mm cavity.
+  </p>
+  <table>
+    <tr><th>Pad</th><th>Signal</th><th>Wire colour</th></tr>
+    <tr><td><code>3V3</code></td><td>Power out to amp</td><td><span class="sw" style="background:#d64545"></span>Red</td></tr>
+    <tr><td><code>GND</code></td><td>Ground</td><td><span class="sw" style="background:#2b2b2b"></span>Black</td></tr>
+    <tr><td><code>D7 / GPIO 7</code></td><td>I2S bit clock (BCLK)</td><td><span class="sw" style="background:#e0b93a"></span>Yellow</td></tr>
+    <tr><td><code>D8 / GPIO 8</code></td><td>I2S word select (LRC)</td><td><span class="sw" style="background:#3f9e54"></span>Green</td></tr>
+    <tr><td><code>D9 / GPIO 9</code></td><td>I2S data (DIN)</td><td><span class="sw" style="background:#3b7dd8"></span>Blue</td></tr>
+    <tr><td><code>D3 / GPIO 3</code></td><td>Capacitive touch pad</td><td><span class="sw" style="background:#ffffff"></span>White</td></tr>
+  </table>
+
+  <div class="foot"><span>Step 1 · Prepare the board</span><span>Page 2</span></div>
+</div>
+
+<!-- ============================== PAGE: FRONT POD ============================== -->
+<div class="page">
+  <div class="stephead">
+    <div class="num">2</div>
+    <div><h2>Wire the front pod</h2><div class="sub">Camera, board, touch pad</div></div>
+    <div class="time">30 min</div>
+  </div>
+
+  <div class="parts">
+    <b>Parts for this step</b>
+    <ul>
+      <li><span class="qty">×1</span>XIAO ESP32S3 Sense, camera attached, pads tinned</li>
+      <li><span class="qty">×5</span>Jumper wires, cut to <b>temple length + 2cm slack</b> — red, black, yellow, green, blue</li>
+      <li><span class="qty">×1</span>Jumper wire, white, ~4cm</li>
+      <li><span class="qty">×1</span>Metal disc — a coin, screw head, or scrap of foil</li>
+      <li><span class="qty">×1</span><code>frontboard_base</code> (TPU) and <code>frontboard_lid</code> (PETG)</li>
+    </ul>
+  </div>
+
+  <div class="fig">
+    <svg width="460" height="230" viewBox="0 0 460 230">
+      <!-- pod outline -->
+      <rect x="22" y="46" width="300" height="128" rx="9" fill="none" stroke="#8b9aa5"
+            stroke-width="2" stroke-dasharray="6 4"/>
+      <text x="172" y="40" font-size="9" fill="#8b9aa5" text-anchor="middle">front pod cavity — 48 × 29 mm inside</text>
+
+      <!-- camera -->
+      <rect x="40" y="76" width="66" height="66" rx="5" fill="#0B4F6C"/>
+      <circle cx="73" cy="109" r="20" fill="#2b3a45"/>
+      <circle cx="73" cy="109" r="11" fill="#F2A65A"/>
+      <circle cx="73" cy="109" r="4.5" fill="#0B4F6C"/>
+      <text x="73" y="160" font-size="8.5" fill="#0B4F6C" text-anchor="middle" font-weight="bold">CAMERA</text>
+      <text x="73" y="171" font-size="7.5" fill="#5a6b78" text-anchor="middle">lens faces forward</text>
+
+      <!-- ribbon -->
+      <path d="M106 100 q22 0 22 -12 q0 -12 20 -12" stroke="#c98b3a" stroke-width="7" fill="none"/>
+      <text x="128" y="70" font-size="7.5" fill="#a4622a" text-anchor="middle">ribbon — leave slack, don't crease</text>
+
+      <!-- xiao -->
+      <rect x="148" y="76" width="156" height="66" rx="5" fill="#0B4F6C"/>
+      <rect x="156" y="84" width="140" height="30" rx="3" fill="#16394a"/>
+      <text x="226" y="104" font-size="9" fill="#fff" text-anchor="middle">XIAO ESP32S3 Sense</text>
+      <rect x="270" y="120" width="26" height="14" rx="2" fill="#8b9aa5"/>
+      <text x="283" y="146" font-size="7" fill="#5a6b78" text-anchor="middle">USB-C</text>
+
+      <!-- edge pads -->
+      <g fill="#F2A65A">
+        <rect x="150" y="120" width="9" height="6"/><rect x="163" y="120" width="9" height="6"/>
+        <rect x="176" y="120" width="9" height="6"/><rect x="189" y="120" width="9" height="6"/>
+        <rect x="202" y="120" width="9" height="6"/><rect x="215" y="120" width="9" height="6"/>
+      </g>
+
+      <!-- wires out to the right -->
+      <g stroke-width="2.4" fill="none">
+        <path d="M304 88  L390 88"  stroke="#d64545"/>
+        <path d="M304 94  L390 94"  stroke="#2b2b2b"/>
+        <path d="M304 100 L390 100" stroke="#e0b93a"/>
+        <path d="M304 106 L390 106" stroke="#3f9e54"/>
+        <path d="M304 112 L390 112" stroke="#3b7dd8"/>
+      </g>
+      <text x="395" y="92"  font-size="7.5" fill="#5a6b78">3V3</text>
+      <text x="395" y="98"  font-size="7.5" fill="#5a6b78">GND</text>
+      <text x="395" y="104" font-size="7.5" fill="#5a6b78">BCLK</text>
+      <text x="395" y="110" font-size="7.5" fill="#5a6b78">LRC</text>
+      <text x="395" y="116" font-size="7.5" fill="#5a6b78">DIN</text>
+      <text x="400" y="132" font-size="8" fill="#137A7F" font-weight="bold">→ to rear pod</text>
+
+      <!-- touch wire -->
+      <path d="M180 120 L180 200 L250 200" stroke="#c9ccd0" stroke-width="2.4" fill="none"/>
+      <circle cx="262" cy="200" r="11" fill="#c9ccd0" stroke="#8b9aa5" stroke-width="1.5"/>
+      <text x="262" y="222" font-size="7.5" fill="#5a6b78" text-anchor="middle">touch pad → lid</text>
+      <text x="150" y="204" font-size="7.5" fill="#5a6b78" text-anchor="end">GPIO 3</text>
+    </svg>
+    <div class="cap">Front pod, viewed from above with the lid off. The camera sits <b>beside</b> the board, not on top of it.</div>
+  </div>
+
+  <ol class="steps">
+    <li><b>Cut the five temple wires to length first.</b> Measure along your actual glasses from the hinge to behind the ear, then add 2cm. Too short is unrecoverable; too long just tucks away.</li>
+    <li>Solder red to <code>3V3</code>, black to <code>GND</code>, yellow to <code>D7</code>, green to <code>D8</code>, blue to <code>D9</code>. Keep the joints flat — anything standing proud eats your lid clearance.</li>
+    <li>Solder the white wire to <code>D3</code>. This one stays inside the pod.</li>
+    <li>Seat the camera in the front of the cavity, lens aligned with the hole in the base. A dab of hot glue holds it.</li>
+    <li>Seat the XIAO beside it. <b>Do not stack the camera on the board</b> — side by side is what keeps the pod at 10mm and off the wearer's head.</li>
+    <li>Route the five temple wires out through the rear-face slot, and the USB cable out the side slot.</li>
+  </ol>
+
+  <div class="warn">
+    <b>Test before you close the lid.</b> Power the board over USB and confirm the
+    camera initialises. Re-opening a hot-glued pod is miserable; catching a dry
+    joint now costs you thirty seconds.
+  </div>
+
+  <div class="foot"><span>Step 2 · Front pod</span><span>Page 3</span></div>
+</div>
+
+<!-- ============================== PAGE: REAR POD ============================== -->
+<div class="page">
+  <div class="stephead">
+    <div class="num">3</div>
+    <div><h2>Wire the rear pod</h2><div class="sub">Amplifier and speaker</div></div>
+    <div class="time">25 min</div>
+  </div>
+
+  <div class="parts">
+    <b>Parts for this step</b>
+    <ul>
+      <li><span class="qty">×1</span>Audio Converter &amp; Amplifier module (Freenove kit)</li>
+      <li><span class="qty">×1</span>Speaker, round ~28mm (Freenove kit)</li>
+      <li><span class="qty">×2</span>Short jumper wires, ~4cm, for the speaker</li>
+      <li><span class="qty">×1</span><code>rearaudio_base</code> (TPU) and <code>rearaudio_lid</code> (PETG)</li>
+      <li>The five temple wires arriving from the front pod</li>
+    </ul>
+  </div>
+
+  <div class="fig">
+    <svg width="460" height="215" viewBox="0 0 460 215">
+      <rect x="52" y="42" width="340" height="132" rx="9" fill="none" stroke="#8b9aa5"
+            stroke-width="2" stroke-dasharray="6 4"/>
+      <text x="222" y="36" font-size="9" fill="#8b9aa5" text-anchor="middle">rear pod cavity — 57 × 38 mm inside</text>
+
+      <!-- incoming wires -->
+      <g stroke-width="2.4" fill="none">
+        <path d="M14 78  L86 78"  stroke="#d64545"/>
+        <path d="M14 90  L86 90"  stroke="#2b2b2b"/>
+        <path d="M14 102 L86 102" stroke="#e0b93a"/>
+        <path d="M14 114 L86 114" stroke="#3f9e54"/>
+        <path d="M14 126 L86 126" stroke="#3b7dd8"/>
+      </g>
+      <text x="16" y="66" font-size="8" fill="#137A7F" font-weight="bold">from front pod →</text>
+
+      <!-- amp -->
+      <rect x="86" y="62" width="104" height="94" rx="5" fill="#0B4F6C"/>
+      <text x="138" y="112" font-size="9" fill="#fff" text-anchor="middle">AMP</text>
+      <g fill="#F2A65A">
+        <rect x="86" y="74" width="7" height="7"/><rect x="86" y="86" width="7" height="7"/>
+        <rect x="86" y="98" width="7" height="7"/><rect x="86" y="110" width="7" height="7"/>
+        <rect x="86" y="122" width="7" height="7"/>
+      </g>
+      <text x="98" y="80"  font-size="6.5" fill="#fff">VIN</text>
+      <text x="98" y="92"  font-size="6.5" fill="#fff">GND</text>
+      <text x="98" y="104" font-size="6.5" fill="#fff">BCLK</text>
+      <text x="98" y="116" font-size="6.5" fill="#fff">LRC</text>
+      <text x="98" y="128" font-size="6.5" fill="#fff">DIN</text>
+      <text x="138" y="170" font-size="8.5" fill="#0B4F6C" text-anchor="middle" font-weight="bold">AMPLIFIER</text>
+
+      <!-- amp to speaker -->
+      <g stroke-width="2.4" fill="none">
+        <path d="M190 100 L246 100" stroke="#8b9aa5"/>
+        <path d="M190 112 L246 112" stroke="#8b9aa5"/>
+      </g>
+      <text x="218" y="94" font-size="7" fill="#5a6b78" text-anchor="middle">OUT+ / OUT−</text>
+
+      <!-- speaker -->
+      <circle cx="304" cy="106" r="50" fill="#0B4F6C"/>
+      <circle cx="304" cy="106" r="36" fill="#16394a"/>
+      <circle cx="304" cy="106" r="18" fill="#F2A65A"/>
+      <text x="304" y="176" font-size="8.5" fill="#0B4F6C" text-anchor="middle" font-weight="bold">SPEAKER</text>
+      <text x="304" y="188" font-size="7.5" fill="#5a6b78" text-anchor="middle">under the grille holes in the lid</text>
+      <text x="400" y="106" font-size="7.5" fill="#5a6b78">28mm face</text>
+      <text x="400" y="117" font-size="7.5" fill="#5a6b78">points outward</text>
+    </svg>
+    <div class="cap">Rear pod from above, lid off. Amp and speaker sit side by side along the arm.</div>
+  </div>
+
+  <table>
+    <tr><th>Wire in</th><th>From (front pod)</th><th>To (amp)</th></tr>
+    <tr><td><span class="sw" style="background:#d64545"></span>Red</td><td><code>3V3</code></td><td><code>VIN</code></td></tr>
+    <tr><td><span class="sw" style="background:#2b2b2b"></span>Black</td><td><code>GND</code></td><td><code>GND</code></td></tr>
+    <tr><td><span class="sw" style="background:#e0b93a"></span>Yellow</td><td><code>D7</code> / GPIO 7</td><td><code>BCLK</code> (sometimes <code>SCK</code>)</td></tr>
+    <tr><td><span class="sw" style="background:#3f9e54"></span>Green</td><td><code>D8</code> / GPIO 8</td><td><code>LRC</code> (sometimes <code>WS</code>)</td></tr>
+    <tr><td><span class="sw" style="background:#3b7dd8"></span>Blue</td><td><code>D9</code> / GPIO 9</td><td><code>DIN</code></td></tr>
+  </table>
+
+  <ol class="steps">
+    <li>Feed the five temple wires in through the front-face slot of the rear pod.</li>
+    <li>Connect each to the amplifier per the table above. Check the silkscreen labels — some boards print <code>SCK</code> for BCLK and <code>WS</code> for LRC. They're the same signals.</li>
+    <li>Connect the speaker to the amp's two output terminals. <b>Polarity doesn't matter</b> with a single speaker.</li>
+    <li>Seat the amp and speaker side by side, speaker face pointing outward, under the grille holes in the lid.</li>
+    <li>Leave the lid off for now — Step 5 tests audio before you close it.</li>
+  </ol>
+
+  <div class="tip">
+    <b>Why jumper wires and not a ribbon cable?</b> I2S is a slow serial protocol.
+    A 10cm run is electrically fine, and it means this whole build costs nothing
+    beyond what the event handed every team. Say that in the pitch before a judge
+    notices the exposed wires — it reads as a deliberate constraint, not an oversight.
+  </div>
+
+  <div class="foot"><span>Step 3 · Rear pod</span><span>Page 4</span></div>
+</div>
+
+<!-- ============================== PAGE: TOUCH + POWER + CLIP ============================== -->
+<div class="page">
+  <div class="stephead">
+    <div class="num">4</div>
+    <div><h2>Touch pad, power, and clip-on</h2><div class="sub">Closing it up</div></div>
+    <div class="time">20 min</div>
+  </div>
+
+  <h3>The touch pad</h3>
+  <p>
+    There is no touch sensor component. The ESP32's capacitive touch peripheral
+    reads a bare GPIO pin directly — the wire and any conductive surface
+    <i>are</i> the whole circuit.
+  </p>
+  <ol class="steps">
+    <li>Glue a coin, screw head, or scrap of foil into the recess on the outside of <code>frontboard_lid</code>.</li>
+    <li>Solder the white wire from <code>D3</code> to it. If it's a coin, scuff the surface first so solder takes.</li>
+    <li>Press the lid on. The pad should be reachable with a fingertip when the glasses are worn.</li>
+  </ol>
+
+  <div class="warn">
+    <b>Tune <code>TOUCH_THRESHOLD</code> once assembled, not before.</b> The
+    reading changes with the pad's size, the glue, and whether the wearer's head
+    is nearby. Calibrating on the bench and skipping this step is the classic
+    source of a device that false-triggers all through the demo.
+  </div>
+
+  <h3>Power</h3>
+  <table>
+    <tr><th>Option</th><th>How</th><th>Use it when</th></tr>
+    <tr><td><b>USB-C</b></td><td>Cable out the front pod's side slot to a laptop or power bank</td><td><b>Demo night.</b> Simplest and most reliable — use this.</td></tr>
+    <tr><td><b>2×AA holder</b></td><td>~3V to the XIAO's <code>BAT</code> pads</td><td>Only if you need untethered. <b>Check voltage first</b> — those pads expect a LiPo.</td></tr>
+  </table>
+
+  <h3>Clipping onto the glasses</h3>
+  <div class="fig">
+    <svg width="420" height="120" viewBox="0 0 420 120">
+      <path d="M30 62 L330 62 Q358 62 361 86 L363 108" stroke="#8b9aa5" stroke-width="8"
+            fill="none" stroke-linecap="round"/>
+      <rect x="46" y="30" width="96" height="26" rx="5" fill="#137A7F"/>
+      <text x="94" y="24" font-size="8" fill="#0B4F6C" text-anchor="middle" font-weight="bold">front pod — near hinge</text>
+      <text x="94" y="47" font-size="7.5" fill="#fff" text-anchor="middle">camera forward</text>
+      <rect x="238" y="30" width="104" height="26" rx="5" fill="#137A7F"/>
+      <text x="290" y="24" font-size="8" fill="#0B4F6C" text-anchor="middle" font-weight="bold">rear pod — behind ear</text>
+      <g stroke-width="1.6" fill="none">
+        <path d="M142 36 L238 36" stroke="#d64545"/><path d="M142 40 L238 40" stroke="#2b2b2b"/>
+        <path d="M142 44 L238 44" stroke="#e0b93a"/><path d="M142 48 L238 48" stroke="#3f9e54"/>
+        <path d="M142 52 L238 52" stroke="#3b7dd8"/>
+      </g>
+      <text x="190" y="70" font-size="7.5" fill="#5a6b78" text-anchor="middle">run wires along the TOP edge of the arm</text>
+      <text x="190" y="81" font-size="7.5" fill="#5a6b78" text-anchor="middle">dot of removable adhesive at one or two points</text>
+    </svg>
+  </div>
+  <ol class="steps">
+    <li>Clip the front pod on near the hinge, camera facing forward along the wearer's line of sight.</li>
+    <li>Clip the rear pod on behind the ear.</li>
+    <li>Run the five wires along the <b>top</b> edge of the temple arm, with a dot of removable adhesive so they don't snag.</li>
+    <li>Put the glasses on. Check nothing presses into the head and the arm doesn't splay.</li>
+  </ol>
+
+  <div class="tip">
+    <b>Both pods sit beside the arm, not on top of it.</b> That's why they're thin
+    vertically (10mm) and long outward (29–38mm). A temple arm rests against the
+    skull — there's no room above or below it, but plenty straight out. If a pod is
+    touching the wearer's head, something is oriented wrong; check it before gluing.
+  </div>
+
+  <div class="foot"><span>Step 4 · Touch, power, clip-on</span><span>Page 5</span></div>
+</div>
+
+<!-- ============================== PAGE: BRING-UP ============================== -->
+<div class="page">
+  <div class="stephead">
+    <div class="num">5</div>
+    <div><h2>Bring it up — in this order</h2><div class="sub">Each stage is testable alone</div></div>
+    <div class="time">Allow an evening</div>
+  </div>
+
+  <div class="stop">
+    <b>Do not try to make everything work at once.</b> Every stage you skip here is
+    a bug you'll be hunting at 2am with four variables in play instead of one.
+  </div>
+
+  <table>
+    <tr><th style="width:8mm">#</th><th>Stage</th><th>What proves it works</th></tr>
+    <tr><td><b>1</b></td><td><b>Camera only</b>, on the bench, pods not yet connected to each other</td><td>Flash, trigger the touch pad, confirm the server receives a frame at <code>/read_label</code>. No audio, no mic.</td></tr>
+    <tr><td><b>2</b></td><td><b>Audio out</b>, still on the bench, with <b>short</b> wires between the pods</td><td>The server's spoken reply plays through the speaker.</td></tr>
+    <tr><td><b>3</b></td><td><b>Full temple-length wires</b>, both pods clipped on</td><td>Re-test 1 and 2. A longer run occasionally needs a pull-up tweak — I2S at this length usually doesn't.</td></tr>
+    <tr><td><b>4</b></td><td><b>Microphone in</b></td><td>Record a spoken question, confirm the server transcribes it.</td></tr>
+    <tr><td><b>5</b></td><td><b>Wake word</b> — <i>last</i></td><td>Highest-risk item in the project. The touch pad already gives you a complete working demo without it.</td></tr>
+  </table>
+
+  <div class="warn">
+    <b>Stage 2 uses short wires deliberately.</b> Prove the audio chain works over
+    5cm before you commit to a 10cm run threaded along a temple arm. If it breaks
+    after Stage 3, you know it's the cable and not the amp.
+  </div>
+
+  <h3>Troubleshooting</h3>
+  <table>
+    <tr><th>Symptom</th><th>Most likely cause</th></tr>
+    <tr><td>Camera never initialises</td><td><code>PSRAM</code> not set to <b>OPI PSRAM</b>. Check this first, every time.</td></tr>
+    <tr><td>Camera worked, now doesn't</td><td>Ribbon unseated or creased. Re-seat it, latch closed.</td></tr>
+    <tr><td>No sound at all</td><td>Amp not powered — check red to <code>VIN</code>, black to <code>GND</code>. Confirm 3V3 with a meter.</td></tr>
+    <tr><td>Static, buzzing, or noise only</td><td>BCLK and LRC swapped. Yellow → BCLK, green → LRC.</td></tr>
+    <tr><td>Very quiet but correct audio</td><td>Speaker not seated under the lid's grille holes, or DIN loose.</td></tr>
+    <tr><td>Touch triggers by itself</td><td><code>TOUCH_THRESHOLD</code> needs tuning <i>with the pod assembled and worn</i>.</td></tr>
+    <tr><td>Touch never triggers</td><td>White wire not making contact with the metal disc — scuff and re-solder.</td></tr>
+    <tr><td>Works on the bench, fails when worn</td><td>A temple wire is pulling out. Check strain at both pod exits.</td></tr>
+    <tr><td>Server reachable, no reply</td><td>Venue WiFi. Test on a phone hotspot to isolate it.</td></tr>
+  </table>
+
+  <div class="tip">
+    <b>Print a spare set of pods before demo night.</b> TPU bases are quick, and a
+    cracked clip an hour before you present is the difference between a demo and
+    an apology.
+  </div>
+
+  <div class="foot"><span>Step 5 · Bring-up</span><span>Page 6</span></div>
+</div>
+
+<!-- ============================== PAGE: WIRE CHART ============================== -->
+<div class="page">
+  <div class="stephead">
+    <div class="num">✓</div>
+    <div><h2>Master wiring chart</h2><div class="sub">Tear this page out and keep it on the bench</div></div>
+  </div>
+
+  <h3>Every connection in the build</h3>
+  <table>
+    <tr><th>Wire</th><th>From</th><th>To</th><th>Signal</th></tr>
+    <tr><td><span class="sw" style="background:#d64545"></span>Red</td><td>XIAO <code>3V3</code></td><td>Amp <code>VIN</code></td><td>Power</td></tr>
+    <tr><td><span class="sw" style="background:#2b2b2b"></span>Black</td><td>XIAO <code>GND</code></td><td>Amp <code>GND</code></td><td>Ground</td></tr>
+    <tr><td><span class="sw" style="background:#e0b93a"></span>Yellow</td><td>XIAO <code>D7</code> (GPIO 7)</td><td>Amp <code>BCLK</code> / <code>SCK</code></td><td>I2S bit clock</td></tr>
+    <tr><td><span class="sw" style="background:#3f9e54"></span>Green</td><td>XIAO <code>D8</code> (GPIO 8)</td><td>Amp <code>LRC</code> / <code>WS</code></td><td>I2S word select</td></tr>
+    <tr><td><span class="sw" style="background:#3b7dd8"></span>Blue</td><td>XIAO <code>D9</code> (GPIO 9)</td><td>Amp <code>DIN</code></td><td>I2S data</td></tr>
+    <tr><td><span class="sw" style="background:#ffffff"></span>White</td><td>XIAO <code>D3</code> (GPIO 3)</td><td>Metal disc in front lid</td><td>Capacitive touch</td></tr>
+    <tr><td><span class="sw" style="background:#8b9aa5"></span>Grey ×2</td><td>Amp <code>OUT+</code> / <code>OUT−</code></td><td>Speaker terminals</td><td>Analogue out (polarity free)</td></tr>
+    <tr><td>—</td><td>Camera ribbon</td><td>XIAO Sense connector</td><td>Factory ribbon, unmodified</td></tr>
+    <tr><td>—</td><td>USB-C</td><td>Power bank / laptop</td><td>Power + flashing</td></tr>
+  </table>
+
+  <p style="font-size:9pt;color:#5a6b78;margin-top:1mm;">
+    Six wires between the pods' boards, two more inside the rear pod. That's the
+    whole electrical build. Pin assignments match
+    <code>firmware/src/pins.h</code> — if you change one, change both.
+  </p>
+
+  <h3>Final pre-demo checklist</h3>
+  <table>
+    <tr><th style="width:10mm">☐</th><th>Check</th></tr>
+    <tr><td></td><td>Both pods clip on firmly and stay put when the wearer turns their head</td></tr>
+    <tr><td></td><td>Camera points along the wearer's line of sight, not off-axis</td></tr>
+    <tr><td></td><td>Touch pad triggers reliably and doesn't false-fire while worn</td></tr>
+    <tr><td></td><td>Speaker is audible at arm's length in a noisy room</td></tr>
+    <tr><td></td><td>Ten triggers in a row with no failure</td></tr>
+    <tr><td></td><td>Temple wires secured, nothing snagging or pulling at either exit</td></tr>
+    <tr><td></td><td>Tested on the venue network — or a hotspot ready as backup</td></tr>
+    <tr><td></td><td>Spare printed pods in the bag</td></tr>
+    <tr><td></td><td>Demo profile loaded at <code>/setup</code> with <b>synthetic data only</b></td></tr>
+    <tr><td></td><td>The deliberate-failure beat rehearsed — it says "I can't see that clearly", not a guess</td></tr>
+  </table>
+
+  <div class="stop">
+    <b>Synthetic data only.</b> The challenge brief is explicit: no real medical or
+    medication information in the prototype. The demo profile is fictional, and
+    saying so plainly on stage is a strength, not a caveat.
+  </div>
+
+  <div class="foot"><span>Master wiring chart</span><span>Page 7</span></div>
+</div>
