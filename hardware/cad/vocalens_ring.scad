@@ -79,6 +79,23 @@ DT_SQUISH = 0.15;  // TPU rail printed this much oversize -> interference fit
 CAM_LEN = 11; CAM_WID = 11; CAM_HGT = 7;
 XIAO_LEN = 23; XIAO_WID = 19;
 XIAO_THICK = 5;    // board profile WITHOUT the camera (PCB + USB shell)
+
+// HEADERS_FITTED — set true if you soldered the 2x7 pin headers onto the board.
+//
+// This matters more than it looks. Headers plus a pushed-on jumper socket add
+// roughly 10mm to the board's profile, and that profile drives the pod's
+// VERTICAL extent — the axis that runs into the wearer's scalp and ear, where
+// there is almost no clearance. Bare board gives a 10.2mm pod; with headers it
+// is about 19mm, which is close to the bulk the whole two-pod split was meant
+// to avoid.
+//
+// So: headers are excellent for bench testing (everything just plugs in, no
+// iron, and you can unplug to debug). For the pod that goes on a face, either
+// print the taller variant and accept the bulk, or remove the headers and
+// solder wires flat to the pads.
+HEADERS_FITTED  = false;
+HEADER_STACK    = 16;   // board + header plastic + mated jumper socket
+XIAO_PROFILE    = HEADERS_FITTED ? HEADER_STACK : XIAO_THICK;
 SPKR_DIA = 28; SPKR_HGT = 6;
 AMP_LEN = 22; AMP_WID = 16; AMP_HGT = 5;
 
@@ -86,7 +103,7 @@ AMP_LEN = 22; AMP_WID = 16; AMP_HGT = 5;
 FB_GAP  = 3;
 FB_LEN  = CAM_LEN + FB_GAP + XIAO_LEN + 2 * WALL + 8;
 FB_OUT  = max(XIAO_WID, CAM_WID);       // outward (Z) — footprint
-FB_VERT = max(XIAO_THICK, CAM_HGT);     // vertical (Y) — thickness
+FB_VERT = max(XIAO_PROFILE, CAM_HGT);   // vertical (Y) — thickness
 
 RA_LEN  = AMP_LEN + SPKR_DIA + 2 * WALL + 4;
 RA_OUT  = max(AMP_WID, SPKR_DIA);

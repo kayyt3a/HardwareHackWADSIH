@@ -1,0 +1,421 @@
+<meta charset="utf-8">
+<title>Vocalens — Finish the Hardware</title>
+<style>
+  @page { size: A4; margin: 11mm; }
+  * { box-sizing: border-box; }
+  body { font-family:"DejaVu Sans",Arial,sans-serif; color:#1a2530; margin:0;
+         font-size:10.5pt; line-height:1.4;
+         -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .page { page-break-after:always; position:relative; height:270mm; }
+  .page:last-child { page-break-after:auto; }
+  h1 { font-size:28pt; margin:0 0 1mm; color:#0B4F6C; letter-spacing:-.5px; }
+  .banner { background:#0B4F6C; color:#fff; padding:4mm 6mm; margin:-1mm -1mm 3mm; }
+  .banner .t { font-size:14pt; font-weight:700; }
+  .banner .s { font-size:9.5pt; opacity:.8; }
+  .step { display:flex; gap:4mm; margin:0 0 2.5mm; padding:0 0 2.5mm;
+          border-bottom:1px solid #e4eaed; }
+  .step:last-child { border-bottom:none; }
+  .n { flex:0 0 9mm; height:9mm; border-radius:50%; background:#0B4F6C; color:#fff;
+       font-size:11pt; font-weight:700; display:flex; align-items:center;
+       justify-content:center; margin-top:.4mm; }
+  .n.w { background:#c0392b; } .n.g { background:#3f9e54; } .n.s { background:#137A7F; }
+  .body { flex:1; }
+  .act { font-size:11.5pt; font-weight:700; color:#0B4F6C; }
+  .det { font-size:10pt; color:#3c4c58; margin-top:.6mm; }
+  .see { font-size:10pt; color:#2f7a41; margin-top:.9mm; }
+  .bad { font-size:10pt; color:#c0392b; margin-top:.5mm; }
+  .box { display:inline-block; width:4.6mm; height:4.6mm; border:2px solid #8b9aa5;
+         border-radius:1mm; float:right; margin-left:3mm; margin-top:1mm; }
+  .stop { background:#fdecec; border-left:5px solid #c0392b; padding:3mm 4mm; margin:3mm 0; }
+  .stop b { color:#c0392b; }
+  .go   { background:#eef7ef; border-left:5px solid #3f9e54; padding:3mm 4mm; margin:3mm 0; }
+  .go b { color:#2f7a41; }
+  .tip  { background:#eef4f6; border-left:5px solid #0B4F6C; padding:3mm 4mm; margin:3mm 0; }
+  code { font-family:"DejaVu Sans Mono",monospace; font-size:9.6pt; background:#eaf0f2;
+         padding:.3mm 1.4mm; border-radius:1.5mm; font-weight:bold; }
+  pre { background:#16394a; color:#e8f0f3; padding:2.6mm 3.5mm; border-radius:2mm;
+        font-family:"DejaVu Sans Mono",monospace; font-size:9pt; line-height:1.5;
+        margin:1.6mm 0; white-space:pre-wrap; }
+  .foot { position:absolute; bottom:0; left:0; right:0; font-size:8pt; color:#8b9aa5;
+          border-top:1px solid #dde5e8; padding-top:1.5mm; display:flex; justify-content:space-between; }
+  table { width:100%; border-collapse:collapse; font-size:10pt; margin:2.4mm 0; }
+  th { background:#0B4F6C; color:#fff; text-align:left; padding:1.8mm 3mm; font-size:9pt; }
+  td { padding:2mm 3mm; border-bottom:1px solid #dde5e8; }
+  tr:nth-child(even) td { background:#f7fafb; }
+</style>
+
+<!-- ============ COVER ============ -->
+<div class="page">
+  <div style="background:#0B4F6C;color:#fff;padding:8mm;margin:-1mm -1mm 4mm;">
+    <div style="font-size:9pt;letter-spacing:3px;opacity:.75;">VOCALENS · HEADERS FITTED</div>
+    <h1 style="color:#fff;font-size:32pt;">Finish the Hardware</h1>
+    <div style="font-size:12pt;color:#F2A65A;">44 steps, from soldered headers to a working device on your face</div>
+  </div>
+
+  <div class="go">
+    <b>Good news: the headers change everything for the better.</b> Every board
+    connection is now <b>push-on</b>. Only ONE joint still needs the iron — the
+    touch disc, step 19. Everything else plugs together and can be unplugged
+    again when you're debugging.
+  </div>
+
+  <div class="stop">
+    <b>One thing to know before you print pods.</b> Headers plus a pushed-on
+    jumper socket add about 10mm to the board's height. The pod's vertical size
+    follows that — a bare board gives a <b>10mm</b> pod; with headers it's
+    <b>19mm</b>. That's the bulk the two-pod split existed to avoid. You don't
+    have to decide yet: step 39 lays out the choice, and both files are ready.
+  </div>
+
+  <div style="font-size:11pt;font-weight:bold;color:#137A7F;margin-top:5mm;">THE SIX PARTS</div>
+  <table>
+    <tr><th style="width:18mm;">Steps</th><th style="width:62mm;">Part</th><th>Iron needed?</th></tr>
+    <tr><td><b>1–8</b></td><td>Check the headers you just soldered</td><td>Only if you find a bridge</td></tr>
+    <tr><td><b>9–17</b></td><td>Plug in the amp and speaker</td><td>No</td></tr>
+    <tr><td><b>18–21</b></td><td>Make the touch pad</td><td><b>Yes — one joint</b></td></tr>
+    <tr><td><b>22–28</b></td><td>First power-on and flash the firmware</td><td>No</td></tr>
+    <tr><td><b>29–37</b></td><td>Start the server, test the camera</td><td>No</td></tr>
+    <tr><td><b>38–44</b></td><td>Test audio, then into the pods</td><td>No</td></tr>
+  </table>
+
+  <div class="tip">
+    <b>Same rules as before.</b> Do one step. Check the green line actually
+    happened. Only then move on. If the green line didn't happen, the red line
+    tells you what to do.
+  </div>
+
+  <div class="foot"><span>Finish the Hardware</span><span>Cover</span></div>
+</div>
+
+<!-- ============ PART 1 ============ -->
+<div class="page">
+  <div class="banner"><div class="t">PART 1 — Check what you just soldered</div><div class="s">Steps 1–8. Before anything gets powered.</div></div>
+
+  <div class="step"><div class="n">1</div><div class="body"><span class="box"></span>
+    <div class="act">Make sure the USB cable is unplugged.</div>
+    <div class="see"><b>You should see:</b> nothing connected to the board.</div>
+  </div></div>
+
+  <div class="step"><div class="n">2</div><div class="body"><span class="box"></span>
+    <div class="act">Lower your eye to table level and look along the row of 7 pins.</div>
+    <div class="det">From the side, like looking along a fence — not down from above.</div>
+    <div class="see"><b>You should see:</b> 7 separate solder cones with clear gaps between them.</div>
+    <div class="bad"><b>If two are joined:</b> wipe the iron tip clean, drag it firmly across the join and off the edge of the board. Look again.</div>
+  </div></div>
+
+  <div class="step"><div class="n">3</div><div class="body"><span class="box"></span>
+    <div class="act">Do the same on the other row of 7.</div>
+    <div class="see"><b>You should see:</b> 7 more separate cones.</div>
+  </div></div>
+
+  <div class="step"><div class="n">4</div><div class="body"><span class="box"></span>
+    <div class="act">Set the multimeter to beep/continuity and touch the probes together.</div>
+    <div class="det">The dial position marked ")))" or a diode triangle.</div>
+    <div class="see"><b>You should see:</b> it beeps when they touch, silence when apart.</div>
+  </div></div>
+
+  <div class="step"><div class="n w">5</div><div class="body"><span class="box"></span>
+    <div class="act">Touch one probe to the <code>3V3</code> pin, the other to the <code>GND</code> pin.</div>
+    <div class="det">Touch the metal pins themselves, not the plastic.</div>
+    <div class="see"><b>You should see:</b> <b>SILENCE.</b></div>
+    <div class="bad"><b>If it beeps: STOP.</b> Those two are joined by stray solder — a dead short that can kill the board the moment you plug in. Find it and drag it off. Do not continue until this is silent.</div>
+  </div></div>
+
+  <div class="step"><div class="n w">6</div><div class="body"><span class="box"></span>
+    <div class="act">Test every neighbouring pair on both rows.</div>
+    <div class="det"><code>5V</code>–<code>GND</code>, <code>GND</code>–<code>3V3</code>, <code>3V3</code>–<code>D10</code>, <code>D10</code>–<code>D9</code>, <code>D9</code>–<code>D8</code>, <code>D8</code>–<code>D7</code>, then the same down the <code>D0</code>–<code>D6</code> row.</div>
+    <div class="see"><b>You should see:</b> silence every time. That's 12 tests.</div>
+    <div class="bad"><b>Any beep = a bridge.</b> Same fix. Worth the two minutes — this is the single most common way a soldered board gets destroyed.</div>
+  </div></div>
+
+  <div class="step"><div class="n">7</div><div class="body"><span class="box"></span>
+    <div class="act">Check the Sense expansion board is still firmly attached underneath.</div>
+    <div class="det">The smaller board with the camera socket on it. Press it gently — it should be flush with no gap at either end.</div>
+    <div class="see"><b>You should see:</b> the two boards sitting tight together.</div>
+    <div class="bad"><b>If it's loose:</b> press it back on. Heat from soldering can loosen it.</div>
+  </div></div>
+
+  <div class="step"><div class="n">8</div><div class="body"><span class="box"></span>
+    <div class="act">Check the camera ribbon is still latched in its connector.</div>
+    <div class="det">The dark flip-latch should be pressed flat. Tug the ribbon very gently — it must not move.</div>
+    <div class="see"><b>You should see:</b> a seated ribbon, latch closed.</div>
+    <div class="bad"><b>If it moved:</b> lift the latch, push the ribbon fully in with the contacts facing down, press the latch flat.</div>
+  </div></div>
+
+  <div class="foot"><span>Part 1 — Check the headers</span><span>Steps 1–8</span></div>
+</div>
+
+<!-- ============ PART 2 ============ -->
+<div class="page">
+  <div class="banner"><div class="t">PART 2 — Plug in the amp and speaker</div><div class="s">Steps 9–17. No soldering.</div></div>
+
+  <div class="step"><div class="n">9</div><div class="body"><span class="box"></span>
+    <div class="act">Find five jumper wires with a plastic SOCKET on both ends.</div>
+    <div class="det">"Female-to-female" — a small plastic block with a hole at each end. Your kit has 20. You want red, black, yellow, green, blue if possible.</div>
+    <div class="see"><b>You should see:</b> five wires, socket at both ends.</div>
+    <div class="bad"><b>Only male-to-male (bare pins)?</b> Those won't work on header pins. Use female-to-female, or female-to-male with the socket end on the board.</div>
+  </div></div>
+
+  <div class="step"><div class="n">10</div><div class="body"><span class="box"></span>
+    <div class="act">Look at your amplifier board and find its pin labels.</div>
+    <div class="det">You want to be able to point at <code>VIN</code> (or <code>5V</code>), <code>GND</code>, <code>BCLK</code>, <code>LRC</code> and <code>DIN</code>.</div>
+    <div class="see"><b>You should see:</b> five named pins you can point to.</div>
+    <div class="bad"><b>Different names?</b> <code>BCLK</code>=<code>SCK</code>=<code>CLK</code> · <code>LRC</code>=<code>WS</code>=<code>LRCLK</code> · <code>DIN</code>=<code>DATA</code>. Same things.</div>
+  </div></div>
+
+  <div class="step"><div class="n">11</div><div class="body"><span class="box"></span>
+    <div class="act">Push the BLACK wire onto the board's <code>GND</code> pin, other end onto the amp's <code>GND</code>.</div>
+    <div class="det">Push straight down until it's fully seated. It should need a small amount of force.</div>
+    <div class="see"><b>You should see:</b> the socket fully covering the pin, no metal showing.</div>
+  </div></div>
+
+  <div class="step"><div class="n">12</div><div class="body"><span class="box"></span>
+    <div class="act">RED wire: board <code>3V3</code> → amp <code>VIN</code>.</div>
+    <div class="see"><b>You should see:</b> two wires connected.</div>
+    <div class="bad"><b>Amp says 5V only?</b> Use the board's <code>5V</code> pin instead — but note it only carries power while USB is plugged in.</div>
+  </div></div>
+
+  <div class="step"><div class="n">13</div><div class="body"><span class="box"></span>
+    <div class="act">YELLOW wire: board <code>D8</code> → amp <code>BCLK</code>.</div>
+    <div class="see"><b>You should see:</b> three wires connected.</div>
+    <div class="bad"><b>Note:</b> <code>D8</code> is the pad label printed on the board. It is not GPIO 8. Go by the printed label.</div>
+  </div></div>
+
+  <div class="step"><div class="n">14</div><div class="body"><span class="box"></span>
+    <div class="act">GREEN wire: board <code>D9</code> → amp <code>LRC</code>.</div>
+    <div class="see"><b>You should see:</b> four wires connected.</div>
+  </div></div>
+
+  <div class="step"><div class="n">15</div><div class="body"><span class="box"></span>
+    <div class="act">BLUE wire: board <code>D10</code> → amp <code>DIN</code>.</div>
+    <div class="see"><b>You should see:</b> five wires connected. The whole audio link is done.</div>
+  </div></div>
+
+  <div class="step"><div class="n">16</div><div class="body"><span class="box"></span>
+    <div class="act">Connect the speaker's two wires to the amp's two output pins.</div>
+    <div class="det">Labelled <code>OUT+</code>/<code>OUT−</code> or just <code>+</code>/<code>−</code>. Screw terminals: strip 5mm, insert, tighten. Pins: push jumpers on. Bare pads: this is the one place you may need the iron.</div>
+    <div class="see"><b>You should see:</b> the speaker attached to the amp.</div>
+    <div class="bad"><b>Which wire to which?</b> Doesn't matter. A single speaker has no correct way round.</div>
+  </div></div>
+
+  <div class="step"><div class="n w">17</div><div class="body"><span class="box"></span>
+    <div class="act">Leave <code>GAIN</code>, <code>SD</code> and <code>SHUTDOWN</code> completely unconnected.</div>
+    <div class="det">If your amp has these extra pins, ignore them.</div>
+    <div class="see"><b>You should see:</b> nothing plugged into them.</div>
+    <div class="bad"><b>Why it matters:</b> <code>SD</code> usually means <i>shutdown</i>. Connecting it to ground silences the amp completely, and you will spend an hour hunting a fault that isn't there.</div>
+  </div></div>
+
+  <div class="foot"><span>Part 2 — Amp and speaker</span><span>Steps 9–17</span></div>
+</div>
+
+<!-- ============ PART 3 + 4 ============ -->
+<div class="page">
+  <div class="banner"><div class="t">PART 3 — The touch pad · PART 4 — Power and flash</div><div class="s">Steps 18–28. One solder joint, then software.</div></div>
+
+  <div class="step"><div class="n">18</div><div class="body"><span class="box"></span>
+    <div class="act">Rub sandpaper over one face of a coin until it looks dull and scratched.</div>
+    <div class="det">Any coin, or a wide screw head. Scuff an area about the size of a pea.</div>
+    <div class="see"><b>You should see:</b> a dull scratched patch, not shiny.</div>
+    <div class="bad"><b>Why:</b> solder will not stick to a shiny coin. This step is the whole reason the touch pad works.</div>
+  </div></div>
+
+  <div class="step"><div class="n s">19</div><div class="body"><span class="box"></span>
+    <div class="act">Solder one end of a jumper wire to the scuffed patch. <b>The only joint left.</b></div>
+    <div class="det">Use a female-to-male jumper and solder the <b>male (pin) end</b> to the coin, so the socket end is free to push onto the board. A coin is a big lump of metal — hold the iron on it 5–10 seconds, not 2.</div>
+    <div class="see"><b>You should see:</b> the wire firmly attached to the coin.</div>
+    <div class="bad"><b>If solder won't stick:</b> not scuffed enough, or not hot enough. Scuff harder, hold longer.</div>
+  </div></div>
+
+  <div class="step"><div class="n">20</div><div class="body"><span class="box"></span>
+    <div class="act">Push the coin wire's free end onto the board pin labelled <code>D2</code>.</div>
+    <div class="det">Left-hand row, third pin down from the USB end.</div>
+    <div class="see"><b>You should see:</b> the coin connected to <code>D2</code> and nothing else.</div>
+  </div></div>
+
+  <div class="step"><div class="n">21</div><div class="body"><span class="box"></span>
+    <div class="act">Re-test <code>3V3</code> to <code>GND</code> with the meter, one last time.</div>
+    <div class="det">Everything is now connected, so this catches anything the wiring introduced.</div>
+    <div class="see"><b>You should see:</b> silence.</div>
+    <div class="bad"><b>If it beeps now but didn't at step 5:</b> the amp or a jumper is the cause. Unplug the amp and test again.</div>
+  </div></div>
+
+  <div class="step"><div class="n g">22</div><div class="body"><span class="box"></span>
+    <div class="act">Plug in the USB cable.</div>
+    <div class="see"><b>You should see:</b> a small LED on the board light up.</div>
+    <div class="bad"><b>Nothing?</b> Many USB cables are charge-only with no data wires. Try a different cable before assuming the board is faulty.</div>
+  </div></div>
+
+  <div class="step"><div class="n w">23</div><div class="body"><span class="box"></span>
+    <div class="act">Within 5 seconds, dab a fingertip on the board and on the amp.</div>
+    <div class="see"><b>You should see:</b> both cool or barely warm.</div>
+    <div class="bad"><b>If anything is hot: UNPLUG NOW.</b> You have a short. Go back to step 5.</div>
+  </div></div>
+
+  <div class="step"><div class="n">24</div><div class="body"><span class="box"></span>
+    <div class="act">Open the <code>firmware</code> folder in VS Code with the PlatformIO extension.</div>
+    <div class="see"><b>You should see:</b> PlatformIO recognises the project and shows a build toolbar at the bottom.</div>
+  </div></div>
+
+  <div class="step"><div class="n">25</div><div class="body"><span class="box"></span>
+    <div class="act">Copy <code>src/secrets.h.example</code> to a new file called <code>src/secrets.h</code>.</div>
+    <div class="see"><b>You should see:</b> both files in the <code>src</code> folder.</div>
+  </div></div>
+
+  <div class="step"><div class="n">26</div><div class="body"><span class="box"></span>
+    <div class="act">Put your WiFi name and password into <code>secrets.h</code>. Leave the IP for now.</div>
+    <div class="see"><b>You should see:</b> <code>WIFI_SSID</code> and <code>WIFI_PASSWORD</code> filled in.</div>
+    <div class="bad"><b>Note:</b> the ESP32 only works on <b>2.4GHz</b> WiFi. If your network is 5GHz-only it will never connect.</div>
+  </div></div>
+
+  <div class="step"><div class="n">27</div><div class="body"><span class="box"></span>
+    <div class="act">Press Build (the tick icon).</div>
+    <div class="see"><b>You should see:</b> <code>SUCCESS</code> in the terminal. First build downloads a lot and takes several minutes.</div>
+    <div class="bad"><b>Errors?</b> Send me the last 20 lines. Don't start changing code.</div>
+  </div></div>
+
+  <div class="step"><div class="n">28</div><div class="body"><span class="box"></span>
+    <div class="act">Press Upload (the arrow icon).</div>
+    <div class="see"><b>You should see:</b> a progress bar, then <code>SUCCESS</code>.</div>
+    <div class="bad"><b>Port not found?</b> Hold the <b>BOOT</b> button, tap <b>RESET</b>, release BOOT, upload again.</div>
+  </div></div>
+
+  <div class="foot"><span>Parts 3–4 — Touch pad, power, flash</span><span>Steps 18–28</span></div>
+</div>
+
+<!-- ============ PART 5 ============ -->
+<div class="page">
+  <div class="banner"><div class="t">PART 5 — Server and camera</div><div class="s">Steps 29–37. Camera only. No audio yet.</div></div>
+
+  <div class="stop">
+    <b>Camera first, audio second — never both at once.</b> If both are on and it
+    fails, you can't tell which half broke.
+  </div>
+
+  <div class="step"><div class="n">29</div><div class="body"><span class="box"></span>
+    <div class="act">Open a terminal in the <code>server</code> folder and install what it needs.</div>
+<pre>cd server
+pip install -r requirements.txt</pre>
+    <div class="see"><b>You should see:</b> packages install, ending without an error.</div>
+    <div class="bad"><b><code>pyzbar</code> fails?</b> Needs the system <code>zbar</code> library — Mac: <code>brew install zbar</code>.</div>
+  </div></div>
+
+  <div class="step"><div class="n">30</div><div class="body"><span class="box"></span>
+    <div class="act">Create a file called <code>.env</code> in the <code>server</code> folder with your API keys.</div>
+    <div class="see"><b>You should see:</b> a <code>.env</code> file. It's gitignored, so it won't be committed.</div>
+  </div></div>
+
+  <div class="step"><div class="n">31</div><div class="body"><span class="box"></span>
+    <div class="act">Start the server.</div>
+<pre>uvicorn main:app --host 0.0.0.0 --port 8000</pre>
+    <div class="see"><b>You should see:</b> <code>Uvicorn running on http://0.0.0.0:8000</code>. Leave this terminal open.</div>
+  </div></div>
+
+  <div class="step"><div class="n">32</div><div class="body"><span class="box"></span>
+    <div class="act">In a browser, open <code>http://localhost:8000/health</code>.</div>
+    <div class="see"><b>You should see:</b> a small JSON response, not an error page.</div>
+  </div></div>
+
+  <div class="step"><div class="n g">33</div><div class="body"><span class="box"></span>
+    <div class="act">Test the AI with no hardware at all — photograph a medicine box with your phone, copy it to your laptop, and run:</div>
+<pre>curl -X POST http://localhost:8000/read_label \
+     -F "image=@box.jpg"</pre>
+    <div class="see"><b>You should see:</b> the server describe what's on the box.</div>
+    <div class="bad"><b>The most valuable test in the project</b> — it proves the AI half works with no wiring involved. Try ten real products.</div>
+  </div></div>
+
+  <div class="foot"><span>Part 5 — Server and camera</span><span>Steps 29–33</span></div>
+</div>
+
+<!-- ============ PART 5b ============ -->
+<div class="page">
+  <div class="banner"><div class="t">PART 5 continued — point the board at your laptop</div><div class="s">Steps 34–37.</div></div>
+
+  <div class="step"><div class="n">34</div><div class="body"><span class="box"></span>
+    <div class="act">Find your laptop's IP address on the local network.</div>
+    <div class="det">Mac <code>ipconfig getifaddr en0</code> · Windows <code>ipconfig</code> (IPv4) · Linux <code>hostname -I</code></div>
+    <div class="see"><b>You should see:</b> something like <code>192.168.x.x</code>. <b>Write it down.</b></div>
+  </div></div>
+
+  <div class="step"><div class="n">35</div><div class="body"><span class="box"></span>
+    <div class="act">Put that IP into <code>secrets.h</code> as <code>SERVER_HOST</code>, then Upload again.</div>
+    <div class="see"><b>You should see:</b> another <code>SUCCESS</code>.</div>
+    <div class="bad"><b>Laptop and board must be on the SAME WiFi network.</b> Not guest network, not phone hotspot on one and home WiFi on the other.</div>
+  </div></div>
+
+  <div class="step"><div class="n">36</div><div class="body"><span class="box"></span>
+    <div class="act">Open the Serial Monitor (the plug icon) and press RESET on the board.</div>
+    <div class="see"><b>You should see:</b> <code>Connecting to WiFi</code> then <code>WiFi connected</code>.</div>
+    <div class="bad"><b>Says FAILED?</b> Check the password, and check it's a 2.4GHz network.</div>
+  </div></div>
+
+  <div class="step"><div class="n g">37</div><div class="body"><span class="box"></span>
+    <div class="act">Touch the coin. Watch BOTH the serial monitor and the server terminal.</div>
+    <div class="see"><b>You should see:</b> the board report a capture, and the server log a request arriving.</div>
+    <div class="bad"><b>Camera fails?</b> PSRAM, not wiring — fixed in <code>platformio.ini</code>, so rebuild after pulling. <b>Nothing on touch?</b> Try holding the coin rather than tapping.</div>
+  </div></div>
+
+  <div class="foot"><span>Part 5 — Server and camera</span><span>Steps 34–37</span></div>
+</div>
+
+<!-- ============ PART 6 ============ -->
+<div class="page">
+  <div class="banner"><div class="t">PART 6 — Audio, then onto your face</div><div class="s">Steps 38–44.</div></div>
+
+  <div class="step"><div class="n g">38</div><div class="body"><span class="box"></span>
+    <div class="act">Touch the coin again and listen to the speaker.</div>
+    <div class="see"><b>You should see (hear):</b> a voice reading out whatever the camera is pointed at. <b>That's the whole product working.</b></div>
+    <div class="bad"><b>Silence?</b> Check <code>SD</code>/<code>SHUTDOWN</code> is unconnected (step 17). Then meter amp <code>VIN</code>→<code>GND</code>, expect ~3.3V.<br>
+      <b>Static or buzzing?</b> Yellow and green are swapped. <code>D8</code>→BCLK, <code>D9</code>→LRC.<br>
+      <b>Very quiet?</b> Try the board's <code>5V</code> pin instead of <code>3V3</code>, if your amp is rated for it.</div>
+  </div></div>
+
+  <div class="step"><div class="n">39</div><div class="body"><span class="box"></span>
+    <div class="act">Decide which pod plate to print.</div>
+    <div class="det">
+      <b>Keeping the headers</b> → print <code>FINAL_petg_plate_HEADERS.stl</code>. Pods are 19mm tall. Stick out more, but nothing to undo.<br>
+      <b>Removing the headers</b> → print <code>FINAL_petg_plate.stl</code>. Pods are 10mm tall and sit much closer to the head, but you'd desolder the headers and solder wires flat to the pads.
+    </div>
+    <div class="see"><b>You should see:</b> one file chosen.</div>
+    <div class="bad"><b>My honest suggestion:</b> print the HEADERS version now. A working chunky prototype beats an elegant one that isn't finished. Slimming it down is a week-4 job if you have time.</div>
+  </div></div>
+
+  <div class="step"><div class="n">40</div><div class="body"><span class="box"></span>
+    <div class="act">Print your chosen plate in PETG, and <code>FINAL_tpu_rings.stl</code> in TPU.</div>
+    <div class="det">Layer height 0.16mm, 4 perimeters. The rings are tiny — about 10 minutes each.</div>
+    <div class="see"><b>You should see:</b> two pod bases, two lids, and four rings.</div>
+  </div></div>
+
+  <div class="step"><div class="n">41</div><div class="body"><span class="box"></span>
+    <div class="act">Slide two rings onto one temple arm of your glasses, from the ear end.</div>
+    <div class="det">They're deliberately undersized — they should need a firm stretch to go on.</div>
+    <div class="see"><b>You should see:</b> rings that grip and don't slide when pushed.</div>
+    <div class="bad"><b>Too loose?</b> Reprint with a SMALLER opening — not larger. Reduce <code>RING_IN_OUT</code> by 0.5mm in the <code>.scad</code>.<br>
+      <b>Won't stretch on?</b> Reduce <code>RING_WALL</code> to 1.0mm — a thinner wall stretches far more easily.</div>
+  </div></div>
+
+  <div class="step"><div class="n">42</div><div class="body"><span class="box"></span>
+    <div class="act">Put the board and camera into the front pod, amp and speaker into the rear pod. No glue yet.</div>
+    <div class="det">Camera lens lined up with the hole. Speaker under the grille holes.</div>
+    <div class="see"><b>You should see:</b> both lids close flat.</div>
+    <div class="bad"><b>A lid won't close?</b> Something is taller than the CAD expects. Measure it and tell me the number rather than forcing the lid.</div>
+  </div></div>
+
+  <div class="step"><div class="n">43</div><div class="body"><span class="box"></span>
+    <div class="act">Slide each pod onto its rings, along the arm.</div>
+    <div class="det">The slot slides onto the rail from the end — it won't push on from above. That's the point.</div>
+    <div class="see"><b>You should see:</b> pods that sit firmly and can't be pulled straight off.</div>
+  </div></div>
+
+  <div class="step"><div class="n g">44</div><div class="body"><span class="box"></span>
+    <div class="act">Put the glasses on and wear them for ten minutes.</div>
+    <div class="see"><b>You should see:</b> nothing pressing into your head, arm not splayed, pods not sliding.</div>
+    <div class="bad"><b>Something digs in?</b> Tell me where. That's a CAD fix and it's a quick one.</div>
+  </div></div>
+
+  <div class="go">
+    <b>That's the hardware done.</b> Everything after this is reliability, the
+    wake word, and making it look finished.
+  </div>
+
+  <div class="foot"><span>Part 6 — Audio and assembly</span><span>Steps 38–44</span></div>
+</div>
