@@ -1,0 +1,397 @@
+<meta charset="utf-8">
+<title>Vocalens — Wiring Guide</title>
+<style>
+  @page { size: A4; margin: 12mm; }
+  * { box-sizing: border-box; }
+  body { font-family:"DejaVu Sans",Arial,sans-serif; color:#1a2530; margin:0;
+         font-size:10pt; line-height:1.42;
+         -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .page { page-break-after:always; position:relative; height:268mm; }
+  .page:last-child { page-break-after:auto; }
+  h1 { font-size:27pt; margin:0 0 1mm; color:#0B4F6C; letter-spacing:-.5px; }
+  h2 { font-size:15pt; margin:0; color:#0B4F6C; }
+  h3 { font-size:10.5pt; margin:3.5mm 0 1.5mm; color:#137A7F;
+       text-transform:uppercase; letter-spacing:.6px; }
+  .stephead { display:flex; align-items:center; gap:4mm; border-bottom:2.5px solid #0B4F6C;
+              padding-bottom:2mm; margin-bottom:3mm; }
+  .num { flex:0 0 12mm; height:12mm; border-radius:50%; background:#F2A65A; color:#0B4F6C;
+         font-size:17pt; font-weight:700; display:flex; align-items:center; justify-content:center; }
+  .sub { font-size:9pt; color:#5a6b78; }
+  .cap { font-size:8.5pt; color:#5a6b78; font-style:italic; text-align:center; margin-top:1mm; }
+  .fig { text-align:center; margin:2.5mm 0; }
+  .tip  { background:#eef4f6; border-left:4px solid #0B4F6C; padding:2.5mm 3.5mm; margin:2.5mm 0; font-size:9.5pt; }
+  .warn { background:#fdf3e7; border-left:4px solid #F2A65A; padding:2.5mm 3.5mm; margin:2.5mm 0; font-size:9.5pt; }
+  .warn b { color:#a4622a; }
+  .stop { background:#fdecec; border-left:4px solid #c0392b; padding:2.5mm 3.5mm; margin:2.5mm 0; font-size:9.5pt; }
+  .stop b { color:#c0392b; }
+  .go   { background:#eef7ef; border-left:4px solid #3f9e54; padding:2.5mm 3.5mm; margin:2.5mm 0; font-size:9.5pt; }
+  .go b { color:#2f7a41; }
+  code { font-family:"DejaVu Sans Mono",monospace; font-size:8.9pt; background:#eaf0f2;
+         padding:.2mm 1.2mm; border-radius:1.5mm; }
+  table { width:100%; border-collapse:collapse; font-size:9.3pt; margin:2.4mm 0; }
+  th { background:#0B4F6C; color:#fff; text-align:left; padding:1.8mm 2.5mm;
+       font-size:8.5pt; letter-spacing:.5px; }
+  td { padding:1.6mm 2.5mm; border-bottom:1px solid #dde5e8; vertical-align:top; }
+  tr:nth-child(even) td { background:#f7fafb; }
+  .sw { display:inline-block; width:3.6mm; height:3.6mm; border-radius:50%;
+        border:1px solid #7a8c99; vertical-align:-.6mm; margin-right:1.6mm; }
+  .foot { position:absolute; bottom:0; left:0; right:0; font-size:7.5pt; color:#8b9aa5;
+          border-top:1px solid #dde5e8; padding-top:1.5mm; display:flex; justify-content:space-between; }
+  ol.steps { padding-left:0; list-style:none; counter-reset:s; margin:2.5mm 0; }
+  ol.steps > li { counter-increment:s; position:relative; padding-left:7.5mm; margin:2.2mm 0; }
+  ol.steps > li::before { content:counter(s); position:absolute; left:0; top:.2mm;
+        width:5.2mm; height:5.2mm; background:#137A7F; color:#fff; border-radius:50%;
+        font-size:8pt; font-weight:700; display:flex; align-items:center; justify-content:center; }
+</style>
+
+<!-- ============ P1 : THE PIN CORRECTION ============ -->
+<div class="page">
+  <div style="background:#0B4F6C;color:#fff;padding:7mm;margin:-1mm -1mm 4mm;">
+    <div style="font-size:8.5pt;letter-spacing:3px;opacity:.75;">VOCALENS · WIRING</div>
+    <h1 style="color:#fff;font-size:31pt;">Wiring Guide</h1>
+    <div style="font-size:11pt;color:#F2A65A;">Eight joints. Read page 1 before you touch the iron.</div>
+  </div>
+
+  <div class="stop">
+    <b>READ THIS FIRST — the pad labels are not the GPIO numbers.</b>
+    On the XIAO ESP32S3 the silkscreen says <code>D0</code>…<code>D10</code>, but the
+    code refers to GPIO numbers. <b>They do not match.</b> The code says GPIO 7,
+    which is the pad printed <code>D8</code> — not <code>D7</code>. Wire by the
+    <b>PAD</b> column below, never by the GPIO number.
+  </div>
+
+  <div class="fig">
+    <svg width="690" height="250" viewBox="0 0 690 250">
+      <rect x="0" y="0" width="690" height="250" rx="6" fill="#f7fafb" stroke="#dde5e8" stroke-width="1.5"/>
+      <text x="345" y="22" font-size="11" fill="#0B4F6C" text-anchor="middle" font-weight="bold">XIAO ESP32S3 — seen from above, USB at the top</text>
+
+      <!-- board -->
+      <rect x="255" y="40" width="180" height="190" rx="8" fill="#0B4F6C"/>
+      <rect x="315" y="32" width="60" height="16" rx="3" fill="#8b9aa5"/>
+      <text x="345" y="44" font-size="8" fill="#16394a" text-anchor="middle" font-weight="bold">USB-C</text>
+      <text x="345" y="140" font-size="9" fill="#8fb8c9" text-anchor="middle">XIAO</text>
+      <text x="345" y="154" font-size="9" fill="#8fb8c9" text-anchor="middle">ESP32S3</text>
+
+      <!-- left pads -->
+      <g>
+        <rect x="243" y="62"  width="14" height="10" fill="#8b9aa5"/><text x="236" y="71" font-size="8.5" fill="#5a6b78" text-anchor="end">D0</text>
+        <rect x="243" y="84"  width="14" height="10" fill="#8b9aa5"/><text x="236" y="93" font-size="8.5" fill="#5a6b78" text-anchor="end">D1</text>
+        <rect x="243" y="106" width="14" height="10" fill="#c9ccd0"/><text x="236" y="115" font-size="9" fill="#0B4F6C" text-anchor="end" font-weight="bold">D2 ← touch</text>
+        <rect x="243" y="128" width="14" height="10" fill="#8b9aa5"/><text x="236" y="137" font-size="8.5" fill="#5a6b78" text-anchor="end">D3</text>
+        <rect x="243" y="150" width="14" height="10" fill="#8b9aa5"/><text x="236" y="159" font-size="8.5" fill="#5a6b78" text-anchor="end">D4</text>
+        <rect x="243" y="172" width="14" height="10" fill="#8b9aa5"/><text x="236" y="181" font-size="8.5" fill="#5a6b78" text-anchor="end">D5</text>
+        <rect x="243" y="194" width="14" height="10" fill="#8b9aa5"/><text x="236" y="203" font-size="8.5" fill="#5a6b78" text-anchor="end">D6</text>
+      </g>
+      <!-- right pads -->
+      <g>
+        <rect x="433" y="62"  width="14" height="10" fill="#d64545"/><text x="454" y="71" font-size="9" fill="#c0392b" font-weight="bold">5V</text>
+        <rect x="433" y="84"  width="14" height="10" fill="#2b2b2b"/><text x="454" y="93" font-size="9" fill="#0B4F6C" font-weight="bold">GND → black</text>
+        <rect x="433" y="106" width="14" height="10" fill="#d64545"/><text x="454" y="115" font-size="9" fill="#0B4F6C" font-weight="bold">3V3 → red</text>
+        <rect x="433" y="128" width="14" height="10" fill="#3b7dd8"/><text x="454" y="137" font-size="9" fill="#0B4F6C" font-weight="bold">D10 → blue (DIN)</text>
+        <rect x="433" y="150" width="14" height="10" fill="#3f9e54"/><text x="454" y="159" font-size="9" fill="#0B4F6C" font-weight="bold">D9 → green (LRC)</text>
+        <rect x="433" y="172" width="14" height="10" fill="#e0b93a"/><text x="454" y="181" font-size="9" fill="#0B4F6C" font-weight="bold">D8 → yellow (BCLK)</text>
+        <rect x="433" y="194" width="14" height="10" fill="#8b9aa5"/><text x="454" y="203" font-size="8.5" fill="#5a6b78">D7</text>
+      </g>
+      <text x="345" y="244" font-size="9" fill="#c0392b" text-anchor="middle" font-weight="bold">five of the six wires are on the RIGHT edge, in a row</text>
+    </svg>
+    <div class="cap">Everything except the touch wire lands on one edge. That's convenient — solder them as a group.</div>
+  </div>
+
+  <table>
+    <tr><th style="width:26mm;">SOLDER TO PAD</th><th style="width:26mm;">code calls it</th><th style="width:26mm;">Wire</th><th>Goes to</th></tr>
+    <tr><td><b>3V3</b></td><td><code>—</code></td><td><span class="sw" style="background:#d64545"></span>Red</td><td>Amp <code>VIN</code></td></tr>
+    <tr><td><b>GND</b></td><td><code>—</code></td><td><span class="sw" style="background:#2b2b2b"></span>Black</td><td>Amp <code>GND</code></td></tr>
+    <tr><td><b>D8</b></td><td><code>GPIO 7</code></td><td><span class="sw" style="background:#e0b93a"></span>Yellow</td><td>Amp <code>BCLK</code> / <code>SCK</code></td></tr>
+    <tr><td><b>D9</b></td><td><code>GPIO 8</code></td><td><span class="sw" style="background:#3f9e54"></span>Green</td><td>Amp <code>LRC</code> / <code>WS</code></td></tr>
+    <tr><td><b>D10</b></td><td><code>GPIO 9</code></td><td><span class="sw" style="background:#3b7dd8"></span>Blue</td><td>Amp <code>DIN</code></td></tr>
+    <tr><td><b>D2</b></td><td><code>GPIO 3</code></td><td><span class="sw" style="background:#fff"></span>White</td><td>Metal disc in the front lid</td></tr>
+  </table>
+
+  <div class="warn">
+    <b>Verify this table against Seeed's own pinout diagram before soldering.</b>
+    It's the one thing here that's cheap to check and expensive to get wrong. If
+    your board's diagram disagrees, believe the diagram and tell me — I'll correct
+    <code>pins.h</code> rather than have you rewire.
+  </div>
+
+  <div class="foot"><span>Pin mapping</span><span>Page 1</span></div>
+</div>
+
+<!-- ============ P2 : SOLDERING ============ -->
+<div class="page">
+  <div class="stephead">
+    <div class="num">1</div>
+    <div><h2>How to actually solder this</h2><div class="sub">If you've never done it, start here</div></div>
+  </div>
+
+  <p style="margin:1mm 0 2mm;">
+    Soldering is <b>gluing with metal that conducts</b>. You heat the pad, feed in
+    solder, it melts and sticks to both the pad and the wire. That's all.
+  </p>
+
+  <div class="fig">
+    <svg width="690" height="228" viewBox="0 0 690 228">
+      <!-- A -->
+      <rect x="0" y="0" width="222" height="228" rx="6" fill="#f7fafb" stroke="#dde5e8" stroke-width="1.5"/>
+      <circle cx="20" cy="20" r="11" fill="#137A7F"/><text x="20" y="24.5" font-size="11" fill="#fff" text-anchor="middle" font-weight="bold">A</text>
+      <text x="38" y="24.5" font-size="10.5" fill="#0B4F6C" font-weight="bold">Tin the pad</text>
+      <rect x="46" y="96" width="130" height="30" rx="3" fill="#0B4F6C"/>
+      <rect x="80" y="88" width="34" height="10" fill="#F2A65A"/>
+      <path d="M150 56 L124 86" stroke="#c0392b" stroke-width="7" stroke-linecap="round"/>
+      <circle cx="97" cy="84" r="7" fill="#c9ccd0"/>
+      <text x="111" y="152" font-size="9" fill="#5a6b78" text-anchor="middle">iron on the pad, 2 seconds</text>
+      <text x="111" y="168" font-size="9" fill="#5a6b78" text-anchor="middle">feed a little solder in</text>
+      <text x="111" y="192" font-size="9" fill="#2f7a41" text-anchor="middle" font-weight="bold">leaves a shiny blob</text>
+
+      <!-- B -->
+      <rect x="234" y="0" width="222" height="228" rx="6" fill="#f7fafb" stroke="#dde5e8" stroke-width="1.5"/>
+      <circle cx="254" cy="20" r="11" fill="#137A7F"/><text x="254" y="24.5" font-size="11" fill="#fff" text-anchor="middle" font-weight="bold">B</text>
+      <text x="272" y="24.5" font-size="10.5" fill="#0B4F6C" font-weight="bold">Tin the wire</text>
+      <path d="M280 100 L360 100" stroke="#d64545" stroke-width="9" stroke-linecap="round"/>
+      <path d="M360 100 L400 100" stroke="#c9ccd0" stroke-width="6" stroke-linecap="round"/>
+      <path d="M420 60 L400 88" stroke="#c0392b" stroke-width="7" stroke-linecap="round"/>
+      <text x="345" y="152" font-size="9" fill="#5a6b78" text-anchor="middle">strip 3mm, twist the strands</text>
+      <text x="345" y="168" font-size="9" fill="#5a6b78" text-anchor="middle">heat, feed solder, it wicks in</text>
+      <text x="345" y="192" font-size="9" fill="#2f7a41" text-anchor="middle" font-weight="bold">tip goes stiff and silver</text>
+
+      <!-- C -->
+      <rect x="468" y="0" width="222" height="228" rx="6" fill="#f2f9f4" stroke="#3f9e54" stroke-width="1.5"/>
+      <circle cx="488" cy="20" r="11" fill="#3f9e54"/><text x="488" y="24.5" font-size="11" fill="#fff" text-anchor="middle" font-weight="bold">C</text>
+      <text x="506" y="24.5" font-size="10.5" fill="#2f7a41" font-weight="bold">Join them</text>
+      <rect x="514" y="96" width="130" height="30" rx="3" fill="#0B4F6C"/>
+      <rect x="548" y="88" width="34" height="10" fill="#F2A65A"/>
+      <path d="M582 92 L660 92" stroke="#d64545" stroke-width="9" stroke-linecap="round"/>
+      <circle cx="565" cy="86" r="8" fill="#c9ccd0"/>
+      <text x="579" y="152" font-size="9" fill="#5a6b78" text-anchor="middle">hold wire on pad, touch iron</text>
+      <text x="579" y="168" font-size="9" fill="#5a6b78" text-anchor="middle">1 second — both blobs merge</text>
+      <text x="579" y="192" font-size="9" fill="#2f7a41" text-anchor="middle" font-weight="bold">remove iron, don't move for 3s</text>
+    </svg>
+    <div class="cap">Tin both sides separately, then just melt them together. Far easier than doing it in one go.</div>
+  </div>
+
+  <table>
+    <tr><th style="width:46mm;">What you see</th><th>What it means</th></tr>
+    <tr><td><b>Shiny, smooth, slightly concave</b></td><td style="color:#2f7a41;">Good joint. Move on.</td></tr>
+    <tr><td><b>Dull, grey, lumpy</b></td><td>Moved while cooling, or not hot enough. Re-heat until it flows, then hold still.</td></tr>
+    <tr><td><b>Ball sitting on top, not spread</b></td><td>The pad wasn't hot — you melted solder onto a cold pad. Heat the <i>pad</i>, not the solder.</td></tr>
+    <tr><td><b>Blob bridging two pads</b></td><td>Short circuit. Remove with braid or by dragging a clean hot tip across it.</td></tr>
+  </table>
+
+  <div class="warn">
+    <b>Heat the pad, not the solder.</b> That single sentence is 90% of learning to
+    solder. Touch the iron to the pad, count two, <i>then</i> bring the solder in
+    so the pad melts it. Melting solder on the tip and dabbing it on makes a joint
+    that looks fine and falls off later.
+  </div>
+
+  <div class="tip">
+    <b>Don't have an iron yet?</b> The camera plugs in by ribbon — you can flash the
+    board, run the server and read real labels today with zero soldering. See
+    <code>Vocalens_NoSolder_Day.pdf</code>.
+  </div>
+
+  <div class="foot"><span>Soldering basics</span><span>Page 2</span></div>
+</div>
+
+<!-- ============ P3 : FRONT POD ============ -->
+<div class="page">
+  <div class="stephead">
+    <div class="num">2</div>
+    <div><h2>Front pod — six wires on the board</h2><div class="sub">All on the XIAO</div></div>
+  </div>
+
+  <div class="fig">
+    <svg width="690" height="266" viewBox="0 0 690 266">
+      <rect x="0" y="0" width="690" height="266" rx="6" fill="#f7fafb" stroke="#dde5e8" stroke-width="1.5"/>
+
+      <!-- camera -->
+      <rect x="36" y="92" width="76" height="76" rx="5" fill="#0B4F6C"/>
+      <circle cx="74" cy="130" r="22" fill="#2b3a45"/><circle cx="74" cy="130" r="12" fill="#F2A65A"/><circle cx="74" cy="130" r="4.5" fill="#0B4F6C"/>
+      <text x="74" y="186" font-size="9.5" fill="#0B4F6C" text-anchor="middle" font-weight="bold">CAMERA</text>
+      <text x="74" y="200" font-size="8.5" fill="#3f9e54" text-anchor="middle">ribbon — no solder</text>
+
+      <path d="M112 118 q26 0 26 -14 q0 -14 22 -14" stroke="#c98b3a" stroke-width="8" fill="none"/>
+
+      <!-- board -->
+      <rect x="160" y="76" width="180" height="108" rx="6" fill="#0B4F6C"/>
+      <text x="250" y="126" font-size="9.5" fill="#fff" text-anchor="middle">XIAO ESP32S3</text>
+      <text x="250" y="142" font-size="9.5" fill="#fff" text-anchor="middle">Sense</text>
+      <rect x="222" y="66" width="56" height="12" rx="2" fill="#8b9aa5"/>
+      <text x="250" y="58" font-size="8.5" fill="#5a6b78" text-anchor="middle">USB-C out the side slot</text>
+
+      <!-- left pad D2 -->
+      <rect x="150" y="112" width="12" height="9" fill="#c9ccd0"/>
+      <path d="M150 116 L104 116 L104 226 L188 226" stroke="#c9ccd0" stroke-width="3" fill="none"/>
+      <circle cx="204" cy="226" r="12" fill="#c9ccd0" stroke="#8b9aa5" stroke-width="1.5"/>
+      <text x="204" y="252" font-size="9" fill="#5a6b78" text-anchor="middle">metal disc, glued in the LID</text>
+      <text x="140" y="106" font-size="9" fill="#0B4F6C" text-anchor="end" font-weight="bold">D2</text>
+
+      <!-- right pads -->
+      <g>
+        <rect x="338" y="88"  width="12" height="9" fill="#2b2b2b"/>
+        <rect x="338" y="106" width="12" height="9" fill="#d64545"/>
+        <rect x="338" y="124" width="12" height="9" fill="#3b7dd8"/>
+        <rect x="338" y="142" width="12" height="9" fill="#3f9e54"/>
+        <rect x="338" y="160" width="12" height="9" fill="#e0b93a"/>
+      </g>
+      <g stroke-width="3.4" fill="none">
+        <path d="M350 92  L556 92"  stroke="#2b2b2b"/>
+        <path d="M350 110 L556 110" stroke="#d64545"/>
+        <path d="M350 128 L556 128" stroke="#3b7dd8"/>
+        <path d="M350 146 L556 146" stroke="#3f9e54"/>
+        <path d="M350 164 L556 164" stroke="#e0b93a"/>
+      </g>
+      <text x="566" y="95"  font-size="9" fill="#5a6b78">GND · black</text>
+      <text x="566" y="113" font-size="9" fill="#5a6b78">3V3 · red</text>
+      <text x="566" y="131" font-size="9" fill="#5a6b78">D10 · blue</text>
+      <text x="566" y="149" font-size="9" fill="#5a6b78">D9 · green</text>
+      <text x="566" y="167" font-size="9" fill="#5a6b78">D8 · yellow</text>
+      <text x="600" y="192" font-size="9.5" fill="#137A7F" text-anchor="middle" font-weight="bold">→ out to the rear pod</text>
+      <text x="600" y="208" font-size="8.5" fill="#5a6b78" text-anchor="middle">through the rear-face slot</text>
+    </svg>
+    <div class="cap">Five wires leave the pod as a bundle. The white touch wire stays inside.</div>
+  </div>
+
+  <ol class="steps">
+    <li><b>Cut the five long wires first.</b> Measure your glasses from hinge to behind the ear, add 2cm. Too short can't be fixed.</li>
+    <li>Tin all six pads: <code>3V3</code>, <code>GND</code>, <code>D8</code>, <code>D9</code>, <code>D10</code>, <code>D2</code>.</li>
+    <li>Solder the five bundle wires to the right-hand edge. Work top to bottom so your iron never crosses a finished joint.</li>
+    <li>Solder the white wire to <code>D2</code> on the left edge.</li>
+    <li><b>Check for bridges.</b> Look along the pad row at a low angle — a bridge is obvious side-on and invisible from above.</li>
+    <li>Tug each wire gently. A joint that fails this on the bench will definitely fail on a face.</li>
+  </ol>
+
+  <div class="warn">
+    <b>Keep the joints flat.</b> Anything standing proud eats into the 10mm the pod
+    has. If a blob is tall, re-heat it and let it settle rather than forcing the lid.
+  </div>
+
+  <div class="foot"><span>Front pod</span><span>Page 3</span></div>
+</div>
+
+<!-- ============ P4 : REAR POD ============ -->
+<div class="page">
+  <div class="stephead">
+    <div class="num">3</div>
+    <div><h2>Rear pod — amp and speaker</h2><div class="sub">Two more joints, then you're done</div></div>
+  </div>
+
+  <div class="fig">
+    <svg width="690" height="228" viewBox="0 0 690 228">
+      <rect x="0" y="0" width="690" height="228" rx="6" fill="#f7fafb" stroke="#dde5e8" stroke-width="1.5"/>
+      <g stroke-width="3.4" fill="none">
+        <path d="M14 62  L150 62"  stroke="#d64545"/>
+        <path d="M14 82  L150 82"  stroke="#2b2b2b"/>
+        <path d="M14 102 L150 102" stroke="#e0b93a"/>
+        <path d="M14 122 L150 122" stroke="#3f9e54"/>
+        <path d="M14 142 L150 142" stroke="#3b7dd8"/>
+      </g>
+      <text x="16" y="46" font-size="9.5" fill="#137A7F" font-weight="bold">from front pod →</text>
+
+      <rect x="150" y="44" width="130" height="120" rx="5" fill="#0B4F6C"/>
+      <g fill="#F2A65A">
+        <rect x="150" y="58" width="9" height="9"/><rect x="150" y="78" width="9" height="9"/>
+        <rect x="150" y="98" width="9" height="9"/><rect x="150" y="118" width="9" height="9"/>
+        <rect x="150" y="138" width="9" height="9"/>
+      </g>
+      <text x="166" y="66" font-size="8" fill="#fff">VIN</text>
+      <text x="166" y="86" font-size="8" fill="#fff">GND</text>
+      <text x="166" y="106" font-size="8" fill="#fff">BCLK</text>
+      <text x="166" y="126" font-size="8" fill="#fff">LRC</text>
+      <text x="166" y="146" font-size="8" fill="#fff">DIN</text>
+      <text x="215" y="184" font-size="9.5" fill="#0B4F6C" text-anchor="middle" font-weight="bold">AMPLIFIER</text>
+      <text x="215" y="200" font-size="8.5" fill="#5a6b78" text-anchor="middle">check YOUR silkscreen</text>
+
+      <g stroke="#8b9aa5" stroke-width="3.4" fill="none">
+        <path d="M280 94 L370 94"/><path d="M280 114 L370 114"/>
+      </g>
+      <text x="325" y="86" font-size="8.5" fill="#5a6b78" text-anchor="middle">OUT+ / OUT−</text>
+      <text x="325" y="134" font-size="8.5" fill="#2f7a41" text-anchor="middle" font-weight="bold">polarity doesn't matter</text>
+
+      <circle cx="440" cy="104" r="58" fill="#0B4F6C"/>
+      <circle cx="440" cy="104" r="42" fill="#16394a"/>
+      <circle cx="440" cy="104" r="20" fill="#F2A65A"/>
+      <text x="440" y="184" font-size="9.5" fill="#0B4F6C" text-anchor="middle" font-weight="bold">SPEAKER</text>
+      <text x="440" y="200" font-size="8.5" fill="#5a6b78" text-anchor="middle">face outward, under the grille</text>
+
+      <rect x="522" y="44" width="156" height="120" rx="6" fill="#fdf3e7" stroke="#F2A65A" stroke-width="1.5"/>
+      <text x="600" y="66" font-size="9.5" fill="#a4622a" text-anchor="middle" font-weight="bold">LABEL VARIANTS</text>
+      <text x="600" y="88" font-size="9" fill="#5a6b78" text-anchor="middle">BCLK = SCK = CLK</text>
+      <text x="600" y="106" font-size="9" fill="#5a6b78" text-anchor="middle">LRC = WS = LRCLK</text>
+      <text x="600" y="124" font-size="9" fill="#5a6b78" text-anchor="middle">DIN = SD = DATA</text>
+      <text x="600" y="150" font-size="8.5" fill="#a4622a" text-anchor="middle">same signals, different names</text>
+    </svg>
+    <div class="cap">Five wires in, two wires out to the speaker. Nothing else in this pod.</div>
+  </div>
+
+  <table>
+    <tr><th style="width:30mm;">Wire arriving</th><th style="width:34mm;">From XIAO pad</th><th>To amp pin</th></tr>
+    <tr><td><span class="sw" style="background:#d64545"></span>Red</td><td><code>3V3</code></td><td><code>VIN</code></td></tr>
+    <tr><td><span class="sw" style="background:#2b2b2b"></span>Black</td><td><code>GND</code></td><td><code>GND</code></td></tr>
+    <tr><td><span class="sw" style="background:#e0b93a"></span>Yellow</td><td><code>D8</code></td><td><code>BCLK</code> / <code>SCK</code></td></tr>
+    <tr><td><span class="sw" style="background:#3f9e54"></span>Green</td><td><code>D9</code></td><td><code>LRC</code> / <code>WS</code></td></tr>
+    <tr><td><span class="sw" style="background:#3b7dd8"></span>Blue</td><td><code>D10</code></td><td><code>DIN</code></td></tr>
+  </table>
+
+  <div class="warn">
+    <b>If it's too quiet, try 5V instead of 3V3.</b> Most I2S amp modules run on
+    3–5V and get noticeably louder at 5V. Check your module is rated for it first,
+    and note the XIAO's <code>5V</code> pad only carries 5V while USB is plugged in
+    — on battery it's dead. Start on 3V3; it's the safe one.
+  </div>
+
+  <div class="tip">
+    <b>Many amp modules have extra pins</b> — <code>GAIN</code>, <code>SD</code>,
+    <code>SHUTDOWN</code>. Leave them unconnected. They have sensible defaults, and
+    <code>SD</code> in particular usually means "shutdown" — grounding it silences
+    the amp, which is a confusing hour to lose.
+  </div>
+
+  <div class="foot"><span>Rear pod</span><span>Page 4</span></div>
+</div>
+
+<!-- ============ P5 : TEST + TROUBLESHOOT ============ -->
+<div class="page">
+  <div class="stephead">
+    <div class="num">4</div>
+    <div><h2>Test it in stages</h2><div class="sub">Never debug two things at once</div></div>
+  </div>
+
+  <table>
+    <tr><th style="width:8mm;">#</th><th style="width:56mm;">Test</th><th>Passes when</th></tr>
+    <tr><td><b>1</b></td><td><b>Continuity, power OFF</b><br><span style="color:#5a6b78;">Multimeter on beep mode</span></td><td>Each pad beeps to its far end, and <b>no</b> pad beeps to its neighbour. Neighbours beeping = a bridge.</td></tr>
+    <tr><td><b>2</b></td><td><b>Power, nothing else</b></td><td>Plug in USB. Board enumerates, nothing gets hot. <b>Anything warm — unplug immediately.</b></td></tr>
+    <tr><td><b>3</b></td><td><b>Camera alone</b></td><td>Server receives a frame at <code>/read_label</code>. No audio yet.</td></tr>
+    <tr><td><b>4</b></td><td><b>Audio, short wires</b></td><td>Reply plays through the speaker. Prove it before committing to a 10cm run.</td></tr>
+    <tr><td><b>5</b></td><td><b>Full-length wires, clipped on</b></td><td>Repeat 3 and 4 with everything mounted.</td></tr>
+    <tr><td><b>6</b></td><td><b>Touch pad</b></td><td>Tapping triggers. Tune <code>TOUCH_THRESHOLD</code> <i>while worn</i>, not on the bench.</td></tr>
+  </table>
+
+  <div class="stop">
+    <b>Test 1 costs two minutes and catches the mistake that kills boards.</b>
+    A solder bridge between <code>3V3</code> and <code>GND</code> is a dead short.
+    Find it with a meter before you find it with smoke.
+  </div>
+
+  <h3>Troubleshooting</h3>
+  <table>
+    <tr><th style="width:62mm;">Symptom</th><th>Cause</th></tr>
+    <tr><td>Camera never initialises</td><td>PSRAM not set to OPI. Check this first, every time.</td></tr>
+    <tr><td>No sound at all</td><td>Amp unpowered. Meter <code>VIN</code>–<code>GND</code>, expect ~3.3V.</td></tr>
+    <tr><td>Static or buzzing only</td><td>Yellow and green swapped. <code>D8</code>→BCLK, <code>D9</code>→LRC.</td></tr>
+    <tr><td>Silence, but wiring checks out</td><td>An <code>SD</code>/shutdown pin pulled low. Disconnect it.</td></tr>
+    <tr><td>Very quiet but correct</td><td>Speaker not under the grille, or try 5V.</td></tr>
+    <tr><td>Touch fires by itself</td><td><code>TOUCH_THRESHOLD</code> needs tuning while worn.</td></tr>
+    <tr><td>Touch never fires</td><td>White wire not contacting the disc — scuff and re-solder.</td></tr>
+    <tr><td>Works on bench, fails when worn</td><td>A wire pulling at a pod exit. Add strain relief.</td></tr>
+    <tr><td>Board won't enumerate at all</td><td>Unplug everything. If it enumerates bare, you have a short.</td></tr>
+  </table>
+
+  <div class="go">
+    <b>Eight joints total.</b> Six on the board, two on the speaker. If you can make
+    one good joint you can make eight — and the tinning trick on page 2 makes each
+    one about a second of actual iron contact.
+  </div>
+
+  <div class="foot"><span>Test and troubleshoot</span><span>Page 5</span></div>
+</div>
