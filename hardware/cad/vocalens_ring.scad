@@ -205,6 +205,13 @@ module pod_base(length, out, vert, cable_slot_front = true) {
 // lid
 // ============================================================================
 
+// TRIGGER_IS_BUTTON must match USE_PUSH_BUTTON in firmware/src/pins.h.
+// A touch pad needs a shallow dish to glue a metal disc into; a button needs a
+// hole for its plunger to poke through. They are not interchangeable, so the
+// lid has to know which one is fitted.
+TRIGGER_IS_BUTTON = true;
+BUTTON_PLUNGER_D  = 4.2;   // clearance hole for the plunger, not the body
+
 module pod_lid(length, out, vert, camera_hole = false, touch_recess = false,
                grille = false) {
   bw = vert + 2 * WALL;
@@ -224,9 +231,23 @@ module pod_lid(length, out, vert, camera_hole = false, touch_recess = false,
       translate([WALL + 6, bw / 2, -EPS])
         cylinder(h = WALL + 1.0 + 2 * EPS, d = 7, $fn = 40);
 
-    if (touch_recess)
-      translate([length - 12, bw / 2, WALL - 0.6])
-        cylinder(h = 0.6 + EPS, d = 9, $fn = 40);
+    if (touch_recess) {
+      if (TRIGGER_IS_BUTTON) {
+        // Through-hole: the switch body sits under the lid and only its
+        // plunger comes through, so the lid still holds the switch down.
+        translate([length - 12, bw / 2, -EPS])
+          cylinder(h = WALL + 1.0 + 2 * EPS, d = BUTTON_PLUNGER_D, $fn = 32);
+        // Shallow countersink so a fingertip can find the button by feel —
+        // the wearer cannot see it.
+        translate([length - 12, bw / 2, WALL - 0.5])
+          cylinder(h = 0.5 + EPS, d = BUTTON_PLUNGER_D + 3, $fn = 32);
+      } else {
+        // Blind dish for a glued-in metal disc. Deliberately NOT a through
+        // hole: capacitive touch works fine through a thin layer of plastic.
+        translate([length - 12, bw / 2, WALL - 0.6])
+          cylinder(h = 0.6 + EPS, d = 9, $fn = 40);
+      }
+    }
 
     if (grille)
       for (a = [0 : 60 : 359], r = [2.6, 5.2])

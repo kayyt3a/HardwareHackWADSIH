@@ -1,7 +1,8 @@
 // Vocalens firmware — glasses form factor, XIAO ESP32S3 Sense
 //
-// Trigger: wake word ("hey ..., what does this say?") OR a touch-pad tap on
-// the temple as a manual backup. On trigger: record the spoken question from
+// Trigger: wake word ("hey ..., what does this say?") OR a manual press on
+// the temple as a backup — a push button by default, see USE_PUSH_BUTTON in
+// pins.h. On trigger: record the spoken question from
 // the onboard mic, capture a JPEG frame, POST both to the server, and play
 // the returned MP3 answer through a bone-conduction transducer.
 //
@@ -16,8 +17,8 @@
 //    everything else is only a suggested layout.
 //  - Wake-word detection (wake_word.h) and mic recording (mic_capture.h) are
 //    both stubs pending ESP-SR integration — see comments in those files.
-//    The touch pad works standalone without either being finished, so build
-//    and test the rest of the pipeline against the touch pad first.
+//    The manual trigger works standalone without either being finished, so
+//    build and test the rest of the pipeline against the button first.
 
 #include <Arduino.h>
 #include <WiFi.h>
@@ -79,11 +80,26 @@ bool setupCamera() {
   return true;
 }
 
-bool touchTriggered() {
-  // touchRead() returns lower values the more contact there is; threshold
-  // needs tuning per board/finger once wired up.
+// Manual trigger. USE_PUSH_BUTTON (pins.h) picks which kind of hardware is
+// fitted; everything downstream just calls manualTriggered().
+//
+// The button is the recommended one. Capacitive touch has no fixed threshold:
+// the reading shifts with humidity, with how the pad is glued in, and with how
+// close the wearer's head is — so it has to be re-tuned on the assembled,
+// worn device, and it drifts afterwards. A button is either pressed or it
+// isn't. For a demo, that certainty is worth more than saving a hole in a lid.
+bool manualTriggered() {
+#if USE_PUSH_BUTTON
+  // Wired button-to-GND with the internal pull-up enabled, so the pin idles
+  // HIGH and reads LOW while pressed. This wiring needs no resistor.
+  return digitalRead(PIN_TRIGGER) == LOW;
+#else
+  // touchRead() returns lower values the more contact there is. This threshold
+  // is a starting point only — tune it on the assembled device while it is
+  // being worn, not on the bench.
   const int TOUCH_THRESHOLD = 30;
-  return touchRead(PIN_TOUCH_PAD) < TOUCH_THRESHOLD;
+  return touchRead(PIN_TRIGGER) < TOUCH_THRESHOLD;
+#endif
 }
 
 // Implemented in audio_playback.cpp — see that file for ESP8266Audio wiring.
@@ -168,6 +184,14 @@ void captureAskAndSpeak() {
 
 void setup() {
   Serial.begin(115200);
+
+#if USE_PUSH_BUTTON
+  // INPUT_PULLUP holds the pin HIGH through an internal resistor, so a plain
+  // button shorting it to GND is the whole circuit — no external resistor, and
+  // no floating pin reading random noise when nothing is pressed.
+  pinMode(PIN_TRIGGER, INPUT_PULLUP);
+#endif
+
   setupWiFi();
   if (!setupCamera()) {
     Serial.println("Halting: camera required");
@@ -176,11 +200,11 @@ void setup() {
   setupWakeWord();
   setupMic();
   setupOfflineFallback();
-  Serial.println("Glasses ready — say the wake word or tap the temple pad");
+  Serial.println("Glasses ready — say the wake word or press the button");
 }
 
 void loop() {
-  if (isWakeWordDetected() || touchTriggered()) {
+  if (isWakeWordDetected() || manualTriggered()) {
     Serial.println("Triggered — recording question and capturing frame");
     captureAskAndSpeak();
     delay(1000); // debounce: avoid immediately re-triggering on the same tap

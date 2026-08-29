@@ -28,8 +28,20 @@
 // bone-conduction transducer via a small amp (e.g. MAX98357A) — the ESP32-S3
 // has two I2S peripherals, so mic-in and speaker-out don't collide, but
 // double check this against whatever amp/transducer you actually source.
-#define PIN_TOUCH_PAD 3       // capacitive touch pad on the temple, manual
-                              // backup trigger alongside the wake word
+// Manual trigger hardware. Set USE_PUSH_BUTTON to 1 for a push button (the
+// recommended option — deterministic, nothing to calibrate), or 0 for a
+// capacitive touch pad.
+//
+// BUTTON WIRING: one leg to PIN_TRIGGER, the other leg to GND. Nothing else.
+// The internal pull-up is enabled in setup(), so the pin idles HIGH and reads
+// LOW while pressed — no external resistor needed.
+//
+// GOTCHA: GPIO 3 is a strapping pin on the ESP32-S3 (JTAG source select). It
+// is fine in normal use, but do not hold the button down while the board is
+// powering up. If that ever becomes awkward, move PIN_TRIGGER to GPIO 2 (pad
+// D1) instead; nothing else in the firmware depends on this number.
+#define USE_PUSH_BUTTON 1
+#define PIN_TRIGGER 3         // pad D2 on the silkscreen. Button, or touch pad.
 #define PIN_I2S_BCLK 7        // I2S out to amp -> bone-conduction transducer
 #define PIN_I2S_LRC 8
 #define PIN_I2S_DIN 9
