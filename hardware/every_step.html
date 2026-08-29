@@ -1,0 +1,445 @@
+<meta charset="utf-8">
+<title>Vocalens — Every Single Step</title>
+<style>
+  @page { size: A4; margin: 11mm; }
+  * { box-sizing: border-box; }
+  body { font-family:"DejaVu Sans",Arial,sans-serif; color:#1a2530; margin:0;
+         font-size:10.5pt; line-height:1.4;
+         -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .page { page-break-after:always; position:relative; height:270mm; }
+  .page:last-child { page-break-after:auto; }
+  h1 { font-size:28pt; margin:0 0 1mm; color:#0B4F6C; letter-spacing:-.5px; }
+  .banner { background:#0B4F6C; color:#fff; padding:4mm 6mm; margin:-1mm -1mm 3mm;
+            display:flex; align-items:center; justify-content:space-between; }
+  .banner .t { font-size:14pt; font-weight:700; }
+  .banner .s { font-size:9.5pt; opacity:.8; }
+
+  .step { display:flex; gap:4mm; margin:0 0 2.6mm; padding:0 0 2.6mm;
+          border-bottom:1px solid #e4eaed; }
+  .step:last-child { border-bottom:none; }
+  .n { flex:0 0 9mm; height:9mm; border-radius:50%; background:#0B4F6C; color:#fff;
+       font-size:11pt; font-weight:700; display:flex; align-items:center;
+       justify-content:center; margin-top:.4mm; }
+  .n.warnstep { background:#c0392b; }
+  .n.done { background:#3f9e54; }
+  .body { flex:1; }
+  .act { font-size:11.5pt; font-weight:700; color:#0B4F6C; }
+  .det { font-size:10pt; color:#3c4c58; margin-top:.6mm; }
+  .see { font-size:10pt; color:#2f7a41; margin-top:.9mm; }
+  .see b { color:#2f7a41; }
+  .bad { font-size:10pt; color:#c0392b; margin-top:.5mm; }
+  .box { display:inline-block; width:4.6mm; height:4.6mm; border:2px solid #8b9aa5;
+         border-radius:1mm; float:right; margin-left:3mm; margin-top:1mm; }
+
+  .stop { background:#fdecec; border-left:5px solid #c0392b; padding:3mm 4mm; margin:3mm 0; }
+  .stop b { color:#c0392b; }
+  .go   { background:#eef7ef; border-left:5px solid #3f9e54; padding:3mm 4mm; margin:3mm 0; }
+  .go b { color:#2f7a41; }
+  .tip  { background:#eef4f6; border-left:5px solid #0B4F6C; padding:3mm 4mm; margin:3mm 0; }
+  code { font-family:"DejaVu Sans Mono",monospace; font-size:10pt; background:#eaf0f2;
+         padding:.3mm 1.4mm; border-radius:1.5mm; font-weight:bold; }
+  .foot { position:absolute; bottom:0; left:0; right:0; font-size:8pt; color:#8b9aa5;
+          border-top:1px solid #dde5e8; padding-top:1.5mm; display:flex; justify-content:space-between; }
+</style>
+
+<!-- ================= COVER ================= -->
+<div class="page">
+  <div style="background:#0B4F6C;color:#fff;padding:8mm;margin:-1mm -1mm 4mm;">
+    <div style="font-size:9pt;letter-spacing:3px;opacity:.75;">VOCALENS · DO THIS EXACTLY</div>
+    <h1 style="color:#fff;font-size:32pt;">Every Single Step</h1>
+    <div style="font-size:12pt;color:#F2A65A;">42 steps. One action each. Nothing skipped.</div>
+  </div>
+
+  <div class="go">
+    <b>How to use this.</b> Do step 1. Read the green "you should see" line and
+    check it actually happened. Only then do step 2. If the green line didn't
+    happen, the red line tells you what to do. <b>Never skip ahead</b> — every step
+    assumes the one before it worked.
+  </div>
+
+  <div class="stop">
+    <b>Two safety things, once.</b> The iron is 350°C and looks identical hot or
+    cold — <b>assume it is always hot</b>, and put it back in its stand every
+    single time you let go of it. Solder fumes are unpleasant: work somewhere with
+    a window open, and don't lean directly over the joint.
+  </div>
+
+  <div style="font-size:11pt;font-weight:bold;color:#137A7F;margin-top:5mm;">WHAT YOU'RE MAKING</div>
+  <div class="fig" style="text-align:center;margin:3mm 0;">
+    <svg width="660" height="200" viewBox="0 0 660 200">
+      <rect x="0" y="0" width="660" height="200" rx="6" fill="#f7fafb" stroke="#dde5e8" stroke-width="1.5"/>
+
+      <rect x="60" y="56" width="150" height="88" rx="6" fill="#0B4F6C"/>
+      <text x="135" y="96" font-size="10.5" fill="#fff" text-anchor="middle">XIAO board</text>
+      <text x="135" y="114" font-size="10.5" fill="#fff" text-anchor="middle">+ camera</text>
+      <text x="135" y="170" font-size="10.5" fill="#0B4F6C" text-anchor="middle" font-weight="bold">6 wires soldered here</text>
+      <text x="135" y="188" font-size="9.5" fill="#5a6b78" text-anchor="middle">steps 15–27</text>
+
+      <g stroke-width="4" fill="none">
+        <path d="M210 72 L400 72" stroke="#2b2b2b"/>
+        <path d="M210 86 L400 86" stroke="#d64545"/>
+        <path d="M210 100 L400 100" stroke="#3b7dd8"/>
+        <path d="M210 114 L400 114" stroke="#3f9e54"/>
+        <path d="M210 128 L400 128" stroke="#e0b93a"/>
+      </g>
+      <text x="305" y="150" font-size="9.5" fill="#5a6b78" text-anchor="middle">5 long wires</text>
+
+      <rect x="400" y="56" width="110" height="88" rx="6" fill="#137A7F"/>
+      <text x="455" y="105" font-size="10.5" fill="#fff" text-anchor="middle">AMP</text>
+      <text x="455" y="170" font-size="10.5" fill="#0B4F6C" text-anchor="middle" font-weight="bold">pushed on, no iron</text>
+      <text x="455" y="188" font-size="9.5" fill="#5a6b78" text-anchor="middle">steps 34–35</text>
+
+      <circle cx="580" cy="100" r="44" fill="#0B4F6C"/>
+      <circle cx="580" cy="100" r="20" fill="#F2A65A"/>
+      <g stroke="#8b9aa5" stroke-width="4"><path d="M536 82 L510 76"/><path d="M536 118 L510 124"/></g>
+      <text x="580" y="170" font-size="10.5" fill="#0B4F6C" text-anchor="middle" font-weight="bold">2 wires soldered</text>
+      <text x="580" y="188" font-size="9.5" fill="#5a6b78" text-anchor="middle">steps 30–31</text>
+    </svg>
+  </div>
+
+  <div class="tip">
+    <b>Total: 9 soldered joints.</b> Six on the board, two on the speaker, one on a
+    coin. Everything else is cutting, stripping, plugging in, and checking. Most of
+    these 42 steps involve no iron at all.
+  </div>
+
+  <div class="foot"><span>Every Single Step</span><span>Cover</span></div>
+</div>
+
+<!-- ================= PART 1 : SET UP ================= -->
+<div class="page">
+  <div class="banner"><div><div class="t">PART 1 — Set up your bench</div><div class="s">No iron yet. Steps 1–8.</div></div></div>
+
+  <div class="step"><div class="n">1</div><div class="body"><span class="box"></span>
+    <div class="act">Unplug the USB cable from the XIAO board.</div>
+    <div class="det">If it isn't plugged in, good — leave it that way.</div>
+    <div class="see"><b>You should see:</b> nothing connected to the board at all.</div>
+    <div class="bad"><b>Why:</b> soldering a powered board can destroy it.</div>
+  </div></div>
+
+  <div class="step"><div class="n">2</div><div class="body"><span class="box"></span>
+    <div class="act">Put the board on the table with the USB socket pointing away from you.</div>
+    <div class="det">The silver USB socket is at one short end. Point that end away.</div>
+    <div class="see"><b>You should see:</b> a row of 7 small silver pads down the left edge, and 7 down the right.</div>
+  </div></div>
+
+  <div class="step"><div class="n">3</div><div class="body"><span class="box"></span>
+    <div class="act">Tape the board down.</div>
+    <div class="det">A loop of tape under it, or tape over each end. Any tape.</div>
+    <div class="see"><b>You should see:</b> the board doesn't slide when you nudge it.</div>
+    <div class="bad"><b>Why:</b> one hand holds the iron, one holds the solder. You have no hand left for the board.</div>
+  </div></div>
+
+  <div class="step"><div class="n">4</div><div class="body"><span class="box"></span>
+    <div class="act">Find the writing next to the pads.</div>
+    <div class="det">Tiny text: <code>D0 D1 D2 D3 D4 D5 D6</code> on one edge, and
+      <code>5V GND 3V3 D10 D9 D8 D7</code> on the other. Use your phone camera zoomed in if you can't read it.</div>
+    <div class="see"><b>You should see:</b> you can point at the pad labelled <code>3V3</code> and the one labelled <code>D8</code>.</div>
+    <div class="bad"><b>If you can't find these:</b> stop and message me a photo. Everything else depends on this.</div>
+  </div></div>
+
+  <div class="step"><div class="n">5</div><div class="body"><span class="box"></span>
+    <div class="act">Plug the soldering iron in and set it to 350°C.</div>
+    <div class="det">No temperature dial? Just plug it in. It'll settle wherever it settles and that's usually fine.</div>
+    <div class="see"><b>You should see:</b> it takes 2–5 minutes to heat. Wait.</div>
+  </div></div>
+
+  <div class="step"><div class="n">6</div><div class="body"><span class="box"></span>
+    <div class="act">Wet the sponge in the iron's stand.</div>
+    <div class="det">A splash of water. Damp, not soaking — squeeze the excess out.</div>
+    <div class="see"><b>You should see:</b> a damp sponge that doesn't drip.</div>
+  </div></div>
+
+  <div class="step"><div class="n">7</div><div class="body"><span class="box"></span>
+    <div class="act">Once hot, wipe the iron's tip on the wet sponge.</div>
+    <div class="det">One quick drag. It will hiss and steam — that's correct.</div>
+    <div class="see"><b>You should see:</b> the very tip goes shiny silver instead of dull black.</div>
+  </div></div>
+
+  <div class="step"><div class="n">8</div><div class="body"><span class="box"></span>
+    <div class="act">Touch solder to the tip until a bead forms, then wipe again.</div>
+    <div class="det">This is called "tinning the tip". Melt a bit of solder onto it, wipe most off.</div>
+    <div class="see"><b>You should see:</b> the tip stays bright silver and shiny.</div>
+    <div class="bad"><b>If it stays black:</b> the tip is oxidised. Repeat 7–8 twice more. A black tip will not transfer heat and nothing else will work.</div>
+  </div></div>
+
+  <div class="foot"><span>Part 1 — Set up</span><span>Steps 1–8</span></div>
+</div>
+
+<!-- ================= PART 2 : CUT WIRES ================= -->
+<div class="page">
+  <div class="banner"><div><div class="t">PART 2 — Prepare the wires</div><div class="s">Still no iron. Steps 9–14.</div></div></div>
+
+  <div class="step"><div class="n">9</div><div class="body"><span class="box"></span>
+    <div class="act">Put your glasses on the table and measure along one arm.</div>
+    <div class="det">From the hinge (where the arm meets the lens) to the point that sits behind your ear. Use a ruler.</div>
+    <div class="see"><b>You should see:</b> a number, roughly 10–14 cm. <b>Write it down.</b></div>
+  </div></div>
+
+  <div class="step"><div class="n">10</div><div class="body"><span class="box"></span>
+    <div class="act">Add 2 cm to that number. This is your cut length.</div>
+    <div class="det">So 12 cm measured → cut at 14 cm.</div>
+    <div class="see"><b>You should see:</b> one number written down that you'll use five times.</div>
+    <div class="bad"><b>Why:</b> wires always need more slack than you think. Too long tucks away; too short is unfixable.</div>
+  </div></div>
+
+  <div class="step"><div class="n">11</div><div class="body"><span class="box"></span>
+    <div class="act">Cut FIVE wires to that length: one red, one black, one yellow, one green, one blue.</div>
+    <div class="det">If your jumper wires have plastic plugs on the ends, cut those off — you need bare wire.</div>
+    <div class="see"><b>You should see:</b> five wires of equal length in five different colours.</div>
+    <div class="bad"><b>No blue or green?</b> Any five distinct colours work. Just write down which colour you chose for which job and stick to it.</div>
+  </div></div>
+
+  <div class="step"><div class="n">12</div><div class="body"><span class="box"></span>
+    <div class="act">Cut ONE more wire, white, about 5 cm long.</div>
+    <div class="det">Much shorter — this one never leaves the front pod.</div>
+    <div class="see"><b>You should see:</b> six wires total. Five long, one short.</div>
+  </div></div>
+
+  <div class="step"><div class="n">13</div><div class="body"><span class="box"></span>
+    <div class="act">Strip 3 mm of plastic off BOTH ends of ALL SIX wires.</div>
+    <div class="det">3 mm is about the width of a matchstick. Strippers if you have them; otherwise score gently with a knife and pull the plastic off.</div>
+    <div class="see"><b>You should see:</b> 12 bare metal ends, each about 3 mm long.</div>
+    <div class="bad"><b>If you cut through the metal:</b> snip that end off and strip again. It's fine, you have slack.</div>
+  </div></div>
+
+  <div class="step"><div class="n">14</div><div class="body"><span class="box"></span>
+    <div class="act">Twist each bare end tightly between your fingers.</div>
+    <div class="det">The metal is many thin strands. Roll them together so they form one solid point.</div>
+    <div class="see"><b>You should see:</b> 12 neat twisted points, no stray strands sticking out sideways.</div>
+    <div class="bad"><b>Why:</b> one loose strand touching the next pad is a short circuit.</div>
+  </div></div>
+
+  <div class="tip">
+    <b>You're a third of the way through and haven't touched the iron.</b> That's
+    normal. Preparation is most of the job; the soldering itself is fast.
+  </div>
+
+  <div class="foot"><span>Part 2 — Wires</span><span>Steps 9–14</span></div>
+</div>
+
+<!-- ================= PART 3 : TIN THE PADS ================= -->
+<div class="page">
+  <div class="banner"><div><div class="t">PART 3 — Put solder on the six pads</div><div class="s">Iron time. Steps 15–20.</div></div></div>
+
+  <div class="go">
+    <b>The move, for all six.</b> Touch the iron tip to the pad. <b>Count "one,
+    two".</b> Now touch solder to the <i>pad</i> (not the iron). It melts and spreads.
+    Take the solder away, then the iron. Total: about 3 seconds.
+  </div>
+
+  <div class="step"><div class="n">15</div><div class="body"><span class="box"></span>
+    <div class="act">Put solder on the pad labelled <code>GND</code>.</div>
+    <div class="det">Right-hand edge, second one down from the USB end.</div>
+    <div class="see"><b>You should see:</b> a small shiny silver dome covering the pad.</div>
+    <div class="bad"><b>If the solder balls up and rolls off:</b> the pad wasn't hot enough. Hold the iron on it longer before adding solder.</div>
+  </div></div>
+
+  <div class="step"><div class="n">16</div><div class="body"><span class="box"></span>
+    <div class="act">Put solder on the pad labelled <code>3V3</code>.</div>
+    <div class="det">Third one down, right-hand edge.</div>
+    <div class="see"><b>You should see:</b> a second shiny dome. <b>It must not touch the first one.</b></div>
+  </div></div>
+
+  <div class="step"><div class="n">17</div><div class="body"><span class="box"></span>
+    <div class="act">Put solder on the pad labelled <code>D10</code>.</div>
+    <div class="det">Fourth down, right-hand edge.</div>
+    <div class="see"><b>You should see:</b> three separate domes in a row.</div>
+  </div></div>
+
+  <div class="step"><div class="n">18</div><div class="body"><span class="box"></span>
+    <div class="act">Put solder on the pad labelled <code>D9</code>.</div>
+    <div class="det">Fifth down, right-hand edge.</div>
+    <div class="see"><b>You should see:</b> four separate domes.</div>
+  </div></div>
+
+  <div class="step"><div class="n">19</div><div class="body"><span class="box"></span>
+    <div class="act">Put solder on the pad labelled <code>D8</code>.</div>
+    <div class="det">Sixth down, right-hand edge.</div>
+    <div class="see"><b>You should see:</b> five separate domes.</div>
+  </div></div>
+
+  <div class="step"><div class="n">20</div><div class="body"><span class="box"></span>
+    <div class="act">Put solder on the pad labelled <code>D2</code> — on the OTHER edge.</div>
+    <div class="det">Left-hand edge, third one down. This is the only one on that side.</div>
+    <div class="see"><b>You should see:</b> six domes total. Five on the right, one on the left.</div>
+  </div></div>
+
+  <div class="step"><div class="n warnstep">21</div><div class="body"><span class="box"></span>
+    <div class="act">Lower your eye to table level and look ALONG the row of five.</div>
+    <div class="det">Not down from above — from the side, like looking along a shelf.</div>
+    <div class="see"><b>You should see:</b> five separate bumps with clear gaps between them.</div>
+    <div class="bad"><b>If any two are joined:</b> wipe the iron tip clean, then drag it firmly across the join and away off the edge of the board. The solder follows the tip. Look again from the side.</div>
+  </div></div>
+
+  <div class="foot"><span>Part 3 — Tin the pads</span><span>Steps 15–21</span></div>
+</div>
+
+<!-- ================= PART 4 : TIN WIRES + JOIN ================= -->
+<div class="page">
+  <div class="banner"><div><div class="t">PART 4 — Attach the wires</div><div class="s">The six real joints. Steps 22–29.</div></div></div>
+
+  <div class="step"><div class="n">22</div><div class="body"><span class="box"></span>
+    <div class="act">Put solder on ONE bare end of each of the six wires.</div>
+    <div class="det">Hold the iron under the twisted end, count two, touch solder to the wire. It soaks in. Do all six, then continue.</div>
+    <div class="see"><b>You should see:</b> six wire ends gone stiff and silver instead of coppery and floppy.</div>
+    <div class="bad"><b>If the plastic shrinks back:</b> you held it too long. Still fine as long as bare metal isn't touching bare metal.</div>
+  </div></div>
+
+  <div class="go">
+    <b>The joining move, for all six.</b> Hold the silvered wire end flat against
+    the silvered pad. Touch the iron on top of <b>both</b> for <b>one second</b> —
+    the two blobs merge into one. Lift the iron. <b>Now do not move the wire for
+    three seconds.</b>
+  </div>
+
+  <div class="step"><div class="n">23</div><div class="body"><span class="box"></span>
+    <div class="act">Solder the BLACK wire to <code>GND</code>.</div>
+    <div class="see"><b>You should see:</b> one shiny joint. Tug the wire gently — it doesn't move.</div>
+    <div class="bad"><b>If it looks dull, grey or crusty:</b> you moved it while cooling. Just re-heat until it goes shiny, then hold still. Don't add more solder.</div>
+  </div></div>
+
+  <div class="step"><div class="n">24</div><div class="body"><span class="box"></span>
+    <div class="act">Solder the RED wire to <code>3V3</code>.</div>
+    <div class="see"><b>You should see:</b> two joints, not touching each other.</div>
+  </div></div>
+
+  <div class="step"><div class="n">25</div><div class="body"><span class="box"></span>
+    <div class="act">Solder the BLUE wire to <code>D10</code>.</div>
+    <div class="see"><b>You should see:</b> three joints.</div>
+  </div></div>
+
+  <div class="step"><div class="n">26</div><div class="body"><span class="box"></span>
+    <div class="act">Solder the GREEN wire to <code>D9</code>.</div>
+    <div class="see"><b>You should see:</b> four joints.</div>
+  </div></div>
+
+  <div class="step"><div class="n">27</div><div class="body"><span class="box"></span>
+    <div class="act">Solder the YELLOW wire to <code>D8</code>.</div>
+    <div class="see"><b>You should see:</b> five joints, five wires leaving the right edge together.</div>
+  </div></div>
+
+  <div class="step"><div class="n">28</div><div class="body"><span class="box"></span>
+    <div class="act">Solder the WHITE wire to <code>D2</code> on the left edge.</div>
+    <div class="see"><b>You should see:</b> six joints. That's every joint on the board done.</div>
+  </div></div>
+
+  <div class="step"><div class="n warnstep">29</div><div class="body"><span class="box"></span>
+    <div class="act">Tug each of the six wires gently, then look along the edge again.</div>
+    <div class="det">A firm pull, not a yank.</div>
+    <div class="see"><b>You should see:</b> nothing moves, and no two joints are touching.</div>
+    <div class="bad"><b>If a wire comes off:</b> that joint was cold. Re-tin the pad and the wire end, and redo it.</div>
+  </div></div>
+
+  <div class="foot"><span>Part 4 — Attach the wires</span><span>Steps 22–29</span></div>
+</div>
+
+<!-- ================= PART 5 : SPEAKER, DISC, AMP ================= -->
+<div class="page">
+  <div class="banner"><div><div class="t">PART 5 — Speaker, touch pad, amplifier</div><div class="s">Last three joints. Steps 30–35.</div></div></div>
+
+  <div class="step"><div class="n">30</div><div class="body"><span class="box"></span>
+    <div class="act">Solder a short wire to one of the speaker's two metal tabs.</div>
+    <div class="det">Any spare wire, about 4 cm. Same move: tin the tab, tin the wire, melt together.</div>
+    <div class="see"><b>You should see:</b> one wire attached to the speaker.</div>
+    <div class="bad"><b>Speaker already has wires?</b> Skip steps 30 and 31 entirely.</div>
+  </div></div>
+
+  <div class="step"><div class="n">31</div><div class="body"><span class="box"></span>
+    <div class="act">Solder a second short wire to the speaker's other tab.</div>
+    <div class="det"><b>It does not matter which wire goes to which tab.</b> A single speaker has no correct way round.</div>
+    <div class="see"><b>You should see:</b> two wires attached to the speaker.</div>
+  </div></div>
+
+  <div class="step"><div class="n">32</div><div class="body"><span class="box"></span>
+    <div class="act">Rub sandpaper or a file over one face of your coin.</div>
+    <div class="det">Any coin, or a wide screw head. Scratch it until it looks dull and scuffed, not shiny.</div>
+    <div class="see"><b>You should see:</b> a dull, scratched patch about the size of a pea.</div>
+    <div class="bad"><b>Why:</b> solder will not stick to a shiny coin. This step is the whole reason the touch pad works.</div>
+  </div></div>
+
+  <div class="step"><div class="n">33</div><div class="body"><span class="box"></span>
+    <div class="act">Solder the WHITE wire's free end to the scuffed patch.</div>
+    <div class="det">A coin is a big lump of metal, so it takes longer to heat — 5–10 seconds, not 2. Be patient.</div>
+    <div class="see"><b>You should see:</b> the wire stuck firmly to the coin. <b>That's all 9 joints done.</b></div>
+    <div class="bad"><b>If solder won't stick:</b> not scuffed enough, or not hot enough. Scuff harder, hold the iron longer.</div>
+  </div></div>
+
+  <div class="step"><div class="n done">34</div><div class="body"><span class="box"></span>
+    <div class="act">Push the five long wires onto the amplifier's pins.</div>
+    <div class="det"><b>No soldering</b> if your amp has pins sticking out — use jumper wires with plastic sockets, or just twist the bare wire tightly round each pin for now.<br>
+      Red→<code>VIN</code> · Black→<code>GND</code> · Yellow→<code>BCLK</code> · Green→<code>LRC</code> · Blue→<code>DIN</code></div>
+    <div class="see"><b>You should see:</b> five wires connected, each to the pin with the matching name.</div>
+    <div class="bad"><b>Different names on your board?</b> <code>BCLK</code>=<code>SCK</code>=<code>CLK</code> · <code>LRC</code>=<code>WS</code>=<code>LRCLK</code> · <code>DIN</code>=<code>DATA</code>. Same signals.</div>
+  </div></div>
+
+  <div class="step"><div class="n done">35</div><div class="body"><span class="box"></span>
+    <div class="act">Connect the speaker's two wires to the amp's two output pins.</div>
+    <div class="det">Labelled <code>OUT+</code> and <code>OUT−</code>, or just <code>+</code> and <code>−</code>. Either wire to either pin.</div>
+    <div class="see"><b>You should see:</b> the speaker connected to the amp.</div>
+    <div class="bad"><b>Leave <code>GAIN</code>, <code>SD</code> and <code>SHUTDOWN</code> empty.</b> Connecting <code>SD</code> silences the amp completely.</div>
+  </div></div>
+
+  <div class="foot"><span>Part 5 — Speaker, disc, amp</span><span>Steps 30–35</span></div>
+</div>
+
+<!-- ================= PART 6 : CHECK ================= -->
+<div class="page">
+  <div class="banner"><div><div class="t">PART 6 — Check it, then power it</div><div class="s">Steps 36–42. Do not skip.</div></div></div>
+
+  <div class="stop">
+    <b>Everything is still unplugged.</b> Steps 36–40 happen with no power anywhere.
+  </div>
+
+  <div class="step"><div class="n">36</div><div class="body"><span class="box"></span>
+    <div class="act">Set your multimeter to the beep/continuity setting.</div>
+    <div class="det">The dial position marked with a sound-wave symbol ")))" or a diode triangle. Touch the two probes together — it should beep.</div>
+    <div class="see"><b>You should see:</b> it beeps when the probes touch, stops when you part them.</div>
+    <div class="bad"><b>No multimeter?</b> Skip to step 41, but understand you're taking a real risk of killing the board.</div>
+  </div></div>
+
+  <div class="step"><div class="n warnstep">37</div><div class="body"><span class="box"></span>
+    <div class="act">Touch one probe to <code>3V3</code> and the other to <code>GND</code>.</div>
+    <div class="see"><b>You should see:</b> <b>SILENCE.</b> No beep.</div>
+    <div class="bad"><b>If it beeps: STOP.</b> Those two are joined by stray solder — a dead short. Find it (look along the edge), drag it off with a clean hot tip, and test again. <b>Do not plug in until this is silent.</b></div>
+  </div></div>
+
+  <div class="step"><div class="n">38</div><div class="body"><span class="box"></span>
+    <div class="act">Touch one probe to <code>D8</code> and the other to <code>D9</code>.</div>
+    <div class="see"><b>You should see:</b> silence.</div>
+    <div class="bad"><b>If it beeps:</b> those two joints are bridged. Same fix as step 37.</div>
+  </div></div>
+
+  <div class="step"><div class="n">39</div><div class="body"><span class="box"></span>
+    <div class="act">Test <code>D9</code>–<code>D10</code>, then <code>D10</code>–<code>3V3</code>.</div>
+    <div class="see"><b>You should see:</b> silence both times.</div>
+  </div></div>
+
+  <div class="step"><div class="n">40</div><div class="body"><span class="box"></span>
+    <div class="act">Now check each wire actually works: one probe on a pad, the other on that same wire's far end.</div>
+    <div class="det">Do all six. This proves the joint conducts, not just that it looks attached.</div>
+    <div class="see"><b>You should see:</b> a beep every time. <b>This is the one test where beeping is good.</b></div>
+    <div class="bad"><b>If one doesn't beep:</b> that joint looks fine but isn't connected. Re-heat it until the solder flows.</div>
+  </div></div>
+
+  <div class="step"><div class="n done">41</div><div class="body"><span class="box"></span>
+    <div class="act">Plug the USB cable in.</div>
+    <div class="see"><b>You should see:</b> a small light on the board come on.</div>
+    <div class="bad"><b>If nothing happens:</b> unplug. Try the cable on something else — many USB cables are charge-only and carry no data.</div>
+  </div></div>
+
+  <div class="step"><div class="n warnstep">42</div><div class="body"><span class="box"></span>
+    <div class="act">Within 5 seconds, touch the board and the amp with a fingertip.</div>
+    <div class="det">Quick dab, don't hold your finger there.</div>
+    <div class="see"><b>You should see:</b> both are cool or barely warm.</div>
+    <div class="bad"><b>If anything is hot: UNPLUG IMMEDIATELY.</b> You have a short. Go back to step 37 and test everything again.</div>
+  </div></div>
+
+  <div class="go">
+    <b>Done — all 42 steps.</b> The board is wired. Next: flash the firmware,
+    start the server, and test the camera <i>before</i> the audio. Never both at
+    once, or you won't know which one is broken.
+  </div>
+
+  <div class="foot"><span>Part 6 — Check and power</span><span>Steps 36–42</span></div>
+</div>
