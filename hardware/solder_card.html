@@ -1,0 +1,390 @@
+<meta charset="utf-8">
+<title>Vocalens — Solder Card</title>
+<style>
+  @page { size: A4; margin: 11mm; }
+  * { box-sizing: border-box; }
+  body { font-family:"DejaVu Sans",Arial,sans-serif; color:#1a2530; margin:0;
+         font-size:11pt; line-height:1.42;
+         -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .page { page-break-after:always; position:relative; height:270mm; }
+  .page:last-child { page-break-after:auto; }
+  h1 { font-size:28pt; margin:0 0 1mm; color:#0B4F6C; letter-spacing:-.5px; }
+  h2 { font-size:17pt; margin:0; color:#0B4F6C; }
+  h3 { font-size:11.5pt; margin:4mm 0 1.5mm; color:#137A7F;
+       text-transform:uppercase; letter-spacing:.7px; }
+  .stephead { display:flex; align-items:center; gap:4mm; border-bottom:3px solid #0B4F6C;
+              padding-bottom:2mm; margin-bottom:3.5mm; }
+  .num { flex:0 0 13mm; height:13mm; border-radius:50%; background:#F2A65A; color:#0B4F6C;
+         font-size:18pt; font-weight:700; display:flex; align-items:center; justify-content:center; }
+  .sub { font-size:9.5pt; color:#5a6b78; }
+  .cap { font-size:9pt; color:#5a6b78; font-style:italic; text-align:center; margin-top:1.5mm; }
+  .fig { text-align:center; margin:3mm 0; }
+  .tip  { background:#eef4f6; border-left:5px solid #0B4F6C; padding:3mm 4mm; margin:3mm 0; }
+  .warn { background:#fdf3e7; border-left:5px solid #F2A65A; padding:3mm 4mm; margin:3mm 0; }
+  .warn b { color:#a4622a; }
+  .stop { background:#fdecec; border-left:5px solid #c0392b; padding:3mm 4mm; margin:3mm 0; }
+  .stop b { color:#c0392b; }
+  .go   { background:#eef7ef; border-left:5px solid #3f9e54; padding:3mm 4mm; margin:3mm 0; }
+  .go b { color:#2f7a41; }
+  code { font-family:"DejaVu Sans Mono",monospace; font-size:10pt; background:#eaf0f2;
+         padding:.3mm 1.4mm; border-radius:1.5mm; font-weight:bold; }
+  table { width:100%; border-collapse:collapse; font-size:10.5pt; margin:3mm 0; }
+  th { background:#0B4F6C; color:#fff; text-align:left; padding:2mm 3mm;
+       font-size:9pt; letter-spacing:.5px; }
+  td { padding:2.4mm 3mm; border-bottom:1px solid #dde5e8; vertical-align:middle; }
+  tr:nth-child(even) td { background:#f7fafb; }
+  .box { display:inline-block; width:5mm; height:5mm; border:2px solid #0B4F6C;
+         border-radius:1mm; vertical-align:-1mm; }
+  .sw { display:inline-block; width:4.4mm; height:4.4mm; border-radius:50%;
+        border:1px solid #7a8c99; vertical-align:-.8mm; margin-right:2mm; }
+  .foot { position:absolute; bottom:0; left:0; right:0; font-size:8pt; color:#8b9aa5;
+          border-top:1px solid #dde5e8; padding-top:1.5mm; display:flex; justify-content:space-between; }
+  ol.steps { padding-left:0; list-style:none; counter-reset:s; margin:3mm 0; }
+  ol.steps > li { counter-increment:s; position:relative; padding-left:9mm; margin:2.8mm 0; }
+  ol.steps > li::before { content:counter(s); position:absolute; left:0; top:.3mm;
+        width:6mm; height:6mm; background:#137A7F; color:#fff; border-radius:50%;
+        font-size:9pt; font-weight:700; display:flex; align-items:center; justify-content:center; }
+</style>
+
+<!-- ===================== P1 : PREP + PAD MAP ===================== -->
+<div class="page">
+  <div style="background:#0B4F6C;color:#fff;padding:6mm 7mm;margin:-1mm -1mm 4mm;">
+    <div style="font-size:9pt;letter-spacing:3px;opacity:.75;">VOCALENS · AT THE BENCH</div>
+    <h1 style="color:#fff;font-size:30pt;">Solder Card</h1>
+    <div style="font-size:12pt;color:#F2A65A;">9 joints. Work top to bottom. Tick as you go.</div>
+  </div>
+
+  <div class="stop">
+    <b>USB UNPLUGGED.</b> Never solder a powered board. Plug in only at page 5.
+  </div>
+
+  <h3>Prep — before the iron touches anything</h3>
+  <table>
+    <tr><td style="width:9mm;"><span class="box"></span></td><td><b>Cut 5 long wires</b> — red, black, yellow, green, blue.<br>
+        <span style="color:#5a6b78;">Hinge → behind the ear on YOUR glasses, <b>plus 2cm</b>. Too short can't be fixed.</span></td></tr>
+    <tr><td><span class="box"></span></td><td><b>Cut 1 white wire, ~5cm</b></td></tr>
+    <tr><td><span class="box"></span></td><td><b>Strip 3mm</b> off both ends of all six. Twist each end tight.</td></tr>
+    <tr><td><span class="box"></span></td><td><b>Iron to ~350°C.</b> Tip shiny — if dull or black, wipe it and melt a little solder onto it.</td></tr>
+    <tr><td><span class="box"></span></td><td><b>Check your amp module.</b> Header pins already fitted? Then its 5 connections are <b>push-on, no iron.</b></td></tr>
+  </table>
+
+  <h3>The pad map — wire by PAD LABEL, not GPIO number</h3>
+
+  <div class="fig">
+    <svg width="690" height="272" viewBox="0 0 690 272">
+      <rect x="0" y="0" width="690" height="272" rx="6" fill="#f7fafb" stroke="#dde5e8" stroke-width="1.5"/>
+      <text x="345" y="24" font-size="12" fill="#0B4F6C" text-anchor="middle" font-weight="bold">XIAO ESP32S3 — from above, USB at the top</text>
+
+      <rect x="268" y="46" width="154" height="196" rx="8" fill="#0B4F6C"/>
+      <rect x="320" y="38" width="50" height="14" rx="3" fill="#8b9aa5"/>
+      <text x="345" y="49" font-size="8.5" fill="#16394a" text-anchor="middle" font-weight="bold">USB</text>
+      <text x="345" y="146" font-size="10" fill="#8fb8c9" text-anchor="middle">XIAO</text>
+      <text x="345" y="162" font-size="10" fill="#8fb8c9" text-anchor="middle">ESP32S3</text>
+
+      <!-- left -->
+      <rect x="256" y="66"  width="14" height="11" fill="#8b9aa5"/><text x="248" y="76" font-size="9.5" fill="#8b9aa5" text-anchor="end">D0</text>
+      <rect x="256" y="90"  width="14" height="11" fill="#8b9aa5"/><text x="248" y="100" font-size="9.5" fill="#8b9aa5" text-anchor="end">D1</text>
+      <rect x="256" y="114" width="14" height="11" fill="#fff" stroke="#0B4F6C" stroke-width="1.5"/>
+      <text x="248" y="123" font-size="11" fill="#0B4F6C" text-anchor="end" font-weight="bold">D2</text>
+      <path d="M256 125 L214 125 L214 168 L150 168" stroke="#c9ccd0" stroke-width="4" fill="none"/>
+      <circle cx="136" cy="168" r="13" fill="#c9ccd0" stroke="#8b9aa5" stroke-width="1.5"/>
+      <text x="136" y="196" font-size="9.5" fill="#0B4F6C" text-anchor="middle" font-weight="bold">WHITE</text>
+      <text x="136" y="210" font-size="9" fill="#5a6b78" text-anchor="middle">→ touch disc</text>
+      <rect x="256" y="138" width="14" height="11" fill="#8b9aa5"/><text x="248" y="148" font-size="9.5" fill="#8b9aa5" text-anchor="end">D3</text>
+      <rect x="256" y="162" width="14" height="11" fill="#8b9aa5"/><text x="248" y="172" font-size="9.5" fill="#8b9aa5" text-anchor="end">D4</text>
+      <rect x="256" y="186" width="14" height="11" fill="#8b9aa5"/><text x="248" y="196" font-size="9.5" fill="#8b9aa5" text-anchor="end">D5</text>
+      <rect x="256" y="210" width="14" height="11" fill="#8b9aa5"/><text x="248" y="220" font-size="9.5" fill="#8b9aa5" text-anchor="end">D6</text>
+
+      <!-- right -->
+      <rect x="420" y="66"  width="14" height="11" fill="#8b9aa5"/><text x="442" y="76" font-size="9.5" fill="#8b9aa5">5V — leave empty</text>
+      <rect x="420" y="90"  width="14" height="11" fill="#2b2b2b"/>
+      <path d="M434 95 L556 95" stroke="#2b2b2b" stroke-width="4"/>
+      <text x="564" y="99" font-size="11" fill="#0B4F6C" font-weight="bold">GND · black</text>
+      <rect x="420" y="114" width="14" height="11" fill="#d64545"/>
+      <path d="M434 119 L556 119" stroke="#d64545" stroke-width="4"/>
+      <text x="564" y="123" font-size="11" fill="#0B4F6C" font-weight="bold">3V3 · red</text>
+      <rect x="420" y="138" width="14" height="11" fill="#3b7dd8"/>
+      <path d="M434 143 L556 143" stroke="#3b7dd8" stroke-width="4"/>
+      <text x="564" y="147" font-size="11" fill="#0B4F6C" font-weight="bold">D10 · blue</text>
+      <rect x="420" y="162" width="14" height="11" fill="#3f9e54"/>
+      <path d="M434 167 L556 167" stroke="#3f9e54" stroke-width="4"/>
+      <text x="564" y="171" font-size="11" fill="#0B4F6C" font-weight="bold">D9 · green</text>
+      <rect x="420" y="186" width="14" height="11" fill="#e0b93a"/>
+      <path d="M434 191 L556 191" stroke="#e0b93a" stroke-width="4"/>
+      <text x="564" y="195" font-size="11" fill="#0B4F6C" font-weight="bold">D8 · yellow</text>
+      <rect x="420" y="210" width="14" height="11" fill="#8b9aa5"/><text x="442" y="220" font-size="9.5" fill="#8b9aa5">D7 — leave empty</text>
+
+      <text x="345" y="266" font-size="10.5" fill="#c0392b" text-anchor="middle" font-weight="bold">D8 is NOT GPIO 8. Wire by the label printed on the board.</text>
+    </svg>
+    <div class="cap">Five wires in a row on the right edge, one on the left. Nothing else is touched.</div>
+  </div>
+
+  <h3>On the bench before you start</h3>
+  <table>
+    <tr><td style="width:9mm;"><span class="box"></span></td><td style="width:60mm;"><b>Iron + solder</b></td><td>~350°C</td></tr>
+    <tr><td><span class="box"></span></td><td><b>Sponge or brass wool</b></td><td>Wipe the tip between joints</td></tr>
+    <tr><td><span class="box"></span></td><td><b>Strippers or a knife</b></td><td>3mm off each end</td></tr>
+    <tr><td><span class="box"></span></td><td><b>Multimeter</b></td><td><b>Page 5 needs it</b> — beep mode</td></tr>
+    <tr><td><span class="box"></span></td><td><b>Sandpaper</b></td><td>To scuff the touch disc</td></tr>
+    <tr><td><span class="box"></span></td><td><b>Tape</b></td><td>Hold the board down — both hands are busy</td></tr>
+  </table>
+
+  <div class="foot"><span>Prep &amp; pad map</span><span>Page 1</span></div>
+</div>
+
+<!-- ===================== P2 : TECHNIQUE ===================== -->
+<div class="page">
+  <div class="stephead">
+    <div class="num">1</div>
+    <div><h2>The move — tin, tin, join</h2><div class="sub">Do it in three parts, never in one go</div></div>
+  </div>
+
+  <div class="fig">
+    <svg width="690" height="250" viewBox="0 0 690 250">
+      <!-- A -->
+      <rect x="0" y="0" width="222" height="250" rx="6" fill="#f7fafb" stroke="#dde5e8" stroke-width="1.5"/>
+      <circle cx="22" cy="22" r="13" fill="#137A7F"/><text x="22" y="27" font-size="13" fill="#fff" text-anchor="middle" font-weight="bold">A</text>
+      <text x="42" y="27" font-size="12" fill="#0B4F6C" font-weight="bold">Tin the PAD</text>
+      <rect x="40" y="112" width="142" height="34" rx="3" fill="#0B4F6C"/>
+      <rect x="78" y="102" width="38" height="12" fill="#F2A65A"/>
+      <path d="M164 58 L132 98" stroke="#c0392b" stroke-width="9" stroke-linecap="round"/>
+      <path d="M40 76 L86 96" stroke="#c9ccd0" stroke-width="5" stroke-linecap="round"/>
+      <text x="111" y="176" font-size="10.5" fill="#5a6b78" text-anchor="middle">iron on the pad · count 2</text>
+      <text x="111" y="194" font-size="10.5" fill="#5a6b78" text-anchor="middle">then feed solder IN</text>
+      <text x="111" y="222" font-size="10.5" fill="#2f7a41" text-anchor="middle" font-weight="bold">small shiny dome</text>
+
+      <!-- B -->
+      <rect x="234" y="0" width="222" height="250" rx="6" fill="#f7fafb" stroke="#dde5e8" stroke-width="1.5"/>
+      <circle cx="256" cy="22" r="13" fill="#137A7F"/><text x="256" y="27" font-size="13" fill="#fff" text-anchor="middle" font-weight="bold">B</text>
+      <text x="276" y="27" font-size="12" fill="#0B4F6C" font-weight="bold">Tin the WIRE</text>
+      <path d="M262 122 L352 122" stroke="#d64545" stroke-width="11" stroke-linecap="round"/>
+      <path d="M352 122 L400 122" stroke="#c9ccd0" stroke-width="7" stroke-linecap="round"/>
+      <path d="M432 66 L406 106" stroke="#c0392b" stroke-width="9" stroke-linecap="round"/>
+      <text x="345" y="176" font-size="10.5" fill="#5a6b78" text-anchor="middle">strip 3mm · twist the strands</text>
+      <text x="345" y="194" font-size="10.5" fill="#5a6b78" text-anchor="middle">heat it · solder soaks in</text>
+      <text x="345" y="222" font-size="10.5" fill="#2f7a41" text-anchor="middle" font-weight="bold">goes stiff and silver</text>
+
+      <!-- C -->
+      <rect x="468" y="0" width="222" height="250" rx="6" fill="#f2f9f4" stroke="#3f9e54" stroke-width="1.5"/>
+      <circle cx="490" cy="22" r="13" fill="#3f9e54"/><text x="490" y="27" font-size="13" fill="#fff" text-anchor="middle" font-weight="bold">C</text>
+      <text x="510" y="27" font-size="12" fill="#2f7a41" font-weight="bold">Melt them together</text>
+      <rect x="500" y="112" width="142" height="34" rx="3" fill="#0B4F6C"/>
+      <rect x="538" y="102" width="38" height="12" fill="#F2A65A"/>
+      <path d="M576 106 L668 106" stroke="#d64545" stroke-width="11" stroke-linecap="round"/>
+      <path d="M498 68 L540 96" stroke="#c9ccd0" stroke-width="5" stroke-linecap="round"/>
+      <text x="579" y="176" font-size="10.5" fill="#5a6b78" text-anchor="middle">hold wire on pad · touch iron</text>
+      <text x="579" y="194" font-size="10.5" fill="#5a6b78" text-anchor="middle"><tspan font-weight="bold">1 second</tspan> · blobs merge</text>
+      <text x="579" y="222" font-size="10.5" fill="#2f7a41" text-anchor="middle" font-weight="bold">DON'T MOVE IT FOR 3s</text>
+    </svg>
+    <div class="cap">Tinning both sides first turns each joint into a one-second touch instead of a three-handed wrestle.</div>
+  </div>
+
+  <div class="warn">
+    <b style="font-size:12pt;">Heat the PAD, not the solder.</b><br>
+    That one sentence is most of learning to solder. Iron on the pad, count two,
+    <i>then</i> bring the solder in so the <b>pad</b> melts it. Melting solder on
+    the tip and dabbing it on makes a joint that looks fine and falls off later.
+  </div>
+
+  <h3>Reading your own joints</h3>
+  <table>
+    <tr><th style="width:62mm;">What you see</th><th>What to do</th></tr>
+    <tr><td><b>Shiny, smooth, slightly dished</b></td><td style="color:#2f7a41;"><b>Good. Move on.</b></td></tr>
+    <tr><td><b>Dull, grey, lumpy</b></td><td>You moved it while cooling. Re-heat till it flows, hold still. <b>Don't add solder.</b></td></tr>
+    <tr><td><b>Ball sat on top, not spread out</b></td><td>Pad was cold. Re-heat the pad properly and it'll wet.</td></tr>
+    <tr><td><b>Blob bridging two pads</b></td><td><b>Fix now.</b> Drag a clean hot tip across it, or use braid.</td></tr>
+  </table>
+
+  <div class="foot"><span>Technique</span><span>Page 2</span></div>
+</div>
+
+<!-- ===================== P3 : THE 6 BOARD JOINTS ===================== -->
+<div class="page">
+  <div class="stephead">
+    <div class="num">2</div>
+    <div><h2>Joints 1–6 — the XIAO</h2><div class="sub">Tin all six pads first, then all six wires, then join</div></div>
+  </div>
+
+  <div class="go">
+    <b>Work top to bottom down the right edge.</b> That way the iron never has to
+    reach across a joint you've already made.
+  </div>
+
+  <table>
+    <tr><th style="width:9mm;">✓</th><th style="width:14mm;">#</th><th style="width:30mm;">PAD</th><th style="width:42mm;">WIRE</th><th>Other end goes to</th></tr>
+    <tr><td><span class="box"></span></td><td><b>1</b></td><td><code>GND</code></td><td><span class="sw" style="background:#2b2b2b"></span>Black</td><td>Amp <code>GND</code></td></tr>
+    <tr><td><span class="box"></span></td><td><b>2</b></td><td><code>3V3</code></td><td><span class="sw" style="background:#d64545"></span>Red</td><td>Amp <code>VIN</code></td></tr>
+    <tr><td><span class="box"></span></td><td><b>3</b></td><td><code>D10</code></td><td><span class="sw" style="background:#3b7dd8"></span>Blue</td><td>Amp <code>DIN</code></td></tr>
+    <tr><td><span class="box"></span></td><td><b>4</b></td><td><code>D9</code></td><td><span class="sw" style="background:#3f9e54"></span>Green</td><td>Amp <code>LRC</code> / <code>WS</code></td></tr>
+    <tr><td><span class="box"></span></td><td><b>5</b></td><td><code>D8</code></td><td><span class="sw" style="background:#e0b93a"></span>Yellow</td><td>Amp <code>BCLK</code> / <code>SCK</code></td></tr>
+    <tr><td><span class="box"></span></td><td><b>6</b></td><td><code>D2</code> <span style="color:#5a6b78;font-size:9pt;">(left edge)</span></td><td><span class="sw" style="background:#fff"></span>White</td><td>Touch disc — joint 9</td></tr>
+  </table>
+
+  <div class="fig">
+    <svg width="690" height="204" viewBox="0 0 690 204">
+      <rect x="0" y="0" width="690" height="204" rx="6" fill="#fdf5f4" stroke="#e8c4bf" stroke-width="1.5"/>
+      <text x="345" y="26" font-size="12.5" fill="#c0392b" text-anchor="middle" font-weight="bold">CHECK FOR BRIDGES — LOOK ALONG THE EDGE, NOT DOWN AT IT</text>
+
+      <text x="172" y="56" font-size="11" fill="#5a6b78" text-anchor="middle">from above — looks fine</text>
+      <rect x="72" y="86" width="200" height="44" rx="3" fill="#0B4F6C"/>
+      <rect x="94" y="96" width="32" height="24" fill="#F2A65A"/>
+      <rect x="140" y="96" width="32" height="24" fill="#F2A65A"/>
+      <rect x="186" y="96" width="32" height="24" fill="#F2A65A"/>
+      <text x="172" y="158" font-size="10.5" fill="#5a6b78" text-anchor="middle">three separate pads</text>
+      <text x="172" y="180" font-size="10.5" fill="#5a6b78" text-anchor="middle">you cannot see a bridge from here</text>
+
+      <line x1="345" y1="44" x2="345" y2="188" stroke="#e8c4bf" stroke-width="1.5"/>
+
+      <text x="518" y="56" font-size="11" fill="#c0392b" text-anchor="middle" font-weight="bold">from the side — obvious</text>
+      <rect x="418" y="112" width="200" height="20" rx="2" fill="#0B4F6C"/>
+      <path d="M436 112 q16 -26 32 0" fill="#F2A65A"/>
+      <path d="M482 112 q16 -26 32 0" fill="#F2A65A"/>
+      <path d="M528 112 q16 -26 32 0" fill="#F2A65A"/>
+      <path d="M462 102 q14 -9 14 0 q0 8 -14 0" fill="#c0392b"/>
+      <path d="M534 84 L484 96" stroke="#c0392b" stroke-width="1.8" fill="none"/>
+      <text x="678" y="80" font-size="10.5" fill="#c0392b" font-weight="bold" text-anchor="end">solder joining two pads</text>
+      <text x="518" y="158" font-size="10.5" fill="#5a6b78" text-anchor="middle">put your eye level with the board</text>
+      <text x="518" y="180" font-size="10.5" fill="#2f7a41" text-anchor="middle" font-weight="bold">do this after every joint</text>
+    </svg>
+  </div>
+
+  <div class="warn">
+    <b>Tug every wire gently before you move on.</b> A joint that pulls off on the
+    bench will definitely pull off on someone's face.
+  </div>
+
+  <div class="tip">
+    <b>Keep the blobs flat.</b> The pod only has 10mm of height. If a joint stands
+    proud, re-heat and let it settle rather than forcing the lid down on it.
+  </div>
+
+  <div class="stop">
+    <b>Found a bridge?</b> Wipe the tip clean, then drag it firmly across the
+    bridge <i>away</i> from the pads. The solder follows the hot tip off the
+    board. Re-check from the side. Don't add flux-less solder trying to "push"
+    it apart — that makes it bigger.
+  </div>
+
+  <div class="foot"><span>Joints 1–6</span><span>Page 3</span></div>
+</div>
+
+<!-- ===================== P4 : SPEAKER, DISC, AMP ===================== -->
+<div class="page">
+  <div class="stephead">
+    <div class="num">3</div>
+    <div><h2>Joints 7–9, and the amp end</h2><div class="sub">Nearly done</div></div>
+  </div>
+
+  <div class="fig">
+    <svg width="690" height="220" viewBox="0 0 690 220">
+      <!-- speaker -->
+      <rect x="0" y="0" width="222" height="220" rx="6" fill="#f7fafb" stroke="#dde5e8" stroke-width="1.5"/>
+      <text x="111" y="26" font-size="12" fill="#0B4F6C" text-anchor="middle" font-weight="bold">JOINTS 7 &amp; 8</text>
+      <circle cx="111" cy="106" r="52" fill="#0B4F6C"/>
+      <circle cx="111" cy="106" r="36" fill="#16394a"/>
+      <circle cx="111" cy="106" r="17" fill="#F2A65A"/>
+      <path d="M60 88 L18 76" stroke="#8b9aa5" stroke-width="5"/>
+      <path d="M60 124 L18 136" stroke="#8b9aa5" stroke-width="5"/>
+      <text x="111" y="182" font-size="11" fill="#0B4F6C" text-anchor="middle" font-weight="bold">SPEAKER</text>
+      <text x="111" y="202" font-size="10.5" fill="#2f7a41" text-anchor="middle" font-weight="bold">polarity doesn't matter</text>
+
+      <!-- disc -->
+      <rect x="234" y="0" width="222" height="220" rx="6" fill="#f7fafb" stroke="#dde5e8" stroke-width="1.5"/>
+      <text x="345" y="26" font-size="12" fill="#0B4F6C" text-anchor="middle" font-weight="bold">JOINT 9</text>
+      <circle cx="345" cy="106" r="40" fill="#c9ccd0" stroke="#8b9aa5" stroke-width="2"/>
+      <g stroke="#8b9aa5" stroke-width="1.4">
+        <line x1="322" y1="90" x2="368" y2="90"/><line x1="322" y1="100" x2="368" y2="100"/>
+        <line x1="322" y1="110" x2="368" y2="110"/><line x1="322" y1="120" x2="368" y2="120"/>
+      </g>
+      <path d="M305 106 L246 106" stroke="#e8e8e8" stroke-width="5"/>
+      <text x="345" y="170" font-size="11" fill="#0B4F6C" text-anchor="middle" font-weight="bold">COIN / SCREW HEAD</text>
+      <text x="345" y="190" font-size="10.5" fill="#c0392b" text-anchor="middle" font-weight="bold">SCUFF IT WITH SANDPAPER FIRST</text>
+      <text x="345" y="208" font-size="10" fill="#5a6b78" text-anchor="middle">solder won't stick to a shiny coin</text>
+
+      <!-- amp -->
+      <rect x="468" y="0" width="222" height="220" rx="6" fill="#f2f9f4" stroke="#3f9e54" stroke-width="1.5"/>
+      <text x="579" y="26" font-size="12" fill="#2f7a41" text-anchor="middle" font-weight="bold">AMP — PROBABLY NO IRON</text>
+      <rect x="520" y="52" width="118" height="106" rx="5" fill="#0B4F6C"/>
+      <g fill="#F2A65A">
+        <rect x="512" y="66" width="10" height="10"/><rect x="512" y="86" width="10" height="10"/>
+        <rect x="512" y="106" width="10" height="10"/><rect x="512" y="126" width="10" height="10"/>
+      </g>
+      <text x="579" y="112" font-size="10" fill="#fff" text-anchor="middle">AMP</text>
+      <text x="579" y="180" font-size="10.5" fill="#5a6b78" text-anchor="middle">header pins fitted?</text>
+      <text x="579" y="198" font-size="10.5" fill="#2f7a41" text-anchor="middle" font-weight="bold">use push-on jumpers</text>
+    </svg>
+  </div>
+
+  <table>
+    <tr><th style="width:9mm;">✓</th><th style="width:14mm;">#</th><th>What</th></tr>
+    <tr><td><span class="box"></span></td><td><b>7</b></td><td>Short wire → speaker terminal one</td></tr>
+    <tr><td><span class="box"></span></td><td><b>8</b></td><td>Short wire → speaker terminal two</td></tr>
+    <tr><td><span class="box"></span></td><td><b>9</b></td><td>White wire's free end → the scuffed metal disc</td></tr>
+    <tr><td><span class="box"></span></td><td>—</td><td>Speaker's two free ends → amp <code>OUT+</code> and <code>OUT−</code></td></tr>
+    <tr><td><span class="box"></span></td><td>—</td><td>The five bundle wires → amp <code>VIN GND BCLK LRC DIN</code></td></tr>
+  </table>
+
+  <div class="stop">
+    <b>Leave <code>GAIN</code>, <code>SD</code> and <code>SHUTDOWN</code> unconnected.</b>
+    They have sensible defaults. <code>SD</code> usually means <i>shutdown</i> —
+    grounding it silences the amp completely, and that is a very confusing hour to lose.
+  </div>
+
+  <div class="warn">
+    <b>Amp label variants — all the same signals:</b><br>
+    <code>BCLK</code> = <code>SCK</code> = <code>CLK</code>  ·
+    <code>LRC</code> = <code>WS</code> = <code>LRCLK</code>  ·
+    <code>DIN</code> = <code>SD</code>&#8239;(data) = <code>DATA</code>
+  </div>
+
+  <div class="foot"><span>Joints 7–9 &amp; amp</span><span>Page 4</span></div>
+</div>
+
+<!-- ===================== P5 : CHECK BEFORE POWER ===================== -->
+<div class="page">
+  <div class="stephead">
+    <div class="num">4</div>
+    <div><h2>Check before you plug in</h2><div class="sub">Two minutes. Do not skip it.</div></div>
+  </div>
+
+  <div class="stop">
+    <b style="font-size:12.5pt;">A bridge between 3V3 and GND is a dead short.</b><br>
+    It can kill the board the instant you plug in. Find it with a meter, not with smoke.
+  </div>
+
+  <h3>Multimeter on beep mode — still unplugged</h3>
+  <table>
+    <tr><th style="width:9mm;">✓</th><th style="width:56mm;">Touch these two</th><th>Expected</th></tr>
+    <tr><td><span class="box"></span></td><td><code>3V3</code> and <code>GND</code></td><td style="color:#c0392b;"><b>MUST NOT BEEP</b></td></tr>
+    <tr><td><span class="box"></span></td><td><code>D8</code> and <code>D9</code></td><td style="color:#c0392b;"><b>must not beep</b></td></tr>
+    <tr><td><span class="box"></span></td><td><code>D9</code> and <code>D10</code></td><td style="color:#c0392b;"><b>must not beep</b></td></tr>
+    <tr><td><span class="box"></span></td><td><code>D10</code> and <code>3V3</code></td><td style="color:#c0392b;"><b>must not beep</b></td></tr>
+    <tr><td><span class="box"></span></td><td>Each pad → its own far wire end</td><td style="color:#2f7a41;"><b>must beep</b></td></tr>
+  </table>
+
+  <div class="go">
+    <b>Any beep in the first four rows = a solder bridge.</b> Find it, drag a clean
+    hot tip across it, re-test. Don't plug in until all four are silent.
+  </div>
+
+  <h3>Then, and only then</h3>
+  <ol class="steps">
+    <li><b>Plug in USB.</b></li>
+    <li><b>Touch the board and amp within 5 seconds.</b> More than mildly warm — <b>unplug immediately</b>, re-check for bridges.</li>
+    <li>Board shows up on your laptop → flash it.</li>
+    <li>Camera test first, audio second. Never both at once.</li>
+  </ol>
+
+  <h3>If something's wrong</h3>
+  <table>
+    <tr><th style="width:66mm;">Symptom</th><th>Most likely cause</th></tr>
+    <tr><td>Board won't appear on laptop</td><td>Unplug what you soldered. Appears bare → you have a short.</td></tr>
+    <tr><td>Camera never starts</td><td>PSRAM, not wiring — already fixed in the config.</td></tr>
+    <tr><td>No sound at all</td><td>Meter amp <code>VIN</code>→<code>GND</code>, expect ~3.3V. If 0V, joints 1–2.</td></tr>
+    <tr><td>Static or buzzing only</td><td>Yellow and green swapped. <code>D8</code>→BCLK, <code>D9</code>→LRC.</td></tr>
+    <tr><td>Silence but wiring checks out</td><td>An <code>SD</code>/shutdown pin pulled low. Disconnect it.</td></tr>
+    <tr><td>Touch misbehaves</td><td>Fires by itself → tune <code>TOUCH_THRESHOLD</code> <i>while worn</i>. Never fires → disc wasn't scuffed.</td></tr>
+  </table>
+
+  <div class="foot"><span>Check before power</span><span>Page 5</span></div>
+</div>
