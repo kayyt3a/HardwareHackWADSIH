@@ -1,0 +1,548 @@
+<meta charset="utf-8">
+<title>Vocalens — No-Solder Day</title>
+<style>
+  @page { size: A4; margin: 12mm; }
+  * { box-sizing: border-box; }
+  body { font-family: "DejaVu Sans", Arial, sans-serif; color: #1a2530; margin: 0;
+         font-size: 10pt; line-height: 1.4;
+         -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .page { page-break-after: always; position: relative; height: 268mm; }
+  .page:last-child { page-break-after: auto; }
+  h1 { font-size: 27pt; margin: 0 0 1mm; color: #0B4F6C; letter-spacing: -0.5px; }
+  h2 { font-size: 15pt; margin: 0; color: #0B4F6C; }
+  .stephead { display:flex; align-items:center; gap:4mm; border-bottom:2.5px solid #0B4F6C;
+              padding-bottom:2mm; margin-bottom:3mm; }
+  .num { flex:0 0 12mm; height:12mm; border-radius:50%; background:#F2A65A; color:#0B4F6C;
+         font-size:17pt; font-weight:700; display:flex; align-items:center; justify-content:center; }
+  .sub { font-size:9pt; color:#5a6b78; }
+  .time { margin-left:auto; font-size:8.5pt; color:#fff; background:#137A7F;
+          padding:1.2mm 3mm; border-radius:3mm; white-space:nowrap; }
+  .cap { font-size:8.5pt; color:#5a6b78; font-style:italic; text-align:center; margin-top:1mm; }
+  .fig { text-align:center; margin:2.5mm 0; }
+  .tip  { background:#eef4f6; border-left:4px solid #0B4F6C; padding:2.4mm 3.5mm; margin:2.5mm 0; font-size:9.4pt; }
+  .warn { background:#fdf3e7; border-left:4px solid #F2A65A; padding:2.4mm 3.5mm; margin:2.5mm 0; font-size:9.4pt; }
+  .warn b { color:#a4622a; }
+  .stop { background:#fdecec; border-left:4px solid #c0392b; padding:2.4mm 3.5mm; margin:2.5mm 0; font-size:9.4pt; }
+  .stop b { color:#c0392b; }
+  .go   { background:#eef7ef; border-left:4px solid #3f9e54; padding:2.4mm 3.5mm; margin:2.5mm 0; font-size:9.4pt; }
+  .go b { color:#2f7a41; }
+  code { font-family:"DejaVu Sans Mono",monospace; font-size:8.8pt; background:#eaf0f2;
+         padding:0.2mm 1.2mm; border-radius:1.5mm; }
+  pre { background:#16394a; color:#e8f0f3; padding:3mm 4mm; border-radius:2mm;
+        font-family:"DejaVu Sans Mono",monospace; font-size:8.4pt; line-height:1.5;
+        margin:2.5mm 0; white-space:pre-wrap; }
+  pre .c { color:#8fb8c9; }
+  .foot { position:absolute; bottom:0; left:0; right:0; font-size:7.5pt; color:#8b9aa5;
+          border-top:1px solid #dde5e8; padding-top:1.5mm; display:flex; justify-content:space-between; }
+  ol.steps { padding-left:0; list-style:none; counter-reset:s; margin:2.5mm 0; }
+  ol.steps > li { counter-increment:s; position:relative; padding-left:7.5mm; margin:2mm 0; }
+  ol.steps > li::before { content:counter(s); position:absolute; left:0; top:0.2mm;
+        width:5.2mm; height:5.2mm; background:#137A7F; color:#fff; border-radius:50%;
+        font-size:8pt; font-weight:700; display:flex; align-items:center; justify-content:center; }
+</style>
+
+<!-- ================= P1 : WHAT YOU CAN DO TODAY ================= -->
+<div class="page">
+  <div style="background:#0B4F6C;color:#fff;padding:7mm;margin:-1mm -1mm 4mm;">
+    <div style="font-size:8.5pt;letter-spacing:3px;opacity:.75;">VOCALENS · BENCH GUIDE</div>
+    <h1 style="color:#fff;font-size:32pt;">No-Solder Day</h1>
+    <div style="font-size:11pt;color:#F2A65A;">Everything you can build before the iron arrives</div>
+  </div>
+
+  <div class="go">
+    <b>The good news:</b> the camera plugs in with a <b>ribbon cable</b> — no solder.
+    That's the whole vision pipeline: camera → server → Claude → spoken text.
+    Only the <b>speaker output</b> needs an iron.
+  </div>
+
+  <div class="fig">
+    <svg width="690" height="392" viewBox="0 0 510 290">
+      <!-- GREEN ZONE -->
+      <rect x="6" y="6" width="330" height="278" rx="8" fill="#f2f9f4" stroke="#3f9e54" stroke-width="2"/>
+      <rect x="6" y="6" width="330" height="24" rx="8" fill="#3f9e54"/>
+      <rect x="6" y="20" width="330" height="10" fill="#3f9e54"/>
+      <text x="171" y="23" font-size="11" fill="#fff" text-anchor="middle" font-weight="bold">✓  DO ALL OF THIS TODAY</text>
+
+      <!-- laptop -->
+      <rect x="26" y="52" width="86" height="56" rx="4" fill="#0B4F6C"/>
+      <rect x="32" y="58" width="74" height="44" rx="2" fill="#16394a"/>
+      <text x="69" y="78" font-size="7.5" fill="#8fb8c9" text-anchor="middle">FastAPI</text>
+      <text x="69" y="89" font-size="7.5" fill="#8fb8c9" text-anchor="middle">server</text>
+      <path d="M18 112 L120 112 L112 108 L26 108 Z" fill="#5a6b78"/>
+      <text x="69" y="127" font-size="8.5" fill="#0B4F6C" text-anchor="middle" font-weight="bold">YOUR LAPTOP</text>
+
+      <!-- usb cable -->
+      <path d="M112 80 q40 0 40 -6 q0 -6 30 -6" stroke="#2b2b2b" stroke-width="3.5" fill="none"/>
+      <text x="150" y="60" font-size="7.5" fill="#5a6b78" text-anchor="middle">USB-C</text>
+
+      <!-- xiao + camera -->
+      <rect x="182" y="50" width="128" height="54" rx="5" fill="#0B4F6C"/>
+      <text x="246" y="72" font-size="8" fill="#fff" text-anchor="middle">XIAO ESP32S3</text>
+      <text x="246" y="83" font-size="8" fill="#fff" text-anchor="middle">Sense</text>
+      <rect x="228" y="88" width="36" height="10" rx="2" fill="#16394a"/>
+      <!-- ribbon to camera -->
+      <path d="M246 104 q0 18 0 22" stroke="#c98b3a" stroke-width="9" fill="none"/>
+      <rect x="216" y="126" width="60" height="42" rx="4" fill="#0B4F6C"/>
+      <circle cx="246" cy="147" r="15" fill="#2b3a45"/>
+      <circle cx="246" cy="147" r="8" fill="#F2A65A"/>
+      <circle cx="246" cy="147" r="3" fill="#0B4F6C"/>
+      <text x="246" y="182" font-size="8.5" fill="#0B4F6C" text-anchor="middle" font-weight="bold">CAMERA</text>
+      <text x="246" y="192" font-size="7.5" fill="#3f9e54" text-anchor="middle">ribbon — no solder!</text>
+
+      <!-- checklist -->
+      <text x="26" y="152" font-size="8.5" fill="#2f7a41" font-weight="bold">✓ Flash the firmware</text>
+      <text x="26" y="167" font-size="8.5" fill="#2f7a41" font-weight="bold">✓ Run the server</text>
+      <text x="26" y="182" font-size="8.5" fill="#2f7a41" font-weight="bold">✓ Read a real label</text>
+      <text x="26" y="211" font-size="8.5" fill="#2f7a41" font-weight="bold">✓ Test barcodes</text>
+      <text x="26" y="226" font-size="8.5" fill="#2f7a41" font-weight="bold">✓ Set up a profile</text>
+      <text x="26" y="241" font-size="8.5" fill="#2f7a41" font-weight="bold">✓ Dry-fit the pods</text>
+      <text x="26" y="256" font-size="8.5" fill="#2f7a41" font-weight="bold">✓ Measure everything</text>
+      <text x="26" y="271" font-size="8.5" fill="#2f7a41" font-weight="bold">✓ Test the guardrail</text>
+
+      <!-- speech bubble -->
+      <path d="M196 206 h116 a5 5 0 0 1 5 5 v32 a5 5 0 0 1 -5 5 h-96 l-12 11 v-11 h-8 a5 5 0 0 1 -5 -5 v-34 a5 5 0 0 1 5 -5 z"
+            fill="#137A7F"/>
+      <text x="254" y="222" font-size="7.5" fill="#fff" text-anchor="middle">"Paracetamol,</text>
+      <text x="254" y="233" font-size="7.5" fill="#fff" text-anchor="middle">500 milligrams.</text>
+      <text x="254" y="244" font-size="7.5" fill="#fff" text-anchor="middle">Expires June 2027."</text>
+      <text x="254" y="272" font-size="7.5" fill="#5a6b78" text-anchor="middle">shown on the laptop for now</text>
+
+      <!-- GREY ZONE -->
+      <rect x="346" y="6" width="158" height="278" rx="8" fill="#f4f6f7" stroke="#8b9aa5"
+            stroke-width="2" stroke-dasharray="6 4"/>
+      <rect x="346" y="6" width="158" height="24" rx="8" fill="#8b9aa5"/>
+      <rect x="346" y="20" width="158" height="10" fill="#8b9aa5"/>
+      <text x="425" y="23" font-size="10" fill="#fff" text-anchor="middle" font-weight="bold">✕  NEEDS THE IRON</text>
+
+      <rect x="372" y="52" width="106" height="44" rx="4" fill="#c9d4da"/>
+      <text x="425" y="78" font-size="8.5" fill="#7a8c99" text-anchor="middle">AMPLIFIER</text>
+      <circle cx="425" cy="140" r="30" fill="#c9d4da"/>
+      <circle cx="425" cy="140" r="14" fill="#dde5e8"/>
+      <text x="425" y="186" font-size="8.5" fill="#7a8c99" text-anchor="middle">SPEAKER</text>
+      <g stroke="#c9d4da" stroke-width="2.5" fill="none" stroke-dasharray="4 3">
+        <path d="M372 62 L352 62"/><path d="M372 70 L352 70"/><path d="M372 78 L352 78"/>
+      </g>
+      <text x="425" y="212" font-size="8" fill="#7a8c99" text-anchor="middle">6 wires to the</text>
+      <text x="425" y="223" font-size="8" fill="#7a8c99" text-anchor="middle">XIAO edge pads</text>
+      <text x="425" y="248" font-size="8" fill="#7a8c99" text-anchor="middle">+ touch pad</text>
+      <text x="425" y="268" font-size="7.5" fill="#8b9aa5" text-anchor="middle" font-style="italic">≈ 1 hour, later</text>
+    </svg>
+    <div class="cap">Left: today's work, all solderless. Right: the only part that has to wait.</div>
+  </div>
+
+  <div class="tip">
+    <b>This is the right order anyway.</b> The build guide already says
+    <i>camera first, audio second</i> — so not having an iron today costs you
+    nothing. You're doing Stage 1 exactly as planned.
+  </div>
+
+  <div style="font-size:9.4pt;font-weight:bold;color:#137A7F;margin-top:3mm;">HOW THE DAY RUNS</div>
+  <table style="width:100%;border-collapse:collapse;font-size:9.2pt;">
+    <tr><th style="background:#0B4F6C;color:#fff;text-align:left;padding:1.8mm 2.5mm;font-size:8.5pt;letter-spacing:.5px;width:10mm;">#</th>
+        <th style="background:#0B4F6C;color:#fff;text-align:left;padding:1.8mm 2.5mm;font-size:8.5pt;letter-spacing:.5px;">STEP</th>
+        <th style="background:#0B4F6C;color:#fff;text-align:left;padding:1.8mm 2.5mm;font-size:8.5pt;letter-spacing:.5px;width:22mm;">TIME</th>
+        <th style="background:#0B4F6C;color:#fff;text-align:left;padding:1.8mm 2.5mm;font-size:8.5pt;letter-spacing:.5px;width:44mm;">NEEDS</th></tr>
+    <tr><td style="padding:1.7mm 2.5mm;border-bottom:1px solid #dde5e8;"><b>1</b></td>
+        <td style="padding:1.7mm 2.5mm;border-bottom:1px solid #dde5e8;">Seat the camera ribbon</td>
+        <td style="padding:1.7mm 2.5mm;border-bottom:1px solid #dde5e8;">5 min</td>
+        <td style="padding:1.7mm 2.5mm;border-bottom:1px solid #dde5e8;color:#5a6b78;">Board + camera</td></tr>
+    <tr><td style="padding:1.7mm 2.5mm;border-bottom:1px solid #dde5e8;background:#f7fafb;"><b>2</b></td>
+        <td style="padding:1.7mm 2.5mm;border-bottom:1px solid #dde5e8;background:#f7fafb;">Flash, run the server, read real labels</td>
+        <td style="padding:1.7mm 2.5mm;border-bottom:1px solid #dde5e8;background:#f7fafb;">45 min</td>
+        <td style="padding:1.7mm 2.5mm;border-bottom:1px solid #dde5e8;background:#f7fafb;color:#5a6b78;">USB cable, API keys</td></tr>
+    <tr><td style="padding:1.7mm 2.5mm;border-bottom:1px solid #dde5e8;"><b>3</b></td>
+        <td style="padding:1.7mm 2.5mm;border-bottom:1px solid #dde5e8;">Dry-fit the pods, measure everything</td>
+        <td style="padding:1.7mm 2.5mm;border-bottom:1px solid #dde5e8;">40 min</td>
+        <td style="padding:1.7mm 2.5mm;border-bottom:1px solid #dde5e8;color:#5a6b78;">Printed parts, a ruler</td></tr>
+    <tr><td style="padding:1.7mm 2.5mm;border-bottom:1px solid #dde5e8;background:#f7fafb;"><b>4</b></td>
+        <td style="padding:1.7mm 2.5mm;border-bottom:1px solid #dde5e8;background:#f7fafb;">Set up a profile, probe the guardrail</td>
+        <td style="padding:1.7mm 2.5mm;border-bottom:1px solid #dde5e8;background:#f7fafb;">30 min</td>
+        <td style="padding:1.7mm 2.5mm;border-bottom:1px solid #dde5e8;background:#f7fafb;color:#5a6b78;">Browser only</td></tr>
+    <tr><td style="padding:1.7mm 2.5mm;color:#8b9aa5;">—</td>
+        <td style="padding:1.7mm 2.5mm;color:#8b9aa5;"><i>Wire the audio chain</i></td>
+        <td style="padding:1.7mm 2.5mm;color:#8b9aa5;"><i>1 hr</i></td>
+        <td style="padding:1.7mm 2.5mm;color:#c0392b;"><b>waits for the iron</b></td></tr>
+  </table>
+
+  <div class="go">
+    <b>Nothing on this page is throwaway work.</b> Every step is on the critical
+    path — you're not filling time until the iron turns up, you're doing the
+    stages that were meant to come first anyway.
+  </div>
+
+  <div class="foot"><span>No-Solder Day</span><span>Page 1</span></div>
+</div>
+
+<!-- ================= P2 : RIBBON ================= -->
+<div class="page">
+  <div class="stephead">
+    <div class="num">1</div>
+    <div><h2>Seat the camera ribbon</h2><div class="sub">The only fragile thing you'll touch today</div></div>
+    <div class="time">5 min</div>
+  </div>
+
+  <div class="fig">
+    <svg width="690" height="430" viewBox="0 0 690 430">
+  <defs>
+    <marker id="g" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#3f9e54"/></marker>
+    <marker id="t" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#137A7F"/></marker>
+    <marker id="r" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#c0392b"/></marker>
+  </defs>
+
+  <!-- ============ A ============ -->
+  <circle cx="14" cy="14" r="12" fill="#137A7F"/>
+  <text x="14" y="19" font-size="12" fill="#fff" text-anchor="middle" font-weight="bold">A</text>
+  <text x="34" y="19" font-size="12" fill="#0B4F6C" font-weight="bold">Flip the dark latch UP</text>
+  <rect x="0" y="30" width="330" height="168" rx="6" fill="#f7fafb" stroke="#dde5e8" stroke-width="1.5"/>
+  <rect x="46" y="74" width="238" height="72" rx="4" fill="#0B4F6C"/>
+  <rect x="66" y="92" width="198" height="24" rx="2" fill="#16394a"/>
+  <path d="M72 112 L236 66" stroke="#3f9e54" stroke-width="11" stroke-linecap="round" fill="none"/>
+  <path d="M258 82 L246 62" stroke="#3f9e54" stroke-width="2" fill="none" marker-end="url(#g)"/>
+  <text x="266" y="58" font-size="10" fill="#2f7a41" font-weight="bold">lift</text>
+  <text x="165" y="176" font-size="10" fill="#5a6b78" text-anchor="middle">the connector on the Sense board</text>
+
+  <!-- ============ B ============ -->
+  <circle cx="374" cy="14" r="12" fill="#137A7F"/>
+  <text x="374" y="19" font-size="12" fill="#fff" text-anchor="middle" font-weight="bold">B</text>
+  <text x="394" y="19" font-size="12" fill="#0B4F6C" font-weight="bold">Slide the ribbon in</text>
+  <rect x="360" y="30" width="330" height="168" rx="6" fill="#f7fafb" stroke="#dde5e8" stroke-width="1.5"/>
+  <rect x="376" y="74" width="238" height="72" rx="4" fill="#0B4F6C"/>
+  <rect x="396" y="92" width="198" height="24" rx="2" fill="#16394a"/>
+  <path d="M402 112 L566 66" stroke="#8b9aa5" stroke-width="11" stroke-linecap="round" fill="none"/>
+  <rect x="470" y="95" width="212" height="18" rx="2" fill="#c98b3a"/>
+  <rect x="470" y="95" width="212" height="5" rx="2" fill="#2f6f8f"/>
+  <path d="M520 142 L520 120" stroke="#137A7F" stroke-width="2" fill="none" marker-end="url(#t)"/>
+  <text x="525" y="160" font-size="10" fill="#137A7F" text-anchor="middle" font-weight="bold">contacts face DOWN</text>
+  <text x="525" y="176" font-size="10" fill="#5a6b78" text-anchor="middle">push until the blue stripe reaches the lip</text>
+
+  <!-- ============ C ============ -->
+  <circle cx="14" cy="236" r="12" fill="#137A7F"/>
+  <text x="14" y="241" font-size="12" fill="#fff" text-anchor="middle" font-weight="bold">C</text>
+  <text x="34" y="241" font-size="12" fill="#0B4F6C" font-weight="bold">Press the latch DOWN</text>
+  <rect x="0" y="252" width="330" height="168" rx="6" fill="#f7fafb" stroke="#dde5e8" stroke-width="1.5"/>
+  <rect x="46" y="296" width="238" height="72" rx="4" fill="#0B4F6C"/>
+  <rect x="66" y="314" width="198" height="24" rx="2" fill="#16394a"/>
+  <rect x="150" y="317" width="180" height="18" rx="2" fill="#c98b3a"/>
+  <rect x="68" y="318" width="192" height="16" rx="3" fill="#3f9e54"/>
+  <path d="M120 282 L120 310" stroke="#3f9e54" stroke-width="2" fill="none" marker-end="url(#g)"/>
+  <text x="120" y="278" font-size="10" fill="#2f7a41" text-anchor="middle" font-weight="bold">click flat</text>
+  <text x="165" y="398" font-size="10" fill="#5a6b78" text-anchor="middle">then tug gently — it must not move</text>
+
+  <!-- ============ WRONG ============ -->
+  <circle cx="374" cy="236" r="12" fill="#c0392b"/>
+  <text x="374" y="241" font-size="13" fill="#fff" text-anchor="middle" font-weight="bold">✕</text>
+  <text x="394" y="241" font-size="12" fill="#c0392b" font-weight="bold">Never do this</text>
+  <rect x="360" y="252" width="330" height="168" rx="6" fill="#fdf5f4" stroke="#e8c4bf" stroke-width="1.5"/>
+  <rect x="376" y="296" width="238" height="72" rx="4" fill="#0B4F6C" opacity=".5"/>
+  <rect x="396" y="314" width="198" height="24" rx="2" fill="#16394a"/>
+  <rect x="470" y="317" width="200" height="18" rx="2" fill="#c98b3a"/>
+  <rect x="398" y="318" width="192" height="16" rx="3" fill="#c0392b"/>
+  <path d="M600 356 L648 356" stroke="#c0392b" stroke-width="2.5" fill="none" marker-end="url(#r)"/>
+  <text x="525" y="392" font-size="10.5" fill="#c0392b" text-anchor="middle" font-weight="bold">pulling the ribbon while latched tears the contacts</text>
+  <text x="525" y="408" font-size="10" fill="#5a6b78" text-anchor="middle">never crease or fold the ribbon either</text>
+</svg>
+    <div class="cap">The ribbon connector is the most fragile part on the board. Latch up, slide, latch down.</div>
+  </div>
+
+  <div class="stop">
+    <b>If the camera has ever worked and then stopped,</b> this connector is the
+    first thing to check — before you touch any code. A ribbon that looks seated
+    can still be one contact short.
+  </div>
+
+  <div style="font-size:9.4pt;font-weight:bold;color:#137A7F;margin-top:3mm;">WHILE THE BOARD IS IN YOUR HAND</div>
+  <table style="width:100%;border-collapse:collapse;font-size:9.2pt;">
+    <tr><td style="padding:1.6mm 2mm;border-bottom:1px solid #dde5e8;width:46%;"><b>Check the Sense board is seated</b></td>
+        <td style="padding:1.6mm 2mm;border-bottom:1px solid #dde5e8;">Both boards should be flush, no gap at either end</td></tr>
+    <tr><td style="padding:1.6mm 2mm;border-bottom:1px solid #dde5e8;background:#f7fafb;"><b>Note the pad order</b></td>
+        <td style="padding:1.6mm 2mm;border-bottom:1px solid #dde5e8;background:#f7fafb;">Photograph both edges — you'll want it when soldering</td></tr>
+    <tr><td style="padding:1.6mm 2mm;border-bottom:1px solid #dde5e8;"><b>Find <code>D3</code>, <code>D7</code>, <code>D8</code>, <code>D9</code>, <code>3V3</code>, <code>GND</code></b></td>
+        <td style="padding:1.6mm 2mm;border-bottom:1px solid #dde5e8;">Mark them on your photo now, while you have the pinout open</td></tr>
+    <tr><td style="padding:1.6mm 2mm;background:#f7fafb;"><b>Leave the headers in the bag</b></td>
+        <td style="padding:1.6mm 2mm;background:#f7fafb;">You're soldering wire directly to the pads — the headers stay unused</td></tr>
+  </table>
+
+  <div class="tip">
+    <b>Take that photo.</b> When you come back with an iron you'll be squinting at
+    2&nbsp;mm silkscreen; a labelled picture on your phone turns the wiring step
+    from guesswork into copying.
+  </div>
+
+  <div class="foot"><span>Step 1 · Camera ribbon</span><span>Page 2</span></div>
+</div>
+
+<!-- ================= P3 : FLASH + SERVER ================= -->
+<div class="page">
+  <div class="stephead">
+    <div class="num">2</div>
+    <div><h2>Flash, and take a photo</h2><div class="sub">USB only — nothing else connected</div></div>
+    <div class="time">45 min</div>
+  </div>
+
+  <div class="fig">
+    <svg width="690" height="207" viewBox="0 0 500 150">
+      <!-- 1 -->
+      <rect x="4" y="26" width="106" height="66" rx="5" fill="#0B4F6C"/>
+      <text x="57" y="54" font-size="8.5" fill="#fff" text-anchor="middle">XIAO + camera</text>
+      <text x="57" y="68" font-size="8.5" fill="#fff" text-anchor="middle">on USB</text>
+      <text x="57" y="108" font-size="8" fill="#0B4F6C" text-anchor="middle" font-weight="bold">1 · FLASH</text>
+      <text x="57" y="120" font-size="7.5" fill="#5a6b78" text-anchor="middle">PSRAM = OPI</text>
+
+      <path d="M114 59 L136 59" stroke="#137A7F" stroke-width="2.5" marker-end="url(#a2)"/>
+
+      <!-- 2 -->
+      <rect x="140" y="26" width="106" height="66" rx="5" fill="#137A7F"/>
+      <text x="193" y="54" font-size="8.5" fill="#fff" text-anchor="middle">uvicorn</text>
+      <text x="193" y="68" font-size="8.5" fill="#fff" text-anchor="middle">main:app</text>
+      <text x="193" y="108" font-size="8" fill="#0B4F6C" text-anchor="middle" font-weight="bold">2 · SERVER</text>
+      <text x="193" y="120" font-size="7.5" fill="#5a6b78" text-anchor="middle">port 8000</text>
+
+      <path d="M250 59 L272 59" stroke="#137A7F" stroke-width="2.5" marker-end="url(#a2)"/>
+
+      <!-- 3 -->
+      <rect x="276" y="26" width="106" height="66" rx="5" fill="#0B4F6C"/>
+      <text x="329" y="54" font-size="8.5" fill="#fff" text-anchor="middle">curl a photo</text>
+      <text x="329" y="68" font-size="8.5" fill="#fff" text-anchor="middle">/read_label</text>
+      <text x="329" y="108" font-size="8" fill="#0B4F6C" text-anchor="middle" font-weight="bold">3 · TEST AI</text>
+      <text x="329" y="120" font-size="7.5" fill="#5a6b78" text-anchor="middle">laptop photos</text>
+
+      <path d="M386 59 L408 59" stroke="#137A7F" stroke-width="2.5" marker-end="url(#a2)"/>
+
+      <!-- 4 -->
+      <rect x="412" y="26" width="84" height="66" rx="5" fill="#F2A65A"/>
+      <text x="454" y="54" font-size="8.5" fill="#0B4F6C" text-anchor="middle" font-weight="bold">board</text>
+      <text x="454" y="68" font-size="8.5" fill="#0B4F6C" text-anchor="middle" font-weight="bold">posts too</text>
+      <text x="454" y="108" font-size="8" fill="#0B4F6C" text-anchor="middle" font-weight="bold">4 · END-TO-END</text>
+
+      <defs><marker id="a2" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 z" fill="#137A7F"/></marker></defs>
+    </svg>
+  </div>
+
+  <div class="warn">
+    <b>Set PSRAM to OPI PSRAM before your first flash.</b> Skip it and the camera
+    silently fails to initialise — an hour lost to a bug that isn't in your code.
+  </div>
+
+  <div style="font-size:9.4pt;font-weight:bold;color:#137A7F;margin-top:1mm;">START THE SERVER</div>
+<pre><span class="c"># server/.env needs your API keys first</span>
+cd server && pip install -r requirements.txt
+uvicorn main:app --host 0.0.0.0 --port 8000</pre>
+
+  <div style="font-size:9.4pt;font-weight:bold;color:#137A7F;">TEST THE AI WITH NO HARDWARE AT ALL</div>
+<pre><span class="c"># photograph a medicine box with your phone, copy it over</span>
+curl -X POST http://localhost:8000/read_label \
+     -F "image=@box.jpg"</pre>
+
+  <div class="go">
+    <b>This is the highest-value thing you can do today.</b> It de-risks the entire
+    AI half of the project without any hardware working. Try ten real products —
+    a medicine box, a tin, something handwritten, something in bad light.
+  </div>
+
+  <div style="font-size:9.4pt;font-weight:bold;color:#137A7F;">NO SOLDER TRIGGER FOR THE BOARD</div>
+  <p style="margin:1mm 0;">
+    The touch pad needs an iron, but the XIAO has a <b>BOOT button</b> on the
+    board already. Point it at <code>GPIO 0</code> for today so you can trigger a
+    capture by hand and prove the full loop — then move it back to
+    <code>PIN_TOUCH_PAD</code> once you've soldered the pad.
+  </p>
+  <div class="tip">
+    Check the button's pin against your board's pinout before relying on it — if
+    it isn't wired how you expect, a <code>delay()</code> loop that captures every
+    10 seconds tests exactly the same path.
+  </div>
+
+  <div class="foot"><span>Step 2 · Flash and test</span><span>Page 3</span></div>
+</div>
+
+<!-- ================= P4 : DRY FIT ================= -->
+<div class="page">
+  <div class="stephead">
+    <div class="num">3</div>
+    <div><h2>Dry-fit and measure</h2><div class="sub">Find the CAD problems now, not after soldering</div></div>
+    <div class="time">40 min</div>
+  </div>
+
+  <div class="fig">
+    <svg width="690" height="196" viewBox="0 0 690 196">
+  <rect x="0" y="0" width="330" height="196" rx="6" fill="#f7fafb" stroke="#dde5e8" stroke-width="1.5"/>
+  <text x="165" y="20" font-size="11" fill="#0B4F6C" text-anchor="middle" font-weight="bold">FRONT POD — exploded</text>
+  <rect x="60" y="36" width="180" height="16" rx="3" fill="#8b9aa5"/>
+  <circle cx="212" cy="44" r="5" fill="#c9ccd0" stroke="#5a6b78"/>
+  <text x="252" y="42" font-size="9.5" fill="#5a6b78">lid · PETG</text>
+  <text x="252" y="54" font-size="8.5" fill="#8b9aa5">touch recess</text>
+  <g stroke="#c9d4da" stroke-width="1" stroke-dasharray="3 3">
+    <line x1="64" y1="54" x2="64" y2="146"/><line x1="236" y1="54" x2="236" y2="146"/>
+  </g>
+  <rect x="68" y="72" width="62" height="46" rx="3" fill="#0B4F6C"/>
+  <circle cx="99" cy="95" r="14" fill="#F2A65A"/><circle cx="99" cy="95" r="5" fill="#0B4F6C"/>
+  <rect x="142" y="72" width="90" height="46" rx="3" fill="#0B4F6C"/>
+  <text x="187" y="99" font-size="9" fill="#fff" text-anchor="middle">XIAO</text>
+  <path d="M130 88 q7 0 7 -7" stroke="#c98b3a" stroke-width="6" fill="none"/>
+  <text x="252" y="90" font-size="9.5" fill="#5a6b78">side by side</text>
+  <text x="252" y="103" font-size="9.5" fill="#c0392b" font-weight="bold">never stacked</text>
+  <rect x="60" y="140" width="180" height="28" rx="3" fill="#137A7F"/>
+  <rect x="72" y="147" width="156" height="14" rx="2" fill="#0f5f63"/>
+  <text x="252" y="152" font-size="9.5" fill="#5a6b78">base · TPU</text>
+  <text x="252" y="164" font-size="8.5" fill="#8b9aa5">clip channel</text>
+  <text x="165" y="186" font-size="9" fill="#5a6b78" text-anchor="middle">drop parts in loose — no glue</text>
+
+  <rect x="360" y="0" width="330" height="196" rx="6" fill="#f7fafb" stroke="#dde5e8" stroke-width="1.5"/>
+  <text x="525" y="20" font-size="11" fill="#0B4F6C" text-anchor="middle" font-weight="bold">HOW IT SITS ON THE ARM</text>
+  <rect x="410" y="44" width="200" height="12" rx="2" fill="#8b9aa5"/>
+  <rect x="410" y="60" width="200" height="44" rx="3" fill="#137A7F"/>
+  <rect x="428" y="70" width="74" height="26" rx="2" fill="#0B4F6C"/>
+  <rect x="516" y="70" width="76" height="26" rx="2" fill="#0B4F6C"/>
+  <rect x="452" y="112" width="110" height="18" rx="4" fill="#c9d4da"/>
+  <text x="507" y="125" font-size="9" fill="#5a6b78" text-anchor="middle">temple arm</text>
+  <g stroke="#c0392b" stroke-width="1.6">
+    <line x1="634" y1="44" x2="634" y2="104"/>
+    <line x1="629" y1="44" x2="639" y2="44"/><line x1="629" y1="104" x2="639" y2="104"/>
+  </g>
+  <text x="646" y="78" font-size="10.5" fill="#c0392b" font-weight="bold">10mm</text>
+  <text x="525" y="154" font-size="9.5" fill="#5a6b78" text-anchor="middle">the pod sits BESIDE the arm, not on top of it</text>
+  <text x="525" y="172" font-size="9.5" fill="#c0392b" text-anchor="middle" font-weight="bold">if it presses into the head, something is wrong</text>
+</svg>
+    <div class="cap">Dry-fit both pods. If a lid won't close flat, a component is too tall — that's a CAD fix.</div>
+  </div>
+
+  <div class="fig">
+    <svg width="690" height="168" viewBox="0 0 690 168">
+  <rect x="0" y="0" width="330" height="168" rx="6" fill="#f7fafb" stroke="#dde5e8" stroke-width="1.5"/>
+  <text x="165" y="20" font-size="11" fill="#0B4F6C" text-anchor="middle" font-weight="bold">FOOTPRINT — goes OUTWARD</text>
+  <rect x="86" y="42" width="140" height="64" rx="3" fill="#0B4F6C"/>
+  <text x="156" y="79" font-size="9.5" fill="#fff" text-anchor="middle">XIAO</text>
+  <g stroke="#F2A65A" stroke-width="1.6">
+    <line x1="86" y1="122" x2="226" y2="122"/>
+    <line x1="86" y1="117" x2="86" y2="127"/><line x1="226" y1="117" x2="226" y2="127"/>
+    <line x1="244" y1="42" x2="244" y2="106"/>
+    <line x1="239" y1="42" x2="249" y2="42"/><line x1="239" y1="106" x2="249" y2="106"/>
+  </g>
+  <text x="156" y="140" font-size="10" fill="#a4622a" text-anchor="middle" font-weight="bold">XIAO_LEN</text>
+  <text x="258" y="78" font-size="10" fill="#a4622a" font-weight="bold">XIAO_WID</text>
+  <text x="165" y="158" font-size="9" fill="#5a6b78" text-anchor="middle">flat on the bench, ruler across it</text>
+
+  <rect x="360" y="0" width="330" height="168" rx="6" fill="#fdf5f4" stroke="#e8c4bf" stroke-width="1.5"/>
+  <text x="525" y="20" font-size="11" fill="#c0392b" text-anchor="middle" font-weight="bold">THICKNESS — THE ONE THAT MATTERS</text>
+  <rect x="420" y="66" width="180" height="14" rx="2" fill="#0B4F6C"/>
+  <rect x="546" y="52" width="30" height="14" rx="2" fill="#8b9aa5"/>
+  <text x="561" y="44" font-size="8.5" fill="#5a6b78" text-anchor="middle">USB shell</text>
+  <g stroke="#c0392b" stroke-width="1.8">
+    <line x1="626" y1="52" x2="626" y2="80"/>
+    <line x1="621" y1="52" x2="631" y2="52"/><line x1="621" y1="80" x2="631" y2="80"/>
+  </g>
+  <text x="626" y="96" font-size="10" fill="#c0392b" font-weight="bold" text-anchor="middle">XIAO_THICK</text>
+  <text x="500" y="120" font-size="9.5" fill="#5a6b78" text-anchor="middle">turn the board EDGE-ON to the ruler</text>
+  <text x="500" y="136" font-size="9.5" fill="#c0392b" text-anchor="middle" font-weight="bold">measure WITHOUT the camera</text>
+  <text x="500" y="156" font-size="9" fill="#5a6b78" text-anchor="middle">this number decides how far the pod intrudes</text>
+</svg>
+    <div class="cap">Two rulers' worth of work. Footprint goes outward; thickness goes toward the head.</div>
+  </div>
+
+  <ol class="steps">
+    <li>Drop the camera and XIAO into <code>frontboard_base</code>, amp and speaker into <code>rearaudio_base</code>. Loose — no glue.</li>
+    <li>Press each lid on. If a lid won't sit flat, a component is too tall — that's a CAD fix, and far cheaper to find now.</li>
+    <li>Clip both pods onto the glasses and <b>wear them for ten minutes</b>. Comfort problems only show up on a real head.</li>
+    <li>Update the measured numbers in <code>vocalens_pod.scad</code> and re-render before your next print.</li>
+  </ol>
+
+  <div class="warn">
+    <b>Every dimension in the <code>.scad</code> is a placeholder.</b> They were
+    written from datasheets, not from your parts. A pod that's 2&nbsp;mm too shallow
+    is a wasted print and a wasted evening — and you can find that out today with
+    a ruler, before anything is soldered into it.
+  </div>
+
+  <div class="tip">
+    <b>Wearing them is the test that matters.</b> Both pods can measure perfectly
+    and still be wrong on a face — front-heavy, sliding down, pressing behind the
+    ear. Ten minutes of actually wearing the dry-fitted pods tells you more than
+    any measurement, and it's free.
+  </div>
+
+  <div class="foot"><span>Step 3 · Dry-fit</span><span>Page 4</span></div>
+</div>
+
+<!-- ================= P5 : PROFILE + CHECKLIST ================= -->
+<div class="page">
+  <div class="stephead">
+    <div class="num">4</div>
+    <div><h2>Profiles and the guardrail</h2><div class="sub">Pure software — no hardware needed at all</div></div>
+    <div class="time">30 min</div>
+  </div>
+
+  <div class="fig">
+    <svg width="690" height="282" viewBox="0 0 480 196">
+      <!-- dosage -->
+      <rect x="8" y="8" width="216" height="180" rx="7" fill="#f3f7f8" stroke="#137A7F" stroke-width="2"/>
+      <rect x="8" y="8" width="216" height="26" rx="7" fill="#137A7F"/>
+      <rect x="8" y="22" width="216" height="12" fill="#137A7F"/>
+      <text x="116" y="26" font-size="10" fill="#fff" text-anchor="middle" font-weight="bold">profile_type = "dosage"</text>
+      <text x="24" y="56" font-size="9" fill="#0B4F6C" font-weight="bold">Margaret, 78</text>
+      <text x="24" y="74" font-size="8.5" fill="#5a6b78">• age, weight</text>
+      <text x="24" y="90" font-size="8.5" fill="#5a6b78">• allergies</text>
+      <text x="24" y="106" font-size="8.5" fill="#5a6b78">• medication list</text>
+      <rect x="24" y="118" width="184" height="56" rx="4" fill="#fdecec" stroke="#c0392b" stroke-width="1.4"/>
+      <text x="116" y="134" font-size="8" fill="#c0392b" text-anchor="middle" font-weight="bold">ALL SYNTHETIC</text>
+      <text x="116" y="148" font-size="7.5" fill="#c0392b" text-anchor="middle">Never a real person's</text>
+      <text x="116" y="160" font-size="7.5" fill="#c0392b" text-anchor="middle">medical information.</text>
+      <text x="116" y="170" font-size="7pt" fill="#8b9aa5" text-anchor="middle">— challenge brief</text>
+
+      <!-- reminders -->
+      <rect x="256" y="8" width="216" height="180" rx="7" fill="#f3f7f8" stroke="#8b9aa5" stroke-width="2"/>
+      <rect x="256" y="8" width="216" height="26" rx="7" fill="#5a6b78"/>
+      <rect x="256" y="22" width="216" height="12" fill="#5a6b78"/>
+      <text x="364" y="26" font-size="10" fill="#fff" text-anchor="middle" font-weight="bold">profile_type = "reminders"</text>
+      <text x="272" y="56" font-size="9" fill="#0B4F6C" font-weight="bold">Ethan</text>
+      <text x="272" y="74" font-size="8.5" fill="#5a6b78">• saved events</text>
+      <text x="272" y="90" font-size="8.5" fill="#5a6b78">• "remember this"</text>
+      <text x="272" y="106" font-size="8.5" fill="#5a6b78">• nothing else</text>
+      <rect x="272" y="118" width="184" height="56" rx="4" fill="#eef7ef" stroke="#3f9e54" stroke-width="1.4"/>
+      <text x="364" y="134" font-size="8" fill="#2f7a41" text-anchor="middle" font-weight="bold">NO HEALTH DATA</text>
+      <text x="364" y="147" font-size="7.5" fill="#2f7a41" text-anchor="middle">dosage_context_summary()</text>
+      <text x="364" y="158" font-size="7.5" fill="#2f7a41" text-anchor="middle">returns None — the code that</text>
+      <text x="364" y="169" font-size="7.5" fill="#2f7a41" text-anchor="middle">would build it never runs</text>
+    </svg>
+    <div class="cap">Two modes, one device. Open <code>http://localhost:8000/setup</code> to create either.</div>
+  </div>
+
+  <div style="font-size:9.4pt;font-weight:bold;color:#137A7F;">TEST THE GUARDRAIL — A JUDGE WILL PROBE THIS</div>
+  <p style="margin:1mm 0;">
+    Set up a <code>dosage</code> profile with <b>invented</b> details, then point the
+    camera at a medicine box and ask questions designed to make it slip:
+  </p>
+  <table style="width:100%;border-collapse:collapse;font-size:9pt;margin:2mm 0;">
+    <tr><td style="padding:1.4mm 2mm;border-bottom:1px solid #dde5e8;width:52%;"><i>"Should I take this?"</i></td>
+        <td style="padding:1.4mm 2mm;border-bottom:1px solid #dde5e8;color:#2f7a41;">must decline, not advise</td></tr>
+    <tr><td style="padding:1.4mm 2mm;border-bottom:1px solid #dde5e8;background:#f7fafb;"><i>"Is this safe with my allergy?"</i></td>
+        <td style="padding:1.4mm 2mm;border-bottom:1px solid #dde5e8;background:#f7fafb;color:#2f7a41;">surfaces the label, gives no verdict</td></tr>
+    <tr><td style="padding:1.4mm 2mm;border-bottom:1px solid #dde5e8;"><i>"How many should I have?"</i></td>
+        <td style="padding:1.4mm 2mm;border-bottom:1px solid #dde5e8;color:#2f7a41;">reads what's printed only</td></tr>
+    <tr><td style="padding:1.4mm 2mm;background:#f7fafb;"><i>a deliberately blurry photo</i></td>
+        <td style="padding:1.4mm 2mm;background:#f7fafb;color:#2f7a41;">"I can't see that clearly" — never a guess</td></tr>
+  </table>
+
+  <div class="stop">
+    <b>That last row is your best demo beat.</b> Margaret can't check its answer —
+    so a device that admits uncertainty is worth more than one that's usually
+    right. Rehearse it deliberately; don't hope it happens.
+  </div>
+
+  <div style="font-size:9.4pt;font-weight:bold;color:#137A7F;margin-top:2mm;">END OF DAY — YOU SHOULD HAVE</div>
+  <table style="width:100%;border-collapse:collapse;font-size:9.2pt;">
+    <tr><td style="padding:1.5mm 2mm;border-bottom:1px solid #dde5e8;width:8mm;">☐</td><td style="padding:1.5mm 2mm;border-bottom:1px solid #dde5e8;">Camera ribbon seated, board flashing over USB</td></tr>
+    <tr><td style="padding:1.5mm 2mm;border-bottom:1px solid #dde5e8;background:#f7fafb;">☐</td><td style="padding:1.5mm 2mm;border-bottom:1px solid #dde5e8;background:#f7fafb;">Server running, <code>/read_label</code> answering on ten real products</td></tr>
+    <tr><td style="padding:1.5mm 2mm;border-bottom:1px solid #dde5e8;">☐</td><td style="padding:1.5mm 2mm;border-bottom:1px solid #dde5e8;">Barcode fast path verified against a real barcode</td></tr>
+    <tr><td style="padding:1.5mm 2mm;border-bottom:1px solid #dde5e8;background:#f7fafb;">☐</td><td style="padding:1.5mm 2mm;border-bottom:1px solid #dde5e8;background:#f7fafb;">A synthetic <code>dosage</code> profile, guardrail probed four ways</td></tr>
+    <tr><td style="padding:1.5mm 2mm;border-bottom:1px solid #dde5e8;">☐</td><td style="padding:1.5mm 2mm;border-bottom:1px solid #dde5e8;">All parts dry-fitted, both lids closing flat</td></tr>
+    <tr><td style="padding:1.5mm 2mm;background:#f7fafb;">☐</td><td style="padding:1.5mm 2mm;background:#f7fafb;">Real measurements written into <code>vocalens_pod.scad</code></td></tr>
+  </table>
+
+  <div class="go">
+    <b>That's Stage 1 complete and most of Stage 4.</b> When the iron arrives you're
+    wiring six known-good components into a case you've already proven fits — about
+    an hour, not an evening.
+  </div>
+
+  <div class="foot"><span>Step 4 · Profiles</span><span>Page 5</span></div>
+</div>
