@@ -83,22 +83,35 @@ bool setupCamera() {
 // Manual trigger. USE_PUSH_BUTTON (pins.h) picks which kind of hardware is
 // fitted; everything downstream just calls manualTriggered().
 //
-// The button is the recommended one. Capacitive touch has no fixed threshold:
-// the reading shifts with humidity, with how the pad is glued in, and with how
-// close the wearer's head is — so it has to be re-tuned on the assembled,
-// worn device, and it drifts afterwards. A button is either pressed or it
-// isn't. For a demo, that certainty is worth more than saving a hole in a lid.
+// Which to pick is a real trade, not a default:
+//
+//   BUTTON — deterministic, nothing to calibrate. But it needs TWO
+//     connections (pin and ground), and a through-hole switch needs a
+//     breadboard or soldering to attach to at all.
+//
+//   TOUCH PAD — ONE wire to any scrap of metal, no ground return. That makes
+//     it the better choice when GND pins are already spoken for, and it puts
+//     one less thing in the pod. The cost is that it has no fixed threshold:
+//     the reading moves with humidity, with how the pad is mounted, and with
+//     how close the wearer's head is, so it must be calibrated on the
+//     assembled device (the selftest build does this) and rechecked if the
+//     build changes.
 bool manualTriggered() {
 #if USE_PUSH_BUTTON
   // Wired button-to-GND with the internal pull-up enabled, so the pin idles
   // HIGH and reads LOW while pressed. This wiring needs no resistor.
   return digitalRead(PIN_TRIGGER) == LOW;
 #else
-  // touchRead() returns lower values the more contact there is. This threshold
-  // is a starting point only — tune it on the assembled device while it is
-  // being worn, not on the bench.
-  const int TOUCH_THRESHOLD = 30;
+  // Polarity differs across the ESP32 family: on the original ESP32 the
+  // reading FALLS when touched, on the ESP32-S3 it RISES. Run the selftest
+  // build once — it prints the baseline, the touched range, and which of
+  // these two values to use. Guessing makes the pad fire constantly or never
+  // fire, and the wiring looks identical either way.
+#if TOUCH_ACTIVE_HIGH
+  return touchRead(PIN_TRIGGER) > TOUCH_THRESHOLD;
+#else
   return touchRead(PIN_TRIGGER) < TOUCH_THRESHOLD;
+#endif
 #endif
 }
 

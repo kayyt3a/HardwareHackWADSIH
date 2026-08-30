@@ -42,6 +42,15 @@
 // D1) instead; nothing else in the firmware depends on this number.
 #define USE_PUSH_BUTTON 1
 #define PIN_TRIGGER 3         // pad D2 on the silkscreen. Button, or touch pad.
+
+// Touch-pad settings — only used when USE_PUSH_BUTTON is 0. Both values come
+// from running the selftest build, which measures your actual pad and prints
+// the two numbers to set here. Do not guess them.
+//
+// A touch pad needs ONE wire and no ground connection, which is why it is the
+// better choice when GND pins are already spoken for.
+#define TOUCH_ACTIVE_HIGH 1   // ESP32-S3 readings rise on touch; classic ESP32 falls
+#define TOUCH_THRESHOLD 40000 // placeholder — replace with the selftest's number
 #define PIN_I2S_BCLK 7        // I2S out to amp -> bone-conduction transducer
 #define PIN_I2S_LRC 8
 #define PIN_I2S_DIN 9

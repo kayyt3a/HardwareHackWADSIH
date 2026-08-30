@@ -123,7 +123,55 @@ static void testButton() {
          presses > 0 ? String(presses) + " press(es) seen"
                      : "nothing detected — check the leg pair and the GND wire");
 #else
-  skip("Button", "USE_PUSH_BUTTON is 0 — touch pad build");
+  // TOUCH CALIBRATION, not a pass/fail test.
+  //
+  // touchRead()'s polarity is not the same across the ESP32 family. On the
+  // original ESP32 the reading FALLS when touched; on the ESP32-S3 the touch
+  // peripheral is a different design and the reading RISES. Guessing wrong
+  // makes the pad either fire constantly or never fire, with identical-looking
+  // wiring — so measure it rather than assume.
+  //
+  // This prints a baseline, then a live stream while you hold the pad. Read
+  // both numbers off the screen and set TOUCH_THRESHOLD in main.cpp midway
+  // between them, with TOUCH_ACTIVE_HIGH set to match the direction observed.
+  Serial.println("\n  --- TOUCH PAD CALIBRATION ---");
+  Serial.println("  Do NOT touch the pad for 3 seconds...\n");
+  delay(3000);
+
+  uint32_t base = 0;
+  for (int i = 0; i < 20; i++) { base += touchRead(PIN_TRIGGER); delay(20); }
+  base /= 20;
+  Serial.printf("  Untouched baseline: %lu\n", (unsigned long)base);
+
+  Serial.println("\n  >>> NOW HOLD YOUR FINGER ON THE PAD (8 seconds) <<<\n");
+  uint32_t lo = UINT32_MAX, hi = 0;
+  unsigned long deadline = millis() + 8000;
+  while (millis() < deadline) {
+    uint32_t v = touchRead(PIN_TRIGGER);
+    if (v < lo) lo = v;
+    if (v > hi) hi = v;
+    Serial.printf("      %lu\n", (unsigned long)v);
+    delay(250);
+  }
+
+  Serial.printf("\n  While touched: min %lu, max %lu\n",
+                (unsigned long)lo, (unsigned long)hi);
+
+  bool rises = (hi > base * 1.3);
+  bool falls = (lo < base * 0.7);
+  if (rises)
+    report("Touch pad", true,
+           "reading RISES on touch — set TOUCH_ACTIVE_HIGH = 1, threshold ~" +
+           String((base + hi) / 2));
+  else if (falls)
+    report("Touch pad", true,
+           "reading FALLS on touch — set TOUCH_ACTIVE_HIGH = 0, threshold ~" +
+           String((base + lo) / 2));
+  else
+    report("Touch pad", false,
+           "reading barely moved (base " + String(base) + ", touched " +
+           String(lo) + "-" + String(hi) + ") — is the wire actually "
+           "connected to the metal pad?");
 #endif
 }
 
