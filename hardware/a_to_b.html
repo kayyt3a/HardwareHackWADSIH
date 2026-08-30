@@ -1,0 +1,395 @@
+<meta charset="utf-8">
+<title>Vocalens — A to B</title>
+<style>
+  @page { size: A4; margin: 11mm; }
+  * { box-sizing: border-box; }
+  body { font-family:"DejaVu Sans",Arial,sans-serif; color:#1a2530; margin:0;
+         font-size:10.5pt; line-height:1.4;
+         -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .page { page-break-after:always; position:relative; height:270mm; }
+  .page:last-child { page-break-after:auto; }
+  h1 { font-size:28pt; margin:0 0 1mm; color:#0B4F6C; letter-spacing:-.5px; }
+  .banner { background:#0B4F6C; color:#fff; padding:4mm 6mm; margin:-1mm -1mm 3mm; }
+  .banner .t { font-size:14pt; font-weight:700; }
+  .banner .s { font-size:9.5pt; opacity:.8; }
+  .step { display:flex; gap:4mm; margin:0 0 2.4mm; padding:0 0 2.4mm;
+          border-bottom:1px solid #e4eaed; }
+  .step:last-child { border-bottom:none; }
+  .n { flex:0 0 9mm; height:9mm; border-radius:50%; background:#0B4F6C; color:#fff;
+       font-size:11pt; font-weight:700; display:flex; align-items:center;
+       justify-content:center; margin-top:.4mm; }
+  .n.w { background:#c0392b; } .n.g { background:#3f9e54; }
+  .body { flex:1; }
+  .act { font-size:11.5pt; font-weight:700; color:#0B4F6C; }
+  .det { font-size:10pt; color:#3c4c58; margin-top:.6mm; }
+  .see { font-size:10pt; color:#2f7a41; margin-top:.9mm; }
+  .bad { font-size:10pt; color:#c0392b; margin-top:.5mm; }
+  .box { display:inline-block; width:4.6mm; height:4.6mm; border:2px solid #8b9aa5;
+         border-radius:1mm; float:right; margin-left:3mm; margin-top:1mm; }
+  .stop { background:#fdecec; border-left:5px solid #c0392b; padding:3mm 4mm; margin:3mm 0; }
+  .stop b { color:#c0392b; }
+  .go { background:#eef7ef; border-left:5px solid #3f9e54; padding:3mm 4mm; margin:3mm 0; }
+  .go b { color:#2f7a41; }
+  .tip { background:#eef4f6; border-left:5px solid #0B4F6C; padding:3mm 4mm; margin:3mm 0; }
+  code { font-family:"DejaVu Sans Mono",monospace; font-size:9.6pt; background:#eaf0f2;
+         padding:.3mm 1.4mm; border-radius:1.5mm; font-weight:bold; }
+  pre { background:#16394a; color:#e8f0f3; padding:2.4mm 3.5mm; border-radius:2mm;
+        font-family:"DejaVu Sans Mono",monospace; font-size:9pt; line-height:1.5;
+        margin:1.4mm 0; white-space:pre-wrap; }
+  .foot { position:absolute; bottom:0; left:0; right:0; font-size:8pt; color:#8b9aa5;
+          border-top:1px solid #dde5e8; padding-top:1.5mm; display:flex; justify-content:space-between; }
+  table { width:100%; border-collapse:collapse; font-size:10pt; margin:2.4mm 0; }
+  th { background:#0B4F6C; color:#fff; text-align:left; padding:1.8mm 3mm; font-size:9pt; }
+  td { padding:2mm 3mm; border-bottom:1px solid #dde5e8; }
+  tr:nth-child(even) td { background:#f7fafb; }
+</style>
+
+<!-- ============ COVER ============ -->
+<div class="page">
+  <div style="background:#0B4F6C;color:#fff;padding:8mm;margin:-1mm -1mm 4mm;">
+    <div style="font-size:9pt;letter-spacing:3px;opacity:.75;">VOCALENS · FROM NOTHING</div>
+    <h1 style="color:#fff;font-size:32pt;">A to B</h1>
+    <div style="font-size:12pt;color:#F2A65A;">38 steps. Nothing installed, nothing assumed.</div>
+  </div>
+
+  <div class="go">
+    <b>What you're about to do.</b> Install two free programs. Put the code on
+    your laptop. Plug the board in with a USB cable. Send a test program to the
+    board. Read what it says. Then start the AI part and watch the whole thing work.
+  </div>
+
+  <div style="font-size:11pt;font-weight:bold;color:#137A7F;margin-top:5mm;">THE TWO WINDOWS YOU'LL USE</div>
+  <div class="fig" style="text-align:center;margin:3mm 0;">
+    <svg width="660" height="215" viewBox="0 0 660 215">
+      <rect x="0" y="0" width="320" height="215" rx="6" fill="#f7fafb" stroke="#dde5e8" stroke-width="1.5"/>
+      <rect x="0" y="0" width="320" height="26" rx="6" fill="#137A7F"/><rect x="0" y="14" width="320" height="12" fill="#137A7F"/>
+      <text x="160" y="19" font-size="11" fill="#fff" text-anchor="middle" font-weight="bold">VS CODE</text>
+      <rect x="40" y="48" width="240" height="120" rx="4" fill="#16394a"/>
+      <rect x="40" y="48" width="240" height="16" rx="4" fill="#0B4F6C"/>
+      <circle cx="52" cy="56" r="3.5" fill="#d64545"/><circle cx="64" cy="56" r="3.5" fill="#e0b93a"/><circle cx="76" cy="56" r="3.5" fill="#3f9e54"/>
+      <text x="160" y="100" font-size="10" fill="#8fb8c9" text-anchor="middle">the code for the BOARD</text>
+      <text x="160" y="120" font-size="10" fill="#8fb8c9" text-anchor="middle">you press buttons here</text>
+      <text x="160" y="192" font-size="10" fill="#5a6b78" text-anchor="middle">Steps 1–21</text>
+
+      <rect x="340" y="0" width="320" height="215" rx="6" fill="#f7fafb" stroke="#dde5e8" stroke-width="1.5"/>
+      <rect x="340" y="0" width="320" height="26" rx="6" fill="#0B4F6C"/><rect x="340" y="14" width="320" height="12" fill="#0B4F6C"/>
+      <text x="500" y="19" font-size="11" fill="#fff" text-anchor="middle" font-weight="bold">TERMINAL</text>
+      <rect x="380" y="48" width="240" height="120" rx="4" fill="#16394a"/>
+      <text x="396" y="76" font-size="10" fill="#3f9e54" font-family="monospace">$ cd server</text>
+      <text x="396" y="96" font-size="10" fill="#3f9e54" font-family="monospace">$ uvicorn main:app</text>
+      <text x="396" y="120" font-size="10" fill="#8fb8c9" font-family="monospace">Uvicorn running...</text>
+      <text x="500" y="192" font-size="10" fill="#5a6b78" text-anchor="middle">Steps 22–31</text>
+    </svg>
+  </div>
+
+  <table>
+    <tr><th style="width:18mm;">Steps</th><th>What happens</th></tr>
+    <tr><td><b>1–6</b></td><td>Install VS Code and PlatformIO</td></tr>
+    <tr><td><b>7–10</b></td><td>Get the project onto your laptop</td></tr>
+    <tr><td><b>11–14</b></td><td>Plug the board in and prove the laptop sees it</td></tr>
+    <tr><td><b>15–21</b></td><td>Send the self-test to the board and read the results</td></tr>
+    <tr><td><b>22–31</b></td><td>Start the AI server on your laptop</td></tr>
+    <tr><td><b>32–38</b></td><td>Connect the two and watch it work</td></tr>
+  </table>
+
+  <div class="tip">
+    <b>"Terminal" is just a window where you type commands instead of clicking.</b>
+    Step 22 shows you how to open one. Nothing you type there can break your laptop.
+  </div>
+
+  <div class="foot"><span>A to B</span><span>Cover</span></div>
+</div>
+
+<!-- ============ PART 1 ============ -->
+<div class="page">
+  <div class="banner"><div class="t">PART 1 — Install the software</div><div class="s">Steps 1–10. About 20 minutes, mostly waiting.</div></div>
+
+  <div class="step"><div class="n">1</div><div class="body"><span class="box"></span>
+    <div class="act">Go to <code>code.visualstudio.com</code> and download VS Code.</div>
+    <div class="det">It's free. It's a text editor that programmers use.</div>
+    <div class="see"><b>You should see:</b> a download starts.</div>
+  </div></div>
+
+  <div class="step"><div class="n">2</div><div class="body"><span class="box"></span>
+    <div class="act">Install it and open it.</div>
+    <div class="see"><b>You should see:</b> a mostly-empty dark window with icons down the left side.</div>
+  </div></div>
+
+  <div class="step"><div class="n">3</div><div class="body"><span class="box"></span>
+    <div class="act">Click the Extensions icon in the left bar — four small squares, one detached.</div>
+    <div class="det">Fourth or fifth icon down. Or press <code>Ctrl+Shift+X</code> (<code>Cmd+Shift+X</code> on Mac).</div>
+    <div class="see"><b>You should see:</b> a search box appear at the top left.</div>
+  </div></div>
+
+  <div class="step"><div class="n">4</div><div class="body"><span class="box"></span>
+    <div class="act">Type <code>PlatformIO IDE</code> into that search box.</div>
+    <div class="see"><b>You should see:</b> "PlatformIO IDE" as the top result, with an alien-head logo.</div>
+  </div></div>
+
+  <div class="step"><div class="n">5</div><div class="body"><span class="box"></span>
+    <div class="act">Click Install on it. Then wait.</div>
+    <div class="det">This one takes 5–10 minutes and downloads a lot. Leave it alone.</div>
+    <div class="see"><b>You should see:</b> eventually, an alien-head icon appears in the left bar.</div>
+    <div class="bad"><b>What is it?</b> The thing that turns code into something the board understands, and sends it over USB.</div>
+  </div></div>
+
+  <div class="step"><div class="n">6</div><div class="body"><span class="box"></span>
+    <div class="act">Restart VS Code when it asks.</div>
+    <div class="see"><b>You should see:</b> a small toolbar appear along the very bottom edge — a tick, an arrow, a plug.</div>
+  </div></div>
+
+  <div class="step"><div class="n">7</div><div class="body"><span class="box"></span>
+    <div class="act">Get the project folder onto your laptop.</div>
+    <div class="det">If it's already there, skip to step 9. If not, download it from GitHub as a ZIP and unzip it somewhere you'll find again — Desktop is fine.</div>
+    <div class="see"><b>You should see:</b> a folder containing <code>firmware</code>, <code>server</code>, and <code>hardware</code>.</div>
+  </div></div>
+
+  <div class="step"><div class="n w">8</div><div class="body"><span class="box"></span>
+    <div class="act">Note where that folder is. You'll need the path twice.</div>
+    <div class="det">e.g. <code>/Users/you/Desktop/HardwareHackWADSIH</code> or <code>C:\Users\you\Desktop\HardwareHackWADSIH</code></div>
+    <div class="see"><b>You should see:</b> a path you could type out.</div>
+  </div></div>
+
+  <div class="step"><div class="n">9</div><div class="body"><span class="box"></span>
+    <div class="act">In VS Code: File → Open Folder. Choose the <b><code>firmware</code></b> folder.</div>
+    <div class="det"><b>The <code>firmware</code> folder itself</b> — not the folder above it. PlatformIO looks for <code>platformio.ini</code> in whatever you open, and that file lives in <code>firmware</code>.</div>
+    <div class="see"><b>You should see:</b> <code>platformio.ini</code> and a <code>src</code> folder in the left panel.</div>
+    <div class="bad"><b>Opened the wrong one?</b> File → Open Folder again. No harm done.</div>
+  </div></div>
+
+  <div class="step"><div class="n">10</div><div class="body"><span class="box"></span>
+    <div class="act">Wait for the bottom bar to stop saying it's configuring.</div>
+    <div class="det">First open downloads the ESP32 toolchain. Several minutes. Once only.</div>
+    <div class="see"><b>You should see:</b> the bottom toolbar settles, with a tick ✓ and a right-arrow → on the left.</div>
+  </div></div>
+
+  <div class="foot"><span>Part 1 — Install</span><span>Steps 1–10</span></div>
+</div>
+
+<!-- ============ PART 2 ============ -->
+<div class="page">
+  <div class="banner"><div class="t">PART 2 — Plug in and flash the self-test</div><div class="s">Steps 11–21.</div></div>
+
+  <div class="step"><div class="n">11</div><div class="body"><span class="box"></span>
+    <div class="act">Plug the USB-C cable into the board, and the other end into your laptop.</div>
+    <div class="see"><b>You should see:</b> a tiny LED on the board light up.</div>
+    <div class="bad"><b>No light?</b> Try a different cable. Many USB cables only carry power, not data — those will never work here even though the light might come on.</div>
+  </div></div>
+
+  <div class="step"><div class="n">12</div><div class="body"><span class="box"></span>
+    <div class="act">Click the alien-head icon in the left bar, then "Devices".</div>
+    <div class="det">Under PIO Home. It lists everything plugged into your USB ports.</div>
+    <div class="see"><b>You should see:</b> an entry like <code>/dev/cu.usbmodem...</code> (Mac) or <code>COM5</code> (Windows).</div>
+    <div class="bad"><b>Nothing listed?</b> Unplug, replug, refresh. Still nothing → it's the cable, 95% of the time.</div>
+  </div></div>
+
+  <div class="step"><div class="n">13</div><div class="body"><span class="box"></span>
+    <div class="act">In the left file panel, open the <code>src</code> folder.</div>
+    <div class="see"><b>You should see:</b> <code>main.cpp</code>, <code>selftest.cpp</code>, <code>pins.h</code>, <code>secrets.h.example</code> and others.</div>
+  </div></div>
+
+  <div class="step"><div class="n">14</div><div class="body"><span class="box"></span>
+    <div class="act">Right-click <code>secrets.h.example</code> → Copy. Right-click empty space → Paste. Rename the copy to exactly <code>secrets.h</code>.</div>
+    <div class="det">Right-click the new file → Rename. Delete the <code>.example</code> from the end.</div>
+    <div class="see"><b>You should see:</b> both <code>secrets.h.example</code> and <code>secrets.h</code> in <code>src</code>.</div>
+    <div class="bad"><b>Why:</b> the code refuses to build without <code>secrets.h</code>. It's separate so your WiFi password never gets uploaded to GitHub.</div>
+  </div></div>
+
+  <div class="step"><div class="n">15</div><div class="body"><span class="box"></span>
+    <div class="act">Click <code>secrets.h</code> to open it. Fill in your WiFi name and password.</div>
+    <div class="det">Keep the quote marks. Leave <code>SERVER_HOST</code> alone for now — step 33.</div>
+    <div class="see"><b>You should see:</b> your real network name between the quotes. Save with <code>Ctrl+S</code>/<code>Cmd+S</code>.</div>
+    <div class="bad"><b>Important:</b> the board only works on <b>2.4GHz</b> WiFi. If your network is 5GHz-only it will never connect. Most home routers broadcast both.</div>
+  </div></div>
+
+  <div class="step"><div class="n w">16</div><div class="body"><span class="box"></span>
+    <div class="act">At the very bottom of the VS Code window, click where it says <code>Default</code> or shows an environment name.</div>
+    <div class="det">Bottom status bar, near the alien head. This is where you choose WHICH program to send.</div>
+    <div class="see"><b>You should see:</b> a menu listing <code>seeed_xiao_esp32s3</code> and <code>selftest</code>.</div>
+  </div></div>
+
+  <div class="foot"><span>Part 2 — Plug in · Steps 11–16</span></div>
+</div>
+
+<div class="page">
+  <div class="banner"><div class="t">PART 2 continued — send the test to the board</div><div class="s">Steps 17–21.</div></div>
+
+  <div class="step"><div class="n w">17</div><div class="body"><span class="box"></span>
+    <div class="act">Choose <b><code>selftest</code></b>.</div>
+    <div class="det">This is the diagnostic program, not the real firmware. It checks every part and reports back.</div>
+    <div class="see"><b>You should see:</b> <code>env:selftest</code> in the bottom bar.</div>
+  </div></div>
+
+  <div class="step"><div class="n">18</div><div class="body"><span class="box"></span>
+    <div class="act">Click the right-arrow → in the bottom toolbar. That's Upload.</div>
+    <div class="det">It builds the code and sends it to the board in one go. First time takes a few minutes.</div>
+    <div class="see"><b>You should see:</b> a wall of text, ending in green <code>SUCCESS</code>.</div>
+    <div class="bad"><b>Red errors?</b> Copy the last 20 lines and send them to me. Don't start editing code.</div>
+  </div></div>
+
+  <div class="step"><div class="n">19</div><div class="body"><span class="box"></span>
+    <div class="act">Upload failed saying it can't find the port? Hold <b>BOOT</b>, tap <b>RESET</b>, release BOOT, click Upload again.</div>
+    <div class="det">Two tiny buttons on the board. This forces it into receive mode.</div>
+    <div class="see"><b>You should see:</b> the upload proceed.</div>
+  </div></div>
+
+  <div class="step"><div class="n g">20</div><div class="body"><span class="box"></span>
+    <div class="act">Click the plug icon 🔌 in the bottom toolbar. That's the Serial Monitor.</div>
+    <div class="det">It shows messages the board sends back to your laptop.</div>
+    <div class="see"><b>You should see:</b> a new panel open at the bottom.</div>
+  </div></div>
+
+  <div class="step"><div class="n g">21</div><div class="body"><span class="box"></span>
+    <div class="act">Press the RESET button on the board and read the results.</div>
+    <div class="det">The test runs immediately on boot, so you may need to reset to catch it from the start.</div>
+    <div class="see"><b>You should see:</b> a list of <code>[PASS]</code> and <code>[FAIL]</code> lines, then a summary. <b>It will ask you to press your button and will play a tone.</b></div>
+    <div class="bad"><b>Fix the FIRST failure first</b> — the ones below it are often just knock-on effects.</div>
+  </div></div>
+
+  <div class="foot"><span>Part 2 — Flash and test</span><span>Steps 11–21</span></div>
+</div>
+
+<!-- ============ PART 3 ============ -->
+<div class="page">
+  <div class="banner"><div class="t">PART 3 — Start the AI server</div><div class="s">Steps 22–31. This runs on your laptop, not the board.</div></div>
+
+  <div class="step"><div class="n">22</div><div class="body"><span class="box"></span>
+    <div class="act">Open a Terminal.</div>
+    <div class="det"><b>Mac:</b> press <code>Cmd+Space</code>, type <code>Terminal</code>, press Enter.<br>
+      <b>Windows:</b> press the Start key, type <code>PowerShell</code>, press Enter.</div>
+    <div class="see"><b>You should see:</b> a window with a blinking cursor waiting for typing.</div>
+  </div></div>
+
+  <div class="step"><div class="n">23</div><div class="body"><span class="box"></span>
+    <div class="act">Check Python is installed. Type this and press Enter:</div>
+<pre>python3 --version</pre>
+    <div class="see"><b>You should see:</b> something like <code>Python 3.11.5</code>.</div>
+    <div class="bad"><b>"command not found"?</b> Install it from <code>python.org</code>, then close and reopen the Terminal. On Windows try <code>python --version</code> instead — and use <code>python</code> everywhere below.</div>
+  </div></div>
+
+  <div class="step"><div class="n">24</div><div class="body"><span class="box"></span>
+    <div class="act">Move the Terminal into the <code>server</code> folder. Type <code>cd </code> (with a space), then DRAG the <code>server</code> folder from your file browser onto the Terminal window, then press Enter.</div>
+    <div class="det"><code>cd</code> means "change directory". Dragging pastes the path so you don't have to type it.</div>
+    <div class="see"><b>You should see:</b> the prompt now mentions <code>server</code>.</div>
+  </div></div>
+
+  <div class="step"><div class="n">25</div><div class="body"><span class="box"></span>
+    <div class="act">Confirm you're in the right place:</div>
+<pre>ls</pre>
+    <div class="det">Windows PowerShell: <code>dir</code>.</div>
+    <div class="see"><b>You should see:</b> <code>main.py</code>, <code>vision.py</code>, <code>requirements.txt</code> and friends.</div>
+    <div class="bad"><b>Don't see those?</b> You're in the wrong folder. Redo step 24.</div>
+  </div></div>
+
+  <div class="step"><div class="n">26</div><div class="body"><span class="box"></span>
+    <div class="act">Install what the server needs:</div>
+<pre>pip install -r requirements.txt</pre>
+    <div class="see"><b>You should see:</b> lots of downloading, ending without a red error.</div>
+    <div class="bad"><b><code>pip</code> not found?</b> Try <code>pip3</code> or <code>python3 -m pip</code>.</div>
+  </div></div>
+
+  <div class="foot"><span>Part 3 — The server · Steps 22–26</span></div>
+</div>
+
+<div class="page">
+  <div class="banner"><div class="t">PART 3 continued — API keys and go</div><div class="s">Steps 27–31.</div></div>
+
+  <div class="step"><div class="n">27</div><div class="body"><span class="box"></span>
+    <div class="act">In VS Code, make a new file in the <code>server</code> folder called exactly <code>.env</code></div>
+    <div class="det">Yes, it starts with a dot and has no name before it. That's correct.</div>
+    <div class="see"><b>You should see:</b> an empty <code>.env</code> file open.</div>
+  </div></div>
+
+  <div class="step"><div class="n">28</div><div class="body"><span class="box"></span>
+    <div class="act">Put your API keys in it, one per line, and save.</div>
+<pre>ANTHROPIC_API_KEY=sk-ant-...
+OPENAI_API_KEY=sk-...</pre>
+    <div class="see"><b>You should see:</b> two lines with your real keys. No quote marks, no spaces around the <code>=</code>.</div>
+    <div class="bad"><b>This file is gitignored</b>, so your keys never leave your laptop.</div>
+  </div></div>
+
+  <div class="step"><div class="n g">29</div><div class="body"><span class="box"></span>
+    <div class="act">Back in the Terminal, start the server:</div>
+<pre>uvicorn main:app --host 0.0.0.0 --port 8000</pre>
+    <div class="see"><b>You should see:</b> <code>Uvicorn running on http://0.0.0.0:8000</code></div>
+    <div class="bad"><b>Leave this window open and running.</b> Closing it stops the server. Open a SECOND Terminal for anything else.</div>
+  </div></div>
+
+  <div class="step"><div class="n">30</div><div class="body"><span class="box"></span>
+    <div class="act">Open a browser and go to <code>http://localhost:8000/health</code></div>
+    <div class="see"><b>You should see:</b> a short line of text or JSON — not an error page.</div>
+  </div></div>
+
+  <div class="step"><div class="n g">31</div><div class="body"><span class="box"></span>
+    <div class="act">Test the AI with no hardware at all. Photograph a medicine box with your phone, put the photo in the <code>server</code> folder as <code>box.jpg</code>, then in a SECOND Terminal (also <code>cd</code>'d to <code>server</code>):</div>
+<pre>curl -X POST http://localhost:8000/read_label -F "image=@box.jpg"</pre>
+    <div class="see"><b>You should see:</b> the AI describe what's on the box.</div>
+    <div class="bad"><b>This is the most important test in the project.</b> It proves the whole AI half works with zero wiring involved.</div>
+  </div></div>
+
+  <div class="foot"><span>Part 3 — The server</span><span>Steps 22–31</span></div>
+</div>
+
+<!-- ============ PART 4 ============ -->
+<div class="page">
+  <div class="banner"><div class="t">PART 4 — Connect the two halves</div><div class="s">Steps 32–38. The finish line.</div></div>
+
+  <div class="step"><div class="n">32</div><div class="body"><span class="box"></span>
+    <div class="act">Find your laptop's address on your WiFi network. In a Terminal:</div>
+<pre>Mac:      ipconfig getifaddr en0
+Windows:  ipconfig
+Linux:    hostname -I</pre>
+    <div class="det">On Windows, look for the line saying <code>IPv4 Address</code>.</div>
+    <div class="see"><b>You should see:</b> four numbers like <code>192.168.1.42</code>. <b>Write it down.</b></div>
+    <div class="bad"><b>Not <code>127.0.0.1</code></b> — that means "this same computer", and the board isn't this same computer.</div>
+  </div></div>
+
+  <div class="step"><div class="n">33</div><div class="body"><span class="box"></span>
+    <div class="act">In VS Code, open <code>src/secrets.h</code> and put that address in as <code>SERVER_HOST</code>. Save.</div>
+    <div class="see"><b>You should see:</b> <code>#define SERVER_HOST "192.168.1.42"</code> with your number.</div>
+  </div></div>
+
+  <div class="step"><div class="n">34</div><div class="body"><span class="box"></span>
+    <div class="act">With <code>selftest</code> still selected, click Upload again, then open the Serial Monitor.</div>
+    <div class="see"><b>You should see:</b> the test run again — and this time <code>[PASS] Server reachable</code>.</div>
+    <div class="bad"><b>Still failing?</b> The laptop and the board must be on the <b>same WiFi network</b>. Not one on guest WiFi and the other on the main one.</div>
+  </div></div>
+
+  <div class="step"><div class="n w">35</div><div class="body"><span class="box"></span>
+    <div class="act">Only when every self-test line passes: switch the environment back to <code>seeed_xiao_esp32s3</code>.</div>
+    <div class="det">Same bottom-bar menu as step 16.</div>
+    <div class="see"><b>You should see:</b> <code>env:seeed_xiao_esp32s3</code> in the bottom bar.</div>
+    <div class="bad"><b>Don't skip ahead to this.</b> The real firmware assumes the hardware works — debugging it is far harder than debugging the self-test.</div>
+  </div></div>
+
+  <div class="foot"><span>Part 4 — Connect · Steps 32–35</span></div>
+</div>
+
+<div class="page">
+  <div class="banner"><div class="t">PART 4 continued — the finish line</div><div class="s">Steps 36–38.</div></div>
+
+  <div class="step"><div class="n">36</div><div class="body"><span class="box"></span>
+    <div class="act">Click Upload. Then open the Serial Monitor.</div>
+    <div class="see"><b>You should see:</b> <code>WiFi connected</code>, then <code>Glasses ready</code>.</div>
+  </div></div>
+
+  <div class="step"><div class="n g">37</div><div class="body"><span class="box"></span>
+    <div class="act">Point the camera at a medicine box and press your button.</div>
+    <div class="see"><b>You should see:</b> the Serial Monitor say it triggered, the server Terminal log a request, and <b>the speaker read the label out loud.</b></div>
+    <div class="bad"><b>That's the whole product working.</b></div>
+  </div></div>
+
+  <div class="step"><div class="n">38</div><div class="body"><span class="box"></span>
+    <div class="act">Do it ten more times with different objects.</div>
+    <div class="det">A tin, something handwritten, something in bad light, something with a barcode.</div>
+    <div class="see"><b>You should see:</b> ten out of ten trigger and speak. Anything less is what you fix next.</div>
+  </div></div>
+
+  <div class="go">
+    <b>Keep these three windows open whenever you're working:</b> VS Code with the
+    Serial Monitor, the Terminal running the server, and a second Terminal for
+    everything else. Almost every problem shows up in one of the first two.
+  </div>
+
+  <div class="foot"><span>Part 4 — Connect</span><span>Steps 32–38</span></div>
+</div>
