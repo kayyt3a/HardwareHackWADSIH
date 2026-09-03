@@ -1,4 +1,4 @@
-# Vocalens — project context
+# VocaLens — project context
 
 Context file for anyone (human or AI) picking this repo up. Facts and the
 reasoning behind decisions, not a tutorial. Step-by-step guides live in
@@ -163,32 +163,102 @@ configuration to leak.
 Say it that way in the pitch. "We told the model not to" is weak; "the code
 that would build it doesn't execute" is not.
 
+(The reminders mode is a real second configuration in the code, but the demo
+runs one profile only — two configurations doubles the setup and doubles what
+can break in a three-minute slot.)
+
 The device **surfaces what is printed on the label. It never gives a
 verdict.** On a poor image it says it can't see clearly rather than guessing —
 which matters more than usual, because the user cannot check its answer.
 
 ---
 
-## The two users
+## The user
 
-Full briefs in `docs/PERSONAS.md`.
+**Margaret, 78** — synthetic persona, built from the challenge brief and
+published research. Macular degeneration; central vision largely gone,
+peripheral intact, so she navigates her own home confidently but cannot read
+anything she looks directly at. Nine daily medications, kept in a
+self-invented order on the windowsill, rechecked by position. Two bottles are
+the same size and shape, so she has a rubber band round one of them.
 
-**Margaret, 78** — synthetic, the demo persona. Macular degeneration, nine
-daily medications, keeps them in a self-invented order on the windowsill with
-a rubber band round one bottle to tell two identical ones apart.
+> **The line to say out loud:** *"The baseline isn't nothing. It's a rubber
+> band round a pill bottle."* A system she invented, maintains herself, and
+> which fails silently the moment someone tidies the windowsill.
 
-> *"The baseline isn't nothing. It's a rubber band round a pill bottle."*
+Her question for us is *"what happens when it gets it wrong?"* — she cannot
+check the answer. That is why the confidence gate exists and why the demo
+includes a deliberate failure.
 
-**Ethan** — a **real teammate**, the second configuration. Tech-fluent CS
-student who'd say the device was pointless if his phone already did it, which
-is exactly why he's useful: he's the hardest user, not the most sympathetic.
+**We did not interview or test with anyone with disability.** The brief calls
+for synthetic data and the team as test users. Say that plainly if asked;
+it's a limitation, not something to hide, and "we'd validate with real users
+next" is the honest next step.
 
-> **Do not attribute low vision to him as fact.** He's real. The honest
-> framing is stronger anyway: *"He doesn't have low vision. But he's who we
-> designed the younger configuration around, and he's the one who's actually
-> been wearing it."*
+## The pitch
 
----
+Deck: `Vocalens_Pitch_Deck.pptx`. Nine slides, ~3 minute slot.
+
+### The numbers, with sources
+
+| Claim | Source |
+|---|---|
+| 60% of people with vision loss struggle to locate or identify their own medication | APH ConnectCenter |
+| 64% report missing doses; 33% report inaccurate dosing or spilling | APH ConnectCenter |
+| Australia: 400k cataracts · 400k diabetic retinopathy · 200k macular degeneration · 160k glaucoma | AIHW eye health report |
+
+The prevalence slide exists to make the point that glasses and surgery cannot
+fully correct many of these conditions — this is not a shrinking problem.
+
+### The Meta Ray-Ban rebuttal
+
+A judge will ask it, so the deck asks it first.
+
+| | |
+|---|---|
+| **Meta glasses, $800–900** | A phone strapped to your face. Dozens of features an elderly or low-vision user will never touch, or even discover. |
+| **VocaLens, <$100** | One job, done reliably. Head-aim replaces screen-aim — no aiming a screen you can't see. |
+
+### The three demo beats, in order
+
+1. **A barcode read** — instant, zero model calls
+2. **An open question** — "what does this say?"
+3. **A deliberate failure** — it says *"I can't see that clearly"* rather than guessing
+
+Beat 3 is the important one. Rehearse it; don't hope it happens.
+
+### "AI earns its place"
+
+A recognised barcode answers with **zero model calls**. The vision model runs
+only for genuinely open-ended questions — a label, a colour, a comparison.
+This is a design argument, not a cost saving, and it's worth making explicitly
+in a room full of projects that call a model for everything.
+
+### Dignity — four claims the deck makes
+
+- **Who's in control:** only the wearer hears the answer. No escalation, no
+  third party notified, ever.
+- **Collects only what's needed:** camera and mic capture on trigger only. No
+  continuous recording, nothing stored beyond one request.
+- **Looks ordinary:** reads as glasses, not medical equipment, at a friend's
+  kitchen bench.
+- **Not a medical device:** surfaces printed facts, never a safety verdict.
+
+### What we deliberately didn't build
+
+Stating this is a strength. It shows the scope was chosen, not missed.
+
+- Carer notifications or location tracking
+- A synced calendar — reminders are wearer-built, on purpose
+- Multi-language support — next on the list
+
+### Honest gaps in the deck as it stands
+
+- Slide 4 has a **placeholder** where the product image goes.
+- Slide 8's cost breakdown lists a bone-conduction transducer and printed
+  frame. The built prototype uses the kit **speaker** and clips to existing
+  frames. Slide 5 already concedes the speaker swap — make sure slide 8
+  doesn't contradict it.
 
 ## Status
 
@@ -199,6 +269,13 @@ is exactly why he's useful: he's the hardest user, not the most sympathetic.
 | Self-test build | Works. Flash `-e selftest` to find which subsystem is broken. |
 | CAD | Ring + interlock, validated watertight, mate checked by boolean intersection. |
 | Printed and assembled | In progress. |
+
+### Naming
+
+The deck brands it **VocaLens** (capital L). Filenames, CAD and code use
+`vocalens` / `Vocalens`. Not worth churning the code over, but **be consistent
+in anything a judge sees** — deck, README, the printed pods. The deck spelling
+wins.
 
 ### Known stale
 
