@@ -50,6 +50,7 @@ Don't relitigate these without a new reason.
 | **Zero external purchases** | Everything from the Freenove Ultimate Starter Kit + XIAO ESP32S3 Sense. No shipping risk, no budget beyond what every team got. |
 | **Dumb board, smart server** | The ESP32 only captures and plays. All intelligence is server-side Python, so the smart half can be fixed without reflashing. |
 | **Two pods, not one** | One box of all five components is a lump on the side of the head. Split keeps each pod thin, and puts the camera at the front and the speaker at the ear where they belong. |
+| **The amp stays in the REAR pod** | Moving it forward would shorten the rear pod and cut the wires along the arm from 5 to 2, which is why it keeps getting suggested. Reject it. Bulk behind the ear is hidden by the wearer's own head; bulk at the hinge sits in peripheral vision and is the first thing anyone looking at them sees. **Where the volume sits beats how much of it there is.** Rear pod is deliberately the larger one: 55 x 31mm vs the front's 42 x 22mm. |
 
 ### Demoted to "what we'd build next" (pitch material, not built)
 
