@@ -40,7 +40,7 @@
 // is fine in normal use, but do not hold the button down while the board is
 // powering up. If that ever becomes awkward, move PIN_TRIGGER to GPIO 2 (pad
 // D1) instead; nothing else in the firmware depends on this number.
-#define USE_PUSH_BUTTON 1
+#define USE_PUSH_BUTTON 0   // 0 = capacitive pad (built): one wire, no ground return
 #define PIN_TRIGGER 3         // pad D2 on the silkscreen. Button, or touch pad.
 
 // Touch-pad settings — only used when USE_PUSH_BUTTON is 0. Both values come

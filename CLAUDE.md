@@ -121,6 +121,7 @@ shape (pods, lids), PLA for disposable test prints only.
 | **ESP8266Audio must be pinned to 1.9.x** | 2.x targets ESP-IDF 5 (`driver/i2s_std.h`); this platform is arduino-esp32 2.0.17 / IDF 4.4 (`driver/i2s.h`). |
 | **Touch polarity is chip-specific** | On the original ESP32 `touchRead()` *falls* on touch; on the S3 it *rises*. Run the selftest build — it measures and prints both the direction and a threshold. |
 | **GPIO 3 is a strapping pin** | Fine in use, but don't hold a button on it down during power-up. GPIO 2 (pad `D1`) is the drop-in alternative. |
+| **Rail squish and slot clearance are one number** | The pod's dovetail slot is cut with `CLEARANCE` of slack, so `DT_SQUISH` on the TPU rail must **exceed** it or the joint is a slip fit and the pod rattles. They were tuned separately once and cancelled out exactly. |
 | **A GND pin takes more than one wire** | Every ground is the same node. Twist or solder several wires into one joint — that's normal, not a bodge. |
 
 ### Trigger options
@@ -129,6 +130,11 @@ shape (pods, lids), PLA for disposable test prints only.
 
 - **Touch pad** — one wire to any scrap of metal, **no ground return**. Best
   when GND pins are spoken for and smallest in the pod. Needs calibration.
+  **This is what's built**, so `USE_PUSH_BUTTON` is 0 and the lid is cut for a
+  pad. The pad is a 9 x 20mm **stadium, not a circle**: the lid's outer face is
+  only 10.2mm across (that axis runs into the scalp), so a real coin cannot fit
+  — but capacitance follows area, and the stadium has ~3x the area of a 9mm
+  disc. `TRIGGER_IS_BUTTON` in the CAD must match `USE_PUSH_BUTTON` in `pins.h`.
 - **Button** — deterministic, nothing to calibrate, but needs two connections
   and a through-hole switch can't take a jumper socket directly.
 

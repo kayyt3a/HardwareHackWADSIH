@@ -72,7 +72,13 @@ RAIL_BOSS_T   = 1.4;  // extra wall thickness under the rail only
 DT_NECK   = 5.0;   // width at the root (narrow)
 DT_HEAD   = 8.0;   // width at the top (wide)
 DT_HEIGHT = 4.0;
-DT_SQUISH = 0.15;  // TPU rail printed this much oversize -> interference fit
+// The pod's slot is cut with CLEARANCE (0.3) of slack, so the rail must be
+// grown by MORE than that or the joint is a slip fit and the pod rattles —
+// the numbers must be read together, not tuned separately.
+//   net interference per face = DT_SQUISH - CLEARANCE = 0.15mm
+// which TPU takes up by compressing. Raise it if the pod is still loose;
+// lower it if the pod will not slide on by hand.
+DT_SQUISH = 0.45;
 
 // ------------------------------------------------------------- component box
 // Measure YOUR parts and change these. Everything downstream is derived.
@@ -209,8 +215,29 @@ module pod_base(length, out, vert, cable_slot_front = true) {
 // A touch pad needs a shallow dish to glue a metal disc into; a button needs a
 // hole for its plunger to poke through. They are not interchangeable, so the
 // lid has to know which one is fitted.
-TRIGGER_IS_BUTTON = true;
+TRIGGER_IS_BUTTON = false;
 BUTTON_PLUNGER_D  = 4.2;   // clearance hole for the plunger, not the body
+
+// ------------------------------------------------------------ the touch pad
+// WHY THIS IS A STADIUM AND NOT A CIRCLE.
+//
+// The lid's outer face is only (vert + 2*WALL) wide — 10.2mm on the front pod.
+// That is the Y axis, the one that runs into the scalp and the ear, and the
+// entire two-pod split exists to keep it small. So widening the pod to take a
+// real ~20mm coin would undo the thing the design is for.
+//
+// Capacitance goes with AREA, not diameter. A 9 x 20mm stadium has roughly
+// three times the area of a 9mm disc and fits the strip we actually have, so
+// the pad gets MORE sensitive, not less, by refusing to be a coin.
+//
+// Cut into the OUTSIDE of the lid, so the disc drops in flush and there is no
+// proud edge to catch on hair. PAD_WIRE_D goes right through into the cavity:
+// solder the trigger wire to the BACK of the pad before gluing it in, so no
+// solder joint is visible and nothing conductive is exposed to a fingertip.
+PAD_W      = 9.0;   // across the lid (Y). Must stay under (vert + 2*WALL) - 1.
+PAD_L      = 20.0;  // along the arm (X). Free to grow — this is the cheap axis.
+PAD_DEPTH  = 0.8;   // set to your disc/foil thickness so it finishes flush
+PAD_WIRE_D = 2.2;   // pass-through for the trigger wire
 
 module pod_lid(length, out, vert, camera_hole = false, touch_recess = false,
                grille = false) {
@@ -242,10 +269,27 @@ module pod_lid(length, out, vert, camera_hole = false, touch_recess = false,
         translate([length - 12, bw / 2, WALL - 0.5])
           cylinder(h = 0.5 + EPS, d = BUTTON_PLUNGER_D + 3, $fn = 32);
       } else {
-        // Blind dish for a glued-in metal disc. Deliberately NOT a through
-        // hole: capacitive touch works fine through a thin layer of plastic.
-        translate([length - 12, bw / 2, WALL - 0.6])
-          cylinder(h = 0.6 + EPS, d = 9, $fn = 40);
+        // Stadium recess for the glued-in pad. Two cylinders plus the bar
+        // between them, so the ends stay round and there is no sharp corner
+        // for the disc to have to match.
+        pad_w = min(PAD_W, bw - 2);          // never breach the side walls
+        cx    = length - PAD_L / 2 - 4;      // sits at the rear, clear of the lens
+        span  = PAD_L - pad_w;               // centre-to-centre of the end radii
+
+        translate([cx, bw / 2, WALL - PAD_DEPTH]) {
+          hull() {
+            for (dx = [-span / 2, span / 2])
+              translate([dx, 0, 0])
+                cylinder(h = PAD_DEPTH + EPS, d = pad_w, $fn = 40);
+          }
+        }
+
+        // Wire pass-through into the cavity. Solder to the pad's underside.
+        // WALL + 1.0 because the friction rib sits on top of the lid plate
+        // here — a hole only WALL deep stops inside the rib and never breaks
+        // through into the cavity, so the wire has nowhere to go.
+        translate([cx, bw / 2, -EPS])
+          cylinder(h = WALL + 1.0 + 2 * EPS, d = PAD_WIRE_D, $fn = 24);
       }
     }
 
