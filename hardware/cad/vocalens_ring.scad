@@ -56,37 +56,11 @@ $fn         = 48;
 // tall). It stretches up comfortably; a very slim arm is the case that goes
 // loose, which is the safer way round to be wrong.
 RING_LEN      = 14;   // X — how much of the arm the ring covers
-RING_IN_VERT  = 6.0;  // Y — undersized vs a typical ~8-9mm arm height
-RING_IN_OUT   = 2.6;  // Z — undersized vs a typical ~4-5mm arm thickness
+RING_IN_VERT  = 5.0;  // Y — undersized vs a typical ~8-9mm arm height
+RING_IN_OUT   = 2.2;  // Z — undersized vs a typical ~4-5mm arm thickness
 RING_WALL     = 1.2;  // thin on purpose: 3 perimeters, stretches easily.
                       // Thicker walls fight you on every fit.
 
-// SPLIT RING. The collar is a C, not a closed loop: it snaps over the arm
-// instead of being threaded along it.
-//
-// This is not only about grip. A closed ring has to slide the entire length of
-// the temple arm to get into position, past the hinge at one end or the bend
-// over the ear at the other, and on some frames it will not pass either. A C
-// presses on wherever it is wanted.
-//
-// THE MOUTH FACES THE HEAD, and that side is chosen, not arbitrary:
-//   * It is opposite the dovetail rail, so the two lips of the C are the thin
-//     side walls that are supposed to flex. Splitting the rail side would
-//     hinge the joint itself and the pod would work loose.
-//   * For the ring to come off, the arm has to escape through the mouth —
-//     which means moving toward the wearer's head. The head is in the way. The
-//     pod's own weight pulls outward, against the closed side of the C, which
-//     is the direction the arm cannot leave in.
-//   * It is invisible in wear.
-//
-// MOUTH_W is deliberately far narrower than the arm is tall: the arm has to
-// spread the C to get in, and that spread is what the grip is made of. Smaller
-// grips harder. Widen it only if TPU is tearing at the lips rather than
-// stretching, which would mean the walls are too thick, not the mouth too
-// small.
-RING_MOUTH_W  = 4.5;  // gap across the opening, vs RING_IN_VERT of 6.0
-RING_LEADIN   = 1.2;  // funnel on the outside of the mouth, so the arm starts
-                      // the spread instead of catching on a square lip
 
 // The rail must NOT stretch with the rest of the ring, or the pod joint
 // changes size depending on whose glasses it's on. So the wall directly under
@@ -250,17 +224,6 @@ module temple_ring() {
     // the arm passes through — undersized, the TPU stretches onto it
     translate([-EPS, RING_WALL, RING_WALL])
       cube([RING_LEN + 2 * EPS, RING_IN_VERT, RING_IN_OUT]);
-
-    // The mouth, cut through the inner wall (z = 0 side, against the head).
-    // hull() of a wide opening at the outside and a narrow one at the cavity
-    // makes it a funnel: the arm meets a taper and is guided into spreading
-    // the lips, rather than butting into a square edge and needing a fingernail.
-    hull() {
-      translate([-EPS, ow / 2 - (RING_MOUTH_W + 2 * RING_LEADIN) / 2, -EPS])
-        cube([RING_LEN + 2 * EPS, RING_MOUTH_W + 2 * RING_LEADIN, EPS]);
-      translate([-EPS, ow / 2 - RING_MOUTH_W / 2, RING_WALL])
-        cube([RING_LEN + 2 * EPS, RING_MOUTH_W, EPS]);
-    }
   }
 }
 

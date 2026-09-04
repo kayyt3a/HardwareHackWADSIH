@@ -106,12 +106,6 @@ one thickness of temple arm and needed a tuning print. v2 splits the jobs:
 - **`temple_ring()`** — thin-walled TPU collar, opening deliberately
   **undersized**, stretches onto the arm like a hair tie. If it doesn't grip,
   make the opening *smaller* or the wall *thinner* — never larger.
-  It is a **split C, not a closed loop**: it snaps on rather than threading
-  along the arm, which a closed ring cannot always do — it would have to pass
-  the hinge or the bend over the ear. **The mouth faces the head**, which is a
-  chosen side: it is opposite the rail so the flexing happens in the thin side
-  walls and not in the joint, and escaping through it would mean the arm moving
-  *into* the wearer's head, which the head prevents.
 - **`pod_base()`** — rigid PETG box with a dovetail slot. Never touches the
   glasses.
 
