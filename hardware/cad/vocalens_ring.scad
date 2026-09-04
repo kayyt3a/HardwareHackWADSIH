@@ -56,8 +56,8 @@ $fn         = 48;
 // tall). It stretches up comfortably; a very slim arm is the case that goes
 // loose, which is the safer way round to be wrong.
 RING_LEN      = 14;   // X — how much of the arm the ring covers
-RING_IN_VERT  = 7.0;  // Y — undersized vs a typical ~8-9mm arm height
-RING_IN_OUT   = 3.2;  // Z — undersized vs a typical ~4-5mm arm thickness
+RING_IN_VERT  = 6.0;  // Y — undersized vs a typical ~8-9mm arm height
+RING_IN_OUT   = 2.6;  // Z — undersized vs a typical ~4-5mm arm thickness
 RING_WALL     = 1.2;  // thin on purpose: 3 perimeters, stretches easily.
                       // Thicker walls fight you on every fit.
 
@@ -81,7 +81,13 @@ DT_HEIGHT = 4.0;
 DT_SQUISH = 0.45;
 
 // ------------------------------------------------------------- component box
-// Measure YOUR parts and change these. Everything downstream is derived.
+// MEASURE YOUR OWN PARTS AND CHANGE THESE BEFORE PRINTING.
+//
+// These are nominal figures, not measurements of the parts in your kit, and
+// every pod dimension is derived from them — so an error here is an error in
+// the print. SPKR_DIA is the one to check first: it alone sets the rear pod's
+// outward bulk (28mm of a 31mm pod), so if your speaker is smaller than 28mm
+// the whole rear pod shrinks with it for free.
 CAM_LEN = 11; CAM_WID = 11; CAM_HGT = 7;
 XIAO_LEN = 23; XIAO_WID = 19;
 XIAO_THICK = 5;    // board profile WITHOUT the camera (PCB + USB shell)
@@ -106,12 +112,17 @@ SPKR_DIA = 28; SPKR_HGT = 6;
 AMP_LEN = 22; AMP_WID = 16; AMP_HGT = 5;
 
 // ---------------------------------------------------------------- pod sizing
-FB_GAP  = 3;
-FB_LEN  = CAM_LEN + FB_GAP + XIAO_LEN + 2 * WALL + 8;
+// The two trailing constants below are SLACK — room for wire bends and for
+// components sitting a little proud of their nominal size. They were set
+// generously while the layout was still moving. Now that it is fixed they are
+// cut to the minimum that still lets a wire turn a corner: every millimetre
+// here is length hanging off the side of someone's face.
+FB_GAP  = 1.5;
+FB_LEN  = CAM_LEN + FB_GAP + XIAO_LEN + 2 * WALL + 3;
 FB_OUT  = max(XIAO_WID, CAM_WID);       // outward (Z) — footprint
 FB_VERT = max(XIAO_PROFILE, CAM_HGT);   // vertical (Y) — thickness
 
-RA_LEN  = AMP_LEN + SPKR_DIA + 2 * WALL + 4;
+RA_LEN  = AMP_LEN + SPKR_DIA + 2 * WALL + 2;
 RA_OUT  = max(AMP_WID, SPKR_DIA);
 RA_VERT = max(AMP_HGT, SPKR_HGT);
 
