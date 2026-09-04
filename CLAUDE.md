@@ -78,14 +78,25 @@ A temple arm sits against the skull. There is almost **no clearance above or
 below** it before you hit hair or bone; there is **plenty straight outward**.
 
 - **X** — along the arm, front to back.
-- **Y (vertical)** — toward scalp and ear. **Keep small.** Pass a component's
-  *thickness* here.
-- **Z (outward)** — away from the head. Real clearance. Pass a component's
-  *footprint* here.
+- **Y (vertical)** — up and down along the side of the head.
+- **Z (outward)** — away from the head. **This is the expensive one.**
 
-Getting this backwards made the pods 22mm and 31mm tall and they pressed into
-the wearer's head. Corrected, both are ~10mm. It is documented at the top of
-`hardware/cad/vocalens_ring.scad` for the same reason it's here.
+**Boards stand on edge**, broad face parallel to the head: pass a component's
+*footprint* to Y and its *thickness* to Z.
+
+An earlier version of this file said the reverse — keep Y small, because the
+pod presses into the scalp. **That was wrong, and it cost a design round.** The
+pod cannot press into anything: the ring sits between it and the arm, so the
+pod body starts ~12mm outboard and is centred on the arm. Growing it vertically
+happens in free air.
+
+Lying the 19mm board flat to protect a nonexistent constraint projected the
+front pod **34mm** off the arm and the rear pod **43mm** — boxes on the side of
+the head. On edge they are **24mm and 23mm**, and the bulk runs along the line
+of the frame where it reads as a thick glasses arm.
+
+The test to apply: *would a person see it?* Vertical is hidden by the frame and
+the ear. Outward is the silhouette.
 
 ### The mount (v2, current)
 

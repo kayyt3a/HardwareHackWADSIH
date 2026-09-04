@@ -144,12 +144,30 @@ AMP_PROFILE        = AMP_HEADERS_FITTED ? HEADER_STACK : AMP_HGT;
 // here is length hanging off the side of someone's face.
 FB_GAP  = 1.5;
 FB_LEN  = CAM_LEN + FB_GAP + XIAO_LEN + 2 * WALL + 3;
-FB_OUT  = max(XIAO_WID, CAM_WID);       // outward (Z) — footprint
-FB_VERT = max(XIAO_PROFILE, CAM_HGT) + WIRE_ROOM;   // vertical (Y) — thickness
+// BOARDS STAND ON EDGE. Their broad face is parallel to the side of the head,
+// not lying flat like a shelf.
+//
+// This reverses an earlier rule that said to keep the VERTICAL axis small and
+// pass component thickness to it. That rule was protecting against the pod
+// pressing into the scalp — but the pod cannot press into anything. The ring
+// sits between it and the arm, so the pod body starts about 12mm outboard and
+// is centred on the arm: growing it vertically happens in free air.
+//
+// The axis that is actually expensive is OUTWARD, because that is the one a
+// person sees. Lying the 19mm board flat projected the pod 34mm off the arm —
+// a box on the side of the head. Standing it on edge puts 19mm on the vertical
+// axis, where it reads as a thick glasses arm and follows the line of the
+// frame, and leaves only board thickness sticking out.
+FB_VERT = max(XIAO_WID, CAM_WID);                  // vertical (Y) — footprint
+FB_OUT  = max(XIAO_PROFILE, CAM_HGT) + WIRE_ROOM;  // outward (Z) — thickness
 
 RA_LEN  = AMP_LEN + SPKR_DIA + 2 * WALL + 2;
-RA_OUT  = max(AMP_WID, SPKR_DIA);
-RA_VERT = max(AMP_PROFILE, SPKR_HGT) + WIRE_ROOM;
+// Same for the rear pod, and it matters more here: the speaker's 28mm was the
+// single biggest number in the build and it was pointed straight out sideways.
+// On edge it runs vertically, behind the ear, where the ear itself hides it —
+// which is exactly where a behind-the-ear hearing aid puts the same bulk.
+RA_VERT = max(AMP_WID, SPKR_DIA);
+RA_OUT  = max(AMP_PROFILE, SPKR_HGT) + WIRE_ROOM;
 
 // ============================================================================
 // helpers
@@ -262,15 +280,20 @@ BUTTON_PLUNGER_D  = 4.2;   // clearance hole for the plunger, not the body
 // entire two-pod split exists to keep it small. So widening the pod to take a
 // real ~20mm coin would undo the thing the design is for.
 //
-// Capacitance goes with AREA, not diameter. A 9 x 20mm stadium has roughly
-// three times the area of a 9mm disc and fits the strip we actually have, so
-// the pad gets MORE sensitive, not less, by refusing to be a coin.
+// Capacitance goes with AREA, not diameter, so the pad is specified as a
+// stadium rather than a disc and grows along whichever axis has room.
+//
+// It used to be 9mm wide because the lid face was only 10.2mm across. Standing
+// the boards on edge widened that face to 22.2mm, so the pad is now 18 x 20mm
+// — four times the area, and wide enough to take a real coin if you have one
+// glued up already. It is still a stadium, not a circle, because nothing is
+// gained by shrinking it back to fit a round outline.
 //
 // Cut into the OUTSIDE of the lid, so the disc drops in flush and there is no
 // proud edge to catch on hair. PAD_WIRE_D goes right through into the cavity:
 // solder the trigger wire to the BACK of the pad before gluing it in, so no
 // solder joint is visible and nothing conductive is exposed to a fingertip.
-PAD_W      = 9.0;   // across the lid (Y). Must stay under (vert + 2*WALL) - 1.
+PAD_W      = 18.0;  // across the lid (Y). Clamped to (vert + 2*WALL) - 2 in code.
 PAD_L      = 20.0;  // along the arm (X). Free to grow — this is the cheap axis.
 PAD_DEPTH  = 0.8;   // set to your disc/foil thickness so it finishes flush
 PAD_WIRE_D = 2.2;   // pass-through for the trigger wire
