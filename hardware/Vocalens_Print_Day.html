@@ -39,10 +39,10 @@ and the TPU can run after it or on a second machine.</p>
 <table>
 <tr><th>File</th><td><code>FINAL_petg_plate_HEADERS.stl</code>
   &nbsp;— your XIAO has 2×7 headers soldered on, so this is the one.<br>
-  Print <code>FINAL_petg_plate_XIAOSOCKETS_AMPFLAT.stl</code> instead <b>only</b> if
-  the amplifier has wires soldered flat to its pads rather than jumper sockets
-  pushed onto pins. <b>If unsure, print this one</b> — a pod that is slightly too
-  big still closes, one that is too small cannot be fixed.</td></tr>
+  <b>This build assumes the amplifier is wired WITHOUT sockets</b> — wires
+  soldered straight to its pads. That is what makes the rear pod 10mm slimmer.
+  If your amp still has jumper sockets pushed onto pins, this pod will not
+  close over it: print <code>FINAL_petg_plate_AMPSOCKETS.stl</code> instead.</td></tr>
 <tr><th>What is on it</th><td>4 parts: front pod base, front pod lid, rear pod base, rear pod lid</td></tr>
 <tr><th>Material</th><td>PETG (PLA is acceptable if PETG is not free — it is stiffer and more brittle, but it fits)</td></tr>
 <tr><th>Layer height</th><td>0.2 mm</td></tr>
@@ -103,6 +103,11 @@ through the middle of the oval.
   cannot reach it, and nothing conductive should be exposed where a finger touches.</div>
 </li>
 <li><b>Check the rear lid</b> has a ring of small holes — that is the speaker grille.</li>
+<li><b>Drop the amplifier into the rear pod before you glue anything.</b>
+  <div class="why">This is the one clearance the slim design spends. If the amp
+  still has sockets on it, it will not go in — and you want to find that out
+  now, holding both parts, not at midnight with wires already run.</div>
+</li>
 </ol>
 </div>
 

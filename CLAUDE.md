@@ -134,6 +134,7 @@ shape (pods, lids), PLA for disposable test prints only.
 | **Touch polarity is chip-specific** | On the original ESP32 `touchRead()` *falls* on touch; on the S3 it *rises*. Run the selftest build — it measures and prints both the direction and a threshold. |
 | **GPIO 3 is a strapping pin** | Fine in use, but don't hold a button on it down during power-up. GPIO 2 (pad `D1`) is the drop-in alternative. |
 | **Rail squish and slot clearance are one number** | The pod's dovetail slot is cut with `CLEARANCE` of slack, so `DT_SQUISH` on the TPU rail must **exceed** it or the joint is a slip fit and the pod rattles. They were tuned separately once and cancelled out exactly. |
+| **The amp is wired flat, not on sockets** | `AMP_HEADERS_FITTED` defaults to false. A jumper socket adds ~10mm to the rear pod, all of it on the axis facing the wearer's head, so the shipped build solders wires straight to the amp pads. A socketed amp will not fit the default pod — render with `-D AMP_HEADERS_FITTED=true` if you need it. |
 | **A GND pin takes more than one wire** | Every ground is the same node. Twist or solder several wires into one joint — that's normal, not a bodge. |
 
 ### Trigger options

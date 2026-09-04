@@ -134,7 +134,17 @@ AMP_LEN = 22; AMP_WID = 16; AMP_HGT = 5;
 // The amp gets its own flag because whether IT has headers is independent of
 // whether the XIAO does — you might plug into the XIAO and solder wires flat to
 // the amp, or the reverse. It follows HEADERS_FITTED by default.
-AMP_HEADERS_FITTED = HEADERS_FITTED;
+// DEFAULT IS false, and it is a decision about the build, not a preference.
+//
+// false means the amp has wires soldered flat to its pads. It is 10mm slimmer
+// than the socketed version and it is the design we are shipping, because that
+// 10mm comes straight off the pod sitting against the wearer's head.
+//
+// If your amp has header pins with jumper sockets pushed onto them, this pod
+// WILL NOT CLOSE over it. Either wire the amp flat, or override this back to
+// true and accept the taller rear pod:
+//   openscad -D AMP_HEADERS_FITTED=true ...
+AMP_HEADERS_FITTED = false;
 AMP_PROFILE        = AMP_HEADERS_FITTED ? HEADER_STACK : AMP_HGT;
 
 // ---------------------------------------------------------------- pod sizing
