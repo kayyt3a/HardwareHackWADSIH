@@ -108,8 +108,33 @@ XIAO_THICK = 5;    // board profile WITHOUT the camera (PCB + USB shell)
 HEADERS_FITTED  = false;
 HEADER_STACK    = 16;   // board + header plastic + mated jumper socket
 XIAO_PROFILE    = HEADERS_FITTED ? HEADER_STACK : XIAO_THICK;
+
+
+// WIRE_ROOM — headroom above the tallest component for wire to lie in and,
+// more importantly, to TURN in.
+//
+// A jumper socket pushed onto a header leaves along the pin axis, which is the
+// vertical (Y) axis here, and then has to turn 90 degrees to run along the pod.
+// With no allowance the wire is forced flat against the lid the moment it
+// leaves the socket, and the bend loads the solder joint rather than the wire.
+// Stranded jumper wire bends tightly without harm; the joint it is pulling on
+// does not.
+//
+// Bends of any size happen in the X-Z plane, where there is 19mm (front) and
+// 28mm (rear) to work in, so this only has to cover the initial turn.
+WIRE_ROOM = 2;
 SPKR_DIA = 28; SPKR_HGT = 6;
 AMP_LEN = 22; AMP_WID = 16; AMP_HGT = 5;
+
+// MUST COME AFTER AMP_HGT ABOVE. At top level OpenSCAD resolves in file order,
+// so a forward reference here silently becomes undef, RA_VERT becomes undef,
+// and the rear pod exports as a stub with no body and no error.
+//
+// The amp gets its own flag because whether IT has headers is independent of
+// whether the XIAO does — you might plug into the XIAO and solder wires flat to
+// the amp, or the reverse. It follows HEADERS_FITTED by default.
+AMP_HEADERS_FITTED = HEADERS_FITTED;
+AMP_PROFILE        = AMP_HEADERS_FITTED ? HEADER_STACK : AMP_HGT;
 
 // ---------------------------------------------------------------- pod sizing
 // The two trailing constants below are SLACK — room for wire bends and for
@@ -120,11 +145,11 @@ AMP_LEN = 22; AMP_WID = 16; AMP_HGT = 5;
 FB_GAP  = 1.5;
 FB_LEN  = CAM_LEN + FB_GAP + XIAO_LEN + 2 * WALL + 3;
 FB_OUT  = max(XIAO_WID, CAM_WID);       // outward (Z) — footprint
-FB_VERT = max(XIAO_PROFILE, CAM_HGT);   // vertical (Y) — thickness
+FB_VERT = max(XIAO_PROFILE, CAM_HGT) + WIRE_ROOM;   // vertical (Y) — thickness
 
 RA_LEN  = AMP_LEN + SPKR_DIA + 2 * WALL + 2;
 RA_OUT  = max(AMP_WID, SPKR_DIA);
-RA_VERT = max(AMP_HGT, SPKR_HGT);
+RA_VERT = max(AMP_PROFILE, SPKR_HGT) + WIRE_ROOM;
 
 // ============================================================================
 // helpers
