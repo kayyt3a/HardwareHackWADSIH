@@ -106,6 +106,12 @@ one thickness of temple arm and needed a tuning print. v2 splits the jobs:
 - **`temple_ring()`** — thin-walled TPU collar, opening deliberately
   **undersized**, stretches onto the arm like a hair tie. If it doesn't grip,
   make the opening *smaller* or the wall *thinner* — never larger.
+  **But there is a floor.** TPU grips best around 20-30% strain; past that the
+  ring either won't go on at all or takes a permanent set and grips worse. An
+  opening of 5.0 x 2.2mm failed on a real arm at roughly 120% strain. Target
+  **75-85% of the arm's measured section**. `tpu_ladder` prints four graduated
+  rings to find it empirically — all four carry an identical rail, so any of
+  them fits the same pods.
 - **`pod_base()`** — rigid PETG box with a dovetail slot. Never touches the
   glasses.
 

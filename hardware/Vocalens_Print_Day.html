@@ -3,20 +3,20 @@
 <style>
 @page { size: A4; margin: 12mm 11mm; }
 * { box-sizing: border-box; }
-body { font: 9.7pt/1.34 "Calibri","Segoe UI",sans-serif; color:#14202a; }
+body { font: 9.1pt/1.28 "Calibri","Segoe UI",sans-serif; color:#14202a; }
 h1 { font:700 20pt/1.1 "Cambria",Georgia,serif; color:#0B4F6C; margin:0 0 2mm; }
 .sub { color:#4a5c68; margin:0 0 5mm; font-size:9.4pt; }
-h2 { font:700 12.5pt/1.2 "Cambria",Georgia,serif; color:#fff; background:#0B4F6C;
+h2 { font:700 11.5pt/1.2 "Cambria",Georgia,serif; color:#fff; background:#0B4F6C;
      margin:0 0 3mm; padding:2.2mm 3mm; border-radius:2px; }
-.job { border:1px solid #cfdbe2; border-radius:4px; padding:3.2mm; margin:0 0 4mm;
+.job { border:1px solid #cfdbe2; border-radius:4px; padding:2.8mm; margin:0 0 3.2mm;
        break-inside:avoid; }
 table { width:100%; border-collapse:collapse; margin:2mm 0 3mm; font-size:9.6pt; }
-td,th { border:1px solid #d7e1e7; padding:1.1mm 2.2mm; text-align:left; vertical-align:top; }
+td,th { border:1px solid #d7e1e7; padding:0.85mm 2mm; text-align:left; vertical-align:top; }
 th { background:#eef4f7; width:34%; font-weight:700; color:#0B4F6C; }
 code { background:#f2f6f8; padding:0.5mm 1.2mm; border-radius:2px;
        font:9.2pt "Consolas",monospace; }
 ol { margin:0; padding-left:5.5mm; }
-li { margin:0 0 1.6mm; }
+li { margin:0 0 1.2mm; }
 .why { background:#FDF6EC; border-left:3px solid #F2A65A; padding:2.2mm 3mm;
        margin:2mm 0 0; font-size:9.3pt; }
 .why b { color:#8a5a1a; }
@@ -61,8 +61,13 @@ silence it.</div>
 <div class="job">
 <h2>JOB 2 &nbsp;·&nbsp; TPU &nbsp;·&nbsp; the four rings <span class="pill">~40 min</span></h2>
 <table>
-<tr><th>File</th><td><code>FINAL_tpu_rings.stl</code></td></tr>
-<tr><th>What is on it</th><td>4 copies of one small ring — 2 per pod, plus spares</td></tr>
+<tr><th>File</th><td><b>Not measured your glasses arm yet?</b> Print
+  <code>FINAL_tpu_rings_LADDER.stl</code> first — four graduated sizes, ~40 min,
+  smallest on the left. Fit each in turn and keep the smallest that goes on.<br>
+  Once you know the size: <code>FINAL_tpu_rings.stl</code> for four of it.</td></tr>
+<tr><th>What is on it</th><td>4 copies of one small ring — 2 per pod, plus spares.
+  All ring sizes carry an identical dovetail rail, so whichever size fits your
+  frame still mates with the pods you already printed.</td></tr>
 <tr><th>Material</th><td><b>TPU / flexible filament.</b> This one cannot be substituted</td></tr>
 <tr><th>Layer height</th><td>0.2 mm</td></tr>
 <tr><th>Infill</th><td>20 %</td></tr>
@@ -70,7 +75,7 @@ silence it.</div>
 <tr><th>Print speed</th><td><b>20–25 mm/s.</b> TPU jams if pushed fast</td></tr>
 <tr><th>Retraction</th><td>Near zero (0.5 mm or less)</td></tr>
 <tr><th>Supports</th><td>OFF</td></tr>
-<tr><th>Plate size</th><td>68 × 10 × 11 mm &nbsp;(unchanged — same file as before)</td></tr>
+<tr><th>Plate size</th><td>68 × 10 × 12 mm (ladder 68 × 14 × 13 mm)</td></tr>
 </table>
 <div class="stop"><b>If the venue has no TPU,</b> print the rings anyway in the softest
 filament available and expect them to grip poorly, then say so — but ask around first.
@@ -83,10 +88,13 @@ stretch onto the arm.</div>
 <ol>
 <li><b>Slide a ring onto your glasses temple arm.</b> It should need a firm push and
 then stay put on its own.
-  <div class="why"><b>If it is loose:</b> that is the one failure that matters, and it is a
-  10-minute reprint. Reduce <code>RING_IN_VERT</code> and <code>RING_IN_OUT</code> in
-  <code>vocalens_ring.scad</code> by 0.5&nbsp;mm each and print one ring again.
-  <b>Make the opening smaller, never larger</b> — this part grips by stretching, like a hair tie.</div>
+  <div class="why"><b>If it is loose,</b> go down one step on the ladder — or reduce
+  <code>RING_IN_VERT</code> / <code>RING_IN_OUT</code> in <code>vocalens_ring.scad</code>
+  by 0.5&nbsp;mm and reprint one ring (10 minutes).
+  <b>If it will not go on at all, go UP a step.</b> Smaller is the safer direction
+  but it has a floor: TPU grips best at 20-30&nbsp;% stretch, and past that it either
+  refuses to fit or takes a permanent set and grips worse. Aim for roughly
+  <b>75-85&nbsp;% of the arm's measured section</b>.</div>
 </li>
 <li><b>Slide a pod base onto a ring's dovetail rail</b>, along the arm. It should need
 real effort and should not rattle or lift off sideways.

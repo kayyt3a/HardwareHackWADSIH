@@ -56,8 +56,17 @@ $fn         = 48;
 // tall). It stretches up comfortably; a very slim arm is the case that goes
 // loose, which is the safer way round to be wrong.
 RING_LEN      = 14;   // X — how much of the arm the ring covers
-RING_IN_VERT  = 5.0;  // Y — undersized vs a typical ~8-9mm arm height
-RING_IN_OUT   = 2.2;  // Z — undersized vs a typical ~4-5mm arm thickness
+// HOW FAR UNDERSIZED — there is a right amount, and it is not "as much as
+// possible". TPU grips hardest at roughly 20-30% strain. Past that it stops
+// being a press fit and becomes a fight: the ring will not go on at all, or it
+// goes on stretched so far that it takes a permanent set and grips worse than
+// a milder one would have. An opening of 5.0 x 2.2 was tried against a real
+// arm and could not be fitted — that is around 120% strain on the thin axis.
+//
+// So aim for about 75-85% of the arm's actual section, and measure the arm
+// rather than assuming. Print the ladder below if you have not measured.
+RING_IN_VERT  = 7.5;  // Y — vs an arm of roughly 9-10mm height
+RING_IN_OUT   = 3.4;  // Z — vs an arm of roughly 4-5mm thickness
 RING_WALL     = 1.2;  // thin on purpose: 3 perimeters, stretches easily.
                       // Thicker walls fight you on every fit.
 
@@ -211,9 +220,9 @@ module dovetail(length, grow = 0) {
 // TPU ring
 // ============================================================================
 
-module temple_ring() {
-  ow = RING_IN_VERT + 2 * RING_WALL;   // outer, Y
-  oh = RING_IN_OUT  + 2 * RING_WALL;   // outer, Z
+module temple_ring(in_vert = RING_IN_VERT, in_out = RING_IN_OUT) {
+  ow = in_vert + 2 * RING_WALL;   // outer, Y
+  oh = in_out  + 2 * RING_WALL;   // outer, Z
   boss_w = DT_HEAD + 2;                // footprint of the stiffened region
 
   difference() {
@@ -233,7 +242,7 @@ module temple_ring() {
 
     // the arm passes through — undersized, the TPU stretches onto it
     translate([-EPS, RING_WALL, RING_WALL])
-      cube([RING_LEN + 2 * EPS, RING_IN_VERT, RING_IN_OUT]);
+      cube([RING_LEN + 2 * EPS, in_vert, in_out]);
   }
 }
 
@@ -387,6 +396,22 @@ module ring_set() {
     translate([i * (RING_LEN + 4), 0, 0]) temple_ring();
 }
 
+// FIT LADDER — four rings, each a step larger, for when the arm has not been
+// measured. Print it once, find the smallest one that will go on, then set
+// RING_IN_VERT / RING_IN_OUT to that pair and print four of those.
+//
+// They are laid out smallest-first and each step is visibly bigger than the
+// last, so the plate is self-labelling: the order on the bed is the order in
+// the table. Nothing about the dovetail rail changes between them, so every
+// size mates with the same pod.
+RING_LADDER = [[6.0, 2.8], [7.5, 3.4], [9.0, 4.0], [10.5, 4.6]];
+
+module ring_ladder() {
+  for (i = [0 : len(RING_LADDER) - 1])
+    translate([i * (RING_LEN + 4), 0, 0])
+      temple_ring(RING_LADDER[i][0], RING_LADDER[i][1]);
+}
+
 // ============================================================================
 // print plates
 // ============================================================================
@@ -411,7 +436,8 @@ module petg_plate() {
 }
 
 // Everything soft, one plate, TPU.
-module tpu_plate() { ring_set(); }
+module tpu_plate()  { ring_set(); }
+module tpu_ladder() { ring_ladder(); }
 
 // ============================================================================
 // render selector:  openscad -o out.stl -D 'part="frontboard_base"' this.scad
@@ -425,6 +451,7 @@ else if (part == "frontboard_lid")  frontboard_lid();
 else if (part == "rearaudio_base")  rearaudio_base();
 else if (part == "rearaudio_lid")   rearaudio_lid();
 else if (part == "tpu_plate")       tpu_plate();
+else if (part == "tpu_ladder")      tpu_ladder();
 // "none" renders nothing. Needed so another file can `include` this one for
 // its modules and constants without the selector below also emitting a plate
 // into that file's output.
