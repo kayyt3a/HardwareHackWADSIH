@@ -1,0 +1,118 @@
+<meta charset="utf-8">
+<title>VocaLens Print Day</title>
+<style>
+@page { size: A4; margin: 12mm 11mm; }
+* { box-sizing: border-box; }
+body { font: 9.7pt/1.34 "Calibri","Segoe UI",sans-serif; color:#14202a; }
+h1 { font:700 20pt/1.1 "Cambria",Georgia,serif; color:#0B4F6C; margin:0 0 2mm; }
+.sub { color:#4a5c68; margin:0 0 5mm; font-size:9.4pt; }
+h2 { font:700 12.5pt/1.2 "Cambria",Georgia,serif; color:#fff; background:#0B4F6C;
+     margin:0 0 3mm; padding:2.2mm 3mm; border-radius:2px; }
+.job { border:1px solid #cfdbe2; border-radius:4px; padding:3.2mm; margin:0 0 4mm;
+       break-inside:avoid; }
+table { width:100%; border-collapse:collapse; margin:2mm 0 3mm; font-size:9.6pt; }
+td,th { border:1px solid #d7e1e7; padding:1.1mm 2.2mm; text-align:left; vertical-align:top; }
+th { background:#eef4f7; width:34%; font-weight:700; color:#0B4F6C; }
+code { background:#f2f6f8; padding:0.5mm 1.2mm; border-radius:2px;
+       font:9.2pt "Consolas",monospace; }
+ol { margin:0; padding-left:5.5mm; }
+li { margin:0 0 1.6mm; }
+.why { background:#FDF6EC; border-left:3px solid #F2A65A; padding:2.2mm 3mm;
+       margin:2mm 0 0; font-size:9.3pt; }
+.why b { color:#8a5a1a; }
+.stop { background:#fdecec; border-left:3px solid #c0392b; padding:2.2mm 3mm;
+        margin:2mm 0 0; font-size:9.3pt; }
+.stop b { color:#a02c20; }
+.pill { display:inline-block; background:#137A7F; color:#fff; border-radius:9px;
+        padding:0.6mm 2.4mm; font-size:8.6pt; font-weight:700; margin-left:2mm;
+        vertical-align:1px; }
+.chk { list-style:none; padding-left:0; }
+.chk li:before { content:"\2610\00a0\00a0"; }
+</style>
+
+<h1>VocaLens — print day</h1>
+<p class="sub">Two jobs, different materials. <b>Start the PETG first</b> — it is the long one,
+and the TPU can run after it or on a second machine.</p>
+
+<div class="job">
+<h2>JOB 1 &nbsp;·&nbsp; PETG &nbsp;·&nbsp; the two pods <span class="pill">~2–3 h</span></h2>
+<table>
+<tr><th>File</th><td><code>FINAL_petg_plate.stl</code><br>
+  <b>Only</b> if your 2×7 pin headers are still soldered to the XIAO, print
+  <code>FINAL_petg_plate_HEADERS.stl</code> instead — it is the same parts, taller.</td></tr>
+<tr><th>What is on it</th><td>4 parts: front pod base, front pod lid, rear pod base, rear pod lid</td></tr>
+<tr><th>Material</th><td>PETG (PLA is acceptable if PETG is not free — it is stiffer and more brittle, but it fits)</td></tr>
+<tr><th>Layer height</th><td>0.2 mm</td></tr>
+<tr><th>Infill</th><td>25 %</td></tr>
+<tr><th>Perimeters / walls</th><td>3</td></tr>
+<tr><th>Supports</th><td><b>OFF</b></td></tr>
+<tr><th>Brim</th><td>ON — the pods are tall and narrow and can be knocked over</td></tr>
+<tr><th>Plate size</th><td>113 × 46 × 37 mm — fits any printer at the venue</td></tr>
+</table>
+<div class="why"><b>Why supports off:</b> the plate is already arranged so nothing
+overhangs. The pods sit cavity-up and the lids sit flat face down. If your slicer
+warns about overhangs, something imported wrong — do not switch supports on to
+silence it.</div>
+</div>
+
+<div class="job">
+<h2>JOB 2 &nbsp;·&nbsp; TPU &nbsp;·&nbsp; the four rings <span class="pill">~40 min</span></h2>
+<table>
+<tr><th>File</th><td><code>FINAL_tpu_rings.stl</code></td></tr>
+<tr><th>What is on it</th><td>4 copies of one small ring — 2 per pod, plus spares</td></tr>
+<tr><th>Material</th><td><b>TPU / flexible filament.</b> This one cannot be substituted</td></tr>
+<tr><th>Layer height</th><td>0.2 mm</td></tr>
+<tr><th>Infill</th><td>20 %</td></tr>
+<tr><th>Perimeters / walls</th><td><b>2</b> — not 3. The wall is only 1.2 mm; more perimeters make it too stiff to stretch</td></tr>
+<tr><th>Print speed</th><td><b>20–25 mm/s.</b> TPU jams if pushed fast</td></tr>
+<tr><th>Retraction</th><td>Near zero (0.5 mm or less)</td></tr>
+<tr><th>Supports</th><td>OFF</td></tr>
+<tr><th>Plate size</th><td>68 × 10 × 11 mm</td></tr>
+</table>
+<div class="stop"><b>If the venue has no TPU,</b> print the rings anyway in the softest
+filament available and expect them to grip poorly, then say so — but ask around first.
+The rings are the only part that has to flex, and a rigid ring will crack rather than
+stretch onto the arm.</div>
+</div>
+
+<div class="job">
+<h2>WHEN THEY COME OFF THE BED — check in this order</h2>
+<ol>
+<li><b>Slide a ring onto your glasses temple arm.</b> It should need a firm push and
+then stay put on its own.
+  <div class="why"><b>If it is loose:</b> that is the one failure that matters, and it is a
+  10-minute reprint. Reduce <code>RING_IN_VERT</code> and <code>RING_IN_OUT</code> in
+  <code>vocalens_ring.scad</code> by 0.5&nbsp;mm each and print one ring again.
+  <b>Make the opening smaller, never larger</b> — this part grips by stretching, like a hair tie.</div>
+</li>
+<li><b>Slide a pod base onto a ring's dovetail rail</b>, along the arm. It should need
+real effort and should not rattle or lift off sideways.
+  <div class="why"><b>If it will not go on at all,</b> lower <code>DT_SQUISH</code> from
+  0.45 to 0.35. <b>If it rattles,</b> raise it to 0.55.</div>
+</li>
+<li><b>Drop a lid onto its base.</b> The rib should sit inside the cavity and the lid
+should sit flush.</li>
+<li><b>Check the front lid has two openings:</b> a round hole near one end for the camera,
+and a long oval recess near the other for the touch pad, with a small hole through the
+middle of the oval.
+  <div class="why">The small hole is for the touch wire. Solder the wire to the
+  <b>back</b> of the pad <i>before</i> gluing the pad into the recess — afterwards you
+  cannot reach it, and nothing conductive should be exposed where a finger touches.</div>
+</li>
+<li><b>Check the rear lid</b> has a ring of small holes — that is the speaker grille.</li>
+</ol>
+</div>
+
+<div class="job">
+<h2>TAKE WITH YOU</h2>
+<ul class="chk">
+<li>Laptop with the STL files on it (or the GitHub repo open)</li>
+<li>USB stick or SD card — most venue printers will not take a network job</li>
+<li><b>The glasses you are mounting to</b> — the ring fit test is the whole point and cannot be done later</li>
+<li>Your assembled XIAO + camera, to check it drops into the front pod cavity</li>
+<li>The speaker and amplifier, to check they drop into the rear pod cavity</li>
+<li>Superglue or double-sided tape for the touch pad</li>
+</ul>
+<div class="stop"><b>Print the TPU rings even if you are short on time.</b> The pods
+are useless without them, and they are the fastest part on the list.</div>
+</div>
