@@ -329,11 +329,15 @@ module petg_plate() {
   translate([0, 0, DT_HEIGHT + WALL]) frontboard_base();
   translate([FB_LEN + 8, 0, DT_HEIGHT + WALL]) rearaudio_base();
 
-  // lids flipped rib-side-up so they sit flat with no supports
-  translate([0, fbw + 14 + fbw, WALL + 1.0]) rotate([180, 0, 0])
-    frontboard_lid();
-  translate([FB_LEN + 8, raw + 14 + raw, WALL + 1.0]) rotate([180, 0, 0])
-    rearaudio_lid();
+  // Lids sit rib-side-UP, flat face on the bed, so nothing needs support.
+  //
+  // Do not add a rotate([180,0,0]) here. That turns the rib downward, which
+  // lifts the lid plate 1mm off the bed and leaves its whole perimeter
+  // overhanging the rib by ~1.9mm with nothing under it — the edges droop.
+  // Rib-up also puts the pad recess and the camera hole on the top surface,
+  // where they print cleanly, and gives the pad a flat bonding face.
+  translate([0, fbw + 14 + fbw, 0]) frontboard_lid();
+  translate([FB_LEN + 8, raw + 14 + raw, 0]) rearaudio_lid();
 }
 
 // Everything soft, one plate, TPU.
