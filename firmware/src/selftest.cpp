@@ -17,6 +17,7 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
 #include <AudioOutputI2S.h>
+#include <driver/i2s.h>
 #include "esp_camera.h"
 #include "pins.h"
 #include "secrets.h"
@@ -184,7 +185,7 @@ static void testAudio() {
   out->SetBitsPerSample(16);
   out->SetChannels(2);
   out->SetRate(16000);
-  out->SetGain(0.6);
+  out->SetGain(1.0);   // full gain — sample peak is still only ~0.24 FS, so no clipping
 
   if (!out->begin()) {
     report("I2S output", false, "begin() failed — check BCLK/LRC/DIN wiring");
@@ -194,15 +195,17 @@ static void testAudio() {
   report("I2S output", true, "started");
 
   Serial.println("\n  >>> LISTEN: two seconds of tone should play <<<\n");
-  const float freq = 440.0f;      // A4 — easy to recognise as a real note
+  const float freq = 1000.0f;     // standard 1 kHz audio test tone — where speakers/hearing are most sensitive
   const int   rate = 16000;
   for (int i = 0; i < rate * 2; i++) {
     int16_t v = (int16_t)(8000.0f * sinf(2.0f * PI * freq * i / rate));
     int16_t frame[2] = {v, v};
     while (!out->ConsumeSample(frame)) delay(1);
   }
+  delay(50);              // let the DMA buffer drain so the tone doesn't end in a click
   out->stop();
   delete out;
+  i2s_driver_uninstall(I2S_NUM_0);   // fully release the pins so the next stage gets a clean I2S port
 
   report("Tone played", true, "if you heard nothing, see the notes below");
 }
