@@ -246,14 +246,60 @@ module temple_ring(in_vert = RING_IN_VERT, in_out = RING_IN_OUT) {
   }
 }
 
+// ------------------------------------------------------------ the sliding lid
+// The lid slides in from the REAR along X and stops against the inside of the
+// front end wall, which also registers the camera hole.
+//
+// WHY THE GROOVES CUT OUTWARD INTO THE WALLS, not inward over the cavity.
+// The components drop in through the top, and the front pod's cavity is
+// exactly as wide as the XIAO (19mm) — it has to be, that is what set the
+// dimension. Any lip overhanging inward would block the board from going in at
+// all. So the groove is cut sideways INTO each side wall: at the groove's
+// height the wall's inner face steps back by GROOVE_D, and above the groove it
+// returns. The lid is therefore wider than the cavity, its edges live inside
+// the walls, and the full cavity width stays clear from above.
+//
+// That is also why the lid cannot be dropped in — it is wider than the hole it
+// covers. It only goes in endwise, which is the point.
+LID_T      = 1.6;   // lid plate thickness
+LID_LIP    = 1.0;   // wall left above the groove — this is what retains it
+LID_GROOVE = 1.0;   // how far the groove cuts into each side wall
+LID_CLR    = 0.25;  // sliding clearance, per face
+LID_DETENT = 0.3;   // click bump near the entry. Set to 0 for a plain friction
+                    // slide if the lid will not go in.
+
 // ============================================================================
 // pod base — rigid box with the dovetail slot underneath
 // ============================================================================
 
+// Height of the groove floor above the pod's own floor — i.e. the top of the
+// usable component space. Shared by the base and the lid so they cannot drift.
+function groove_z(out) = WALL + out;
+function pod_height(out) = WALL + out + LID_T + LID_LIP;
+function lid_len(length) = length - WALL - LID_CLR;
+function lid_wid(vert)   = vert + 2 * LID_GROOVE - 2 * LID_CLR;
+
 module pod_base(length, out, vert, cable_slot_front = true) {
   bw = vert + 2 * WALL;                  // Y outer
-  bh = out + 2 * WALL;                   // Z outer
+  bh = pod_height(out);                  // Z outer
   slot_pad = DT_HEIGHT + WALL;           // extra Z for the slot boss
+  gz = groove_z(out);
+
+  union() {
+
+  // Detent bumps standing proud of the groove floor, one per side, a few mm in
+  // from the entry. The lid flexes over them and drops behind them, so it does
+  // not walk out on its own. Half-round, so they lead in rather than catch.
+  //
+  // ADDED OUTSIDE THE difference() ON PURPOSE. Put inside it, the groove cut
+  // that runs along this exact band shears their top half off and leaves the
+  // rest buried in solid wall — present in the file, absent from the part, and
+  // silent about it. LID_DETENT = 0 removes them properly.
+  if (LID_DETENT > 0)
+    for (y0 = [WALL - LID_GROOVE, WALL + vert])
+      translate([length - 7, y0, gz])
+        rotate([-90, 0, 0])
+          cylinder(h = LID_GROOVE, r = LID_DETENT, $fn = 20);
 
   difference() {
     union() {
@@ -261,6 +307,7 @@ module pod_base(length, out, vert, cable_slot_front = true) {
       // boss on the underside carrying the dovetail slot
       translate([0, bw / 2 - (DT_HEAD + 2 * WALL) / 2, -slot_pad])
         rounded_prism(length, DT_HEAD + 2 * WALL, slot_pad + EPS, 0.8);
+
     }
 
     // Component cavity, open at the top (+Z) so the lid can close it.
@@ -272,7 +319,13 @@ module pod_base(length, out, vert, cable_slot_front = true) {
     // correct in a render from outside and passes a watertight check, because a
     // sealed void is perfectly manifold.
     translate([WALL, WALL, WALL])
-      cube([length - 2 * WALL, vert, out + WALL + EPS]);
+      cube([length - 2 * WALL, vert, out + LID_T + LID_LIP + EPS]);
+
+    // The lid channel. Cut into both side walls, running from the inside face
+    // of the FRONT end wall (x = WALL, which is the lid's stop) out through the
+    // rear (x = length), which is the end it slides in from.
+    translate([WALL, WALL - LID_GROOVE, gz])
+      cube([length - WALL + EPS, vert + 2 * LID_GROOVE, LID_T]);
 
     // dovetail slot, cut all the way through in X so it slides on
     translate([-EPS, bw / 2, -slot_pad])
@@ -285,6 +338,7 @@ module pod_base(length, out, vert, cable_slot_front = true) {
     // cable entry at the other end
     translate([length - WALL - EPS, bw / 2 - 3, WALL + out / 2 - 2])
       cube([WALL + 2 * EPS, 6, 4]);
+  }
   }
 }
 
@@ -325,64 +379,54 @@ PAD_L      = 20.0;  // along the arm (X). Free to grow — this is the cheap axi
 PAD_DEPTH  = 0.8;   // set to your disc/foil thickness so it finishes flush
 PAD_WIRE_D = 2.2;   // pass-through for the trigger wire
 
+// The lid is now a flat plate that slides into the base's side grooves. It has
+// no rib: the groove locates it in Y and Z, and the front end wall stops it in
+// X, so there is nothing left for a rib to do.
+//
+// Feature positions are given in LID-LOCAL x, and the lid's origin sits at
+// x = WALL in pod coordinates (hard against the front end wall). So a feature
+// meant to land at pod x = P is written here as P - WALL. Get this wrong and
+// the camera looks into the inside of a wall.
 module pod_lid(length, out, vert, camera_hole = false, touch_recess = false,
                grille = false) {
-  bw = vert + 2 * WALL;
-  lid_l = length - 2 * WALL - 2 * CLEARANCE;
-  lid_w = bw - 2 * WALL - 2 * CLEARANCE;
+  ll = lid_len(length);
+  lw = lid_wid(vert);
 
   difference() {
-    union() {
-      rounded_prism(length, bw, WALL, EDGE_RADIUS);
-      // friction rib that drops into the cavity
-      translate([WALL + CLEARANCE, WALL + CLEARANCE, WALL - EPS])
-        rounded_prism(lid_l, lid_w, 1.0, 0.6);
-    }
+    rounded_prism(ll, lw, LID_T, 0.8);
 
-    // ports are cut through the SOLID lid, never into open cavity air
+    // camera: pod x = WALL + 6, so lid-local x = 6
     if (camera_hole)
-      translate([WALL + 6, bw / 2, -EPS])
-        cylinder(h = WALL + 1.0 + 2 * EPS, d = 7, $fn = 40);
+      translate([6, lw / 2, -EPS])
+        cylinder(h = LID_T + 2 * EPS, d = 7, $fn = 40);
 
     if (touch_recess) {
       if (TRIGGER_IS_BUTTON) {
-        // Through-hole: the switch body sits under the lid and only its
-        // plunger comes through, so the lid still holds the switch down.
-        translate([length - 12, bw / 2, -EPS])
-          cylinder(h = WALL + 1.0 + 2 * EPS, d = BUTTON_PLUNGER_D, $fn = 32);
-        // Shallow countersink so a fingertip can find the button by feel —
-        // the wearer cannot see it.
-        translate([length - 12, bw / 2, WALL - 0.5])
+        translate([ll - 10, lw / 2, -EPS])
+          cylinder(h = LID_T + 2 * EPS, d = BUTTON_PLUNGER_D, $fn = 32);
+        translate([ll - 10, lw / 2, LID_T - 0.5])
           cylinder(h = 0.5 + EPS, d = BUTTON_PLUNGER_D + 3, $fn = 32);
       } else {
-        // Stadium recess for the glued-in pad. Two cylinders plus the bar
-        // between them, so the ends stay round and there is no sharp corner
-        // for the disc to have to match.
-        pad_w = min(PAD_W, bw - 2);          // never breach the side walls
-        cx    = length - PAD_L / 2 - 4;      // sits at the rear, clear of the lens
-        span  = PAD_L - pad_w;               // centre-to-centre of the end radii
+        pad_w = min(PAD_W, lw - 2);        // never breach the lid's own edges
+        cx    = ll - PAD_L / 2 - 4;
+        span  = PAD_L - pad_w;
 
-        translate([cx, bw / 2, WALL - PAD_DEPTH]) {
-          hull() {
+        translate([cx, lw / 2, LID_T - PAD_DEPTH])
+          hull()
             for (dx = [-span / 2, span / 2])
               translate([dx, 0, 0])
                 cylinder(h = PAD_DEPTH + EPS, d = pad_w, $fn = 40);
-          }
-        }
 
-        // Wire pass-through into the cavity. Solder to the pad's underside.
-        // WALL + 1.0 because the friction rib sits on top of the lid plate
-        // here — a hole only WALL deep stops inside the rib and never breaks
-        // through into the cavity, so the wire has nowhere to go.
-        translate([cx, bw / 2, -EPS])
-          cylinder(h = WALL + 1.0 + 2 * EPS, d = PAD_WIRE_D, $fn = 24);
+        // wire pass-through: straight through the plate, no rib in the way now
+        translate([cx, lw / 2, -EPS])
+          cylinder(h = LID_T + 2 * EPS, d = PAD_WIRE_D, $fn = 24);
       }
     }
 
     if (grille)
       for (a = [0 : 60 : 359], r = [2.6, 5.2])
-        translate([length - 16 + r * cos(a), bw / 2 + r * sin(a), -EPS])
-          cylinder(h = WALL + 1.0 + 2 * EPS, d = 1.8, $fn = 16);
+        translate([ll - 14 + r * cos(a), lw / 2 + r * sin(a), -EPS])
+          cylinder(h = LID_T + 2 * EPS, d = 1.8, $fn = 16);
   }
 }
 
@@ -431,15 +475,10 @@ module petg_plate() {
   translate([0, 0, DT_HEIGHT + WALL]) frontboard_base();
   translate([FB_LEN + 8, 0, DT_HEIGHT + WALL]) rearaudio_base();
 
-  // Lids sit rib-side-UP, flat face on the bed, so nothing needs support.
-  //
-  // Do not add a rotate([180,0,0]) here. That turns the rib downward, which
-  // lifts the lid plate 1mm off the bed and leaves its whole perimeter
-  // overhanging the rib by ~1.9mm with nothing under it — the edges droop.
-  // Rib-up also puts the pad recess and the camera hole on the top surface,
-  // where they print cleanly, and gives the pad a flat bonding face.
-  translate([0, fbw + 14 + fbw, 0]) frontboard_lid();
-  translate([FB_LEN + 8, raw + 14 + raw, 0]) rearaudio_lid();
+  // Lids are plain plates now — they lie flat either way up and need no
+  // rotation and no support.
+  translate([0, fbw + 14, 0]) frontboard_lid();
+  translate([FB_LEN + 8, raw + 14, 0]) rearaudio_lid();
 }
 
 // Everything soft, one plate, TPU.
