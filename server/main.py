@@ -19,6 +19,8 @@ Run: uvicorn main:app --host 0.0.0.0 --port 8000
 import io
 import logging
 import os
+from datetime import datetime
+from pathlib import Path
 from typing import Optional
 
 from dotenv import load_dotenv
@@ -28,12 +30,18 @@ from fastapi.staticfiles import StaticFiles
 
 load_dotenv()
 
-import barcode
+try:
+    import barcode
+except Exception as _barcode_exc:  # pyzbar/zbar not available on this machine
+    barcode = None
+    logging.getLogger("vocalens").warning(
+        "barcode module unavailable (%s) — barcode fast-path disabled", _barcode_exc
+    )
 import intent
 import profile_store
-import stt
-import tts
-import vision
+import stt_openrouter as stt
+import tts_openrouter as tts
+import vision_openrouter as vision
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("vocalens")
@@ -43,6 +51,22 @@ app.mount("/setup", StaticFiles(directory="static", html=True), name="setup")
 
 CONFIDENCE_THRESHOLD = float(os.environ.get("CONFIDENCE_THRESHOLD", "0.55"))
 DEFAULT_USER_ID = "default"  # single-wearer device for the hackathon demo
+
+# BENCH TEST: save every incoming photo to disk so you can actually look at
+# what the camera saw. Not something you'd want in the real product (it
+# would fill up storage and isn't needed for the flow to work) -- just handy
+# while testing.
+CAPTURES_DIR = Path(__file__).parent / "captures"
+CAPTURES_DIR.mkdir(exist_ok=True)
+
+
+def _save_capture(image_bytes: bytes, tag: str = "") -> Path:
+    stamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
+    suffix = f"_{tag}" if tag else ""
+    path = CAPTURES_DIR / f"{stamp}{suffix}.jpg"
+    path.write_bytes(image_bytes)
+    logger.info("Saved capture: %s", path.name)
+    return path
 
 
 def _speak(spoken: str, confidence: float = 1.0, category: Optional[str] = None) -> StreamingResponse:
@@ -75,13 +99,20 @@ def health():
 async def ask(
     image: UploadFile = File(...),
     question_audio: Optional[UploadFile] = File(None),
+    question_text: Optional[str] = Form(None),
     user_id: str = Form(DEFAULT_USER_ID),
 ):
     image_bytes = await image.read()
     logger.info("Received frame: %d bytes", len(image_bytes))
+    _save_capture(image_bytes, tag="ask")
 
     question = None
-    if question_audio is not None:
+    if question_text:
+        # Bench-testing shortcut: skip the mic/transcription step entirely
+        # and use typed text directly as the question.
+        question = question_text
+        logger.info("Using typed question: %r", question)
+    elif question_audio is not None:
         audio_bytes = await question_audio.read()
         if audio_bytes:
             try:
@@ -105,8 +136,8 @@ async def ask(
         profile_store.add_reminder(user_id, result["spoken_summary"])
         return _speak(f"Got it, I've saved: {result['spoken_summary']}")
 
-    # detected_intent == "ask" — try the fast barcode path first
-    code = barcode.decode(image_bytes)
+    # detected_intent == "ask" — try the fast barcode path first (if available)
+    code = barcode.decode(image_bytes) if barcode else None
     if code:
         product = barcode.lookup_product(code)
         if product and product.get("name"):
@@ -138,6 +169,7 @@ async def ask(
 async def read_label(image: UploadFile = File(...)):
     """No-audio path, for bench-testing before the mic is wired up."""
     image_bytes = await image.read()
+    _save_capture(image_bytes, tag="read_label")
     result = vision.read_label(image_bytes, media_type=image.content_type or "image/jpeg")
     logger.info("Vision result: %s", result)
     return _speak_vision_result(result)
