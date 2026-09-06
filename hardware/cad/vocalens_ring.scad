@@ -263,9 +263,16 @@ module pod_base(length, out, vert, cable_slot_front = true) {
         rounded_prism(length, DT_HEAD + 2 * WALL, slot_pad + EPS, 0.8);
     }
 
-    // component cavity, open at the top (+Z)
+    // Component cavity, open at the top (+Z) so the lid can close it.
+    //
+    // The height is out + WALL, NOT out + EPS. The cavity floor is at z = WALL
+    // and the pod's top face is at out + 2*WALL, so a cut of only out + EPS
+    // stops 1.59mm short and leaves the box sealed — a closed shell you cannot
+    // get the electronics into, and nowhere for the lid's rib to drop. It looks
+    // correct in a render from outside and passes a watertight check, because a
+    // sealed void is perfectly manifold.
     translate([WALL, WALL, WALL])
-      cube([length - 2 * WALL, vert, out + EPS]);
+      cube([length - 2 * WALL, vert, out + WALL + EPS]);
 
     // dovetail slot, cut all the way through in X so it slides on
     translate([-EPS, bw / 2, -slot_pad])
