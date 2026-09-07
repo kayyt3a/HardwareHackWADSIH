@@ -178,7 +178,12 @@ FB_LEN  = CAM_LEN + FB_GAP + XIAO_LEN + 2 * WALL + 3;
 // a box on the side of the head. Standing it on edge puts 19mm on the vertical
 // axis, where it reads as a thick glasses arm and follows the line of the
 // frame, and leaves only board thickness sticking out.
-FB_VERT = max(XIAO_WID, CAM_WID);                  // vertical (Y) — footprint
+// FB_VERT_MIN lets the front pod be widened past what the components need, so
+// the lid can carry a bigger touch pad. It costs vertical height at the hinge,
+// which is the cheap axis, but the front pod is the one in peripheral vision —
+// so spend it deliberately, not by default.
+FB_VERT_MIN = 0;
+FB_VERT = max(XIAO_WID, CAM_WID, FB_VERT_MIN);     // vertical (Y) — footprint
 FB_OUT  = max(XIAO_PROFILE, CAM_HGT) + WIRE_ROOM;  // outward (Z) — thickness
 
 RA_LEN  = AMP_LEN + SPKR_DIA + 2 * WALL + 2;
@@ -376,7 +381,10 @@ BUTTON_PLUNGER_D  = 4.2;   // clearance hole for the plunger, not the body
 // solder joint is visible and nothing conductive is exposed to a fingertip.
 PAD_W      = 18.0;  // across the lid (Y). Clamped to (vert + 2*WALL) - 2 in code.
 PAD_L      = 20.0;  // along the arm (X). Free to grow — this is the cheap axis.
-PAD_DEPTH  = 0.8;   // set to your disc/foil thickness so it finishes flush
+PAD_DEPTH  = 0.8;   // set to your disc/foil thickness so it finishes flush.
+                    // Clamped in code to leave 0.6mm of lid under the pocket:
+                    // a recess as deep as the plate is not a recess, it is a
+                    // hole, and the pad would fall through it.
 PAD_WIRE_D = 2.2;   // pass-through for the trigger wire
 
 // The lid is now a flat plate that slides into the base's side grooves. It has
@@ -408,14 +416,15 @@ module pod_lid(length, out, vert, camera_hole = false, touch_recess = false,
           cylinder(h = 0.5 + EPS, d = BUTTON_PLUNGER_D + 3, $fn = 32);
       } else {
         pad_w = min(PAD_W, lw - 2);        // never breach the lid's own edges
+        pad_d = min(PAD_DEPTH, LID_T - 0.6);
         cx    = ll - PAD_L / 2 - 4;
         span  = PAD_L - pad_w;
 
-        translate([cx, lw / 2, LID_T - PAD_DEPTH])
+        translate([cx, lw / 2, LID_T - pad_d])
           hull()
             for (dx = [-span / 2, span / 2])
               translate([dx, 0, 0])
-                cylinder(h = PAD_DEPTH + EPS, d = pad_w, $fn = 40);
+                cylinder(h = pad_d + EPS, d = pad_w, $fn = 40);
 
         // wire pass-through: straight through the plate, no rib in the way now
         translate([cx, lw / 2, -EPS])
