@@ -557,53 +557,65 @@ module ring_ladder() {
 }
 
 // ============================================================================
-// cable sleeve — conceals the run around the back of the head
+// cable tube — the run around the back of the head
 // ============================================================================
-// With one pod on each temple, the wires no longer run along a single arm.
-// They leave one pod, run back along that temple, around the back of the head,
-// and forward to the other — roughly 35cm of exposed jumper wire, which is
-// both the ugliest thing on the build and the easiest to snag.
+// CLOSED, not split. An earlier version was a channel with an open mouth: it
+// tidied five loose wires into one line but you could still see straight down
+// onto them, which is not concealment. This is a sealed tube — the wires go
+// inside and there is no line of sight to them anywhere along the run.
 //
-// This is a CHANNEL, not a tube, and that is a printing decision. A round
-// split tube has to lie on the bed either on a single curved line or on the
-// two thin edges of its slit; neither sticks, and in TPU they peel. A channel
-// with a flat floor sits down properly, needs no support, and the bore's
-// ceiling is a self-supporting arch.
+// That is only possible because the bundle can be threaded, and it can only be
+// threaded one way round:
+//   * the camera-pod end carries Dupont sockets (2.6 x 5.0mm, 5.64mm across the
+//     diagonal) which will NOT pass a 5mm bore;
+//   * the audio-pod end is bare, because the amp is wired flat.
+// So the bare ends are fed in at the camera end and come out at the amp, and
+// the connectors stay outside the tube entirely.
+//   >>> THREAD THE TUBE BEFORE SOLDERING THE AMP. <<<
+// Soldering first makes both ends un-threadable and the only way back is to cut
+// a wire.
 //
-// The opening is narrower than the bore, so the bundle presses in past the lip
-// and stays. Printed in TPU it opens under a fingernail and closes again.
+// D-SECTION, flattened along the bottom. A round tube 180mm long touches the
+// bed on a single line and peels off it in TPU. The flat gives a 3.7mm contact
+// strip, and it also sits better against the neck than a round one rolls.
 //
-// Printed as SEGMENTS rather than one 35cm piece: segments follow the curve of
-// the head without kinking, survive a failed print (you lose one, not the
-// run), and let the wearer leave gaps where the cable needs to flex most.
-SL_BORE   = 4.2;   // bundle of five jumper wires is about 3.8mm across
-SL_W      = 6.6;   // outer width
-SL_H      = 5.4;   // outer height
-SL_BORE_Z = 2.8;   // bore centre above the floor
-SL_SLIT   = 2.4;   // narrower than the bore — this is what retains the wires
-SL_SEG    = 40;    // length of one segment
-SL_COUNT  = 9;     // 9 x 40mm = 36cm, about one head
+// Two pieces rather than one: 360mm does not fit on a hobby bed in any
+// orientation, and the joint lands at the back of the head where it is under
+// hair.
+TUBE_BORE  = 5.0;    // bundle packs to ~4.2mm
+TUBE_WALL  = 1.2;
+TUBE_OD    = TUBE_BORE + 2 * TUBE_WALL;
+TUBE_FLAT  = 0.5;    // sliced off the underside for bed adhesion
+TUBE_LEN   = 180;    // x2 = 360mm, about one head
+TUBE_COUNT = 2;
 
-// Profile is drawn with x as the sleeve's HEIGHT, running negative, because
-// rotate([0,90,0]) below maps (x,y,z) -> (z,y,-x): the extrusion axis becomes
-// X, and the profile's x is negated on its way to Z. Drawing the height
-// positive here puts the whole channel underneath the bed.
-module sleeve_profile() {
+// Profile x is the tube's HEIGHT and runs negative — rotate([0,90,0]) maps
+// (x,y,z) -> (z,y,-x), so the extrusion axis becomes X and the profile's x is
+// negated on its way to Z. Positive here would put the tube under the bed.
+module tube_profile() {
   difference() {
-    translate([-SL_H, -SL_W / 2]) square([SL_H, SL_W]);
-    translate([-SL_BORE_Z, 0]) circle(d = SL_BORE, $fn = 48);
-    // the mouth, from the bore's centre up to the top face
-    translate([-SL_H, -SL_SLIT / 2]) square([SL_H - SL_BORE_Z, SL_SLIT]);
+    intersection() {
+      translate([-TUBE_OD / 2, 0]) circle(d = TUBE_OD, $fn = 64);
+      // keep everything above the flat
+      translate([-TUBE_OD - 1, -TUBE_OD])
+        square([TUBE_OD + 1 - TUBE_FLAT, 2 * TUBE_OD]);
+    }
+    translate([-TUBE_OD / 2, 0]) circle(d = TUBE_BORE, $fn = 64);
   }
 }
 
-module cable_sleeve(len = SL_SEG) {
-  rotate([0, 90, 0]) linear_extrude(height = len) sleeve_profile();
+module cable_tube(len = TUBE_LEN) {
+  // The flat is cut TUBE_FLAT up from the section's lowest point, so without
+  // this shift the part sits that far above the bed. Most slicers drop it
+  // silently, but not all, and a part floating in the file is a part someone
+  // eventually prints supported on thin air.
+  translate([0, 0, -TUBE_FLAT])
+    rotate([0, 90, 0]) linear_extrude(height = len) tube_profile();
 }
 
-module sleeve_plate() {
-  for (i = [0 : SL_COUNT - 1])
-    translate([0, i * (SL_W + 3), 0]) cable_sleeve();
+module tube_plate() {
+  for (i = [0 : TUBE_COUNT - 1])
+    translate([0, i * (TUBE_OD + 4), 0]) cable_tube();
 }
 
 // ============================================================================
@@ -627,7 +639,7 @@ module petg_plate() {
 // Everything soft, one plate, TPU.
 module tpu_plate()  { ring_set(); }
 module tpu_ladder() { ring_ladder(); }
-module tpu_sleeves() { sleeve_plate(); }
+module tpu_tubes()   { tube_plate(); }
 
 // ============================================================================
 // render selector:  openscad -o out.stl -D 'part="frontboard_base"' this.scad
@@ -642,8 +654,8 @@ else if (part == "rearaudio_base")  rearaudio_base();
 else if (part == "rearaudio_lid")   rearaudio_lid();
 else if (part == "tpu_plate")       tpu_plate();
 else if (part == "tpu_ladder")      tpu_ladder();
-else if (part == "tpu_sleeves")     tpu_sleeves();
-else if (part == "cable_sleeve")    cable_sleeve();
+else if (part == "tpu_tubes")       tpu_tubes();
+else if (part == "cable_tube")      cable_tube();
 // "none" renders nothing. Needed so another file can `include` this one for
 // its modules and constants without the selector below also emitting a plate
 // into that file's output.

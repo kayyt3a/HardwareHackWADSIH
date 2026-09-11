@@ -86,11 +86,25 @@ the three on a demo night. Mitigations, cheapest first:
 
 Test the full-length run on the bench **before** it is threaded into sleeves.
 
-The wires are concealed by printed TPU **sleeve segments** (`tpu_sleeves`,
-9 x 40mm ≈ 36cm). They are a flat-floored channel rather than a round tube
-because a split tube cannot sit on a print bed on anything but a line or two
-thin edges, and in TPU that peels. The mouth is 2.4mm against a 4.2mm bore, so
-the bundle presses past a 0.9mm lip and stays put.
+The wires run inside a **closed TPU tube** (`tpu_tubes`, 2 x 180mm = 360mm).
+
+It was first designed as an open-mouthed channel that the bundle pressed into.
+That tidied five loose wires into one line but you could still see straight
+down onto them — which is not concealment, and it was rightly rejected. The
+tube is sealed: no line of sight to the wires anywhere along the run.
+
+**Assembly order is not optional.** The bundle can only be threaded one way:
+the camera-pod end carries Dupont sockets, 5.64mm across the diagonal, which
+will not pass the 5mm bore; the audio-pod end is bare because the amp is wired
+flat. So the bare ends feed in at the camera end and come out at the amp, and
+the connectors never enter the tube. **Thread the tube before soldering the
+amp** — solder first and both ends are un-threadable, and the only way back is
+to cut a wire.
+
+D-section, flattened 0.5mm along the underside: a round tube 180mm long touches
+the bed on a single line and peels in TPU, where the flat gives a 3.7mm contact
+strip. Two pieces because 360mm does not fit a hobby bed in any orientation;
+the joint lands at the back of the head.
 
 ### The axis convention — read before touching the CAD
 
