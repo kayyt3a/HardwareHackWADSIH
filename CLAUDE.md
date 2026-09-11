@@ -112,10 +112,25 @@ perpendicular to its slide axis. The load on a cable tube is axial pull-out,
 straight along the tube, which a dovetail does nothing about. Match the joint
 to the load.
 
-D-section, flattened 0.5mm along the underside: a round tube 180mm long touches
-the bed on a single line and peels in TPU, where the flat gives a 3.7mm contact
-strip. Two pieces because 360mm does not fit a hobby bed in any orientation;
-the joint lands at the back of the head.
+D-section, flattened 0.5mm along the underside: a round tube touches the bed on
+a single line and peels in TPU, where the flat gives a 3.7mm contact strip.
+
+**Printed pre-curved at R=95mm**, roughly the radius of the back of a head. A
+straight tube forced around a head is a spring — every millimetre of it stores
+energy and pushes back, and it has only two things to push against: the two
+pods, held on by friction against TPU rings. It would walk them off. Curved, it
+sits where it is put. Constant radius rather than a true head profile, because
+TPU straightens far more easily than it bends, so erring toward the tighter
+curve leaves the easy correction.
+
+430mm total, as 2 x 215mm crescents (`TUBE_PIECES`). Each is rotated on the
+plate to sit as a shallow bowl rather than a tipped-over C — 180 x 62mm instead
+of 162 x 99mm, because the bounding box then follows the chord and sagitta
+rather than the radius. Set `TUBE_PIECES = 1` on a 220mm bed for one continuous
+430mm run and no joint at all.
+
+The curve does not interfere with the pod sockets: over 6mm of engagement a
+R=95 arc deviates 0.047mm, against 0.15mm of designed squeeze.
 
 ### The axis convention — read before touching the CAD
 

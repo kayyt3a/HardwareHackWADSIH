@@ -617,36 +617,70 @@ TUBE_BORE  = 5.0;    // bundle packs to ~4.2mm
 TUBE_WALL  = 1.2;
 TUBE_OD    = TUBE_BORE + 2 * TUBE_WALL;
 TUBE_FLAT  = 0.5;    // sliced off the underside for bed adhesion
-TUBE_LEN   = 180;    // x2 = 360mm, about one head
-TUBE_COUNT = 2;
+// PRINTED PRE-CURVED, not straight.
+//
+// A straight tube forced round a head is a spring: every millimetre of it is
+// storing energy and pushing back, and it has only two places to push against
+// — the two pods, which are held on by friction against TPU rings. The cord
+// would slowly walk them off. Curving it to the shape it will be worn in means
+// it sits there instead of fighting.
+//
+// TUBE_R = 95 because the back of a human head is roughly that. The curve is a
+// constant radius rather than a real head profile: the temple runs are
+// straighter than the back is, but TPU straightens far more easily than it
+// bends, so erring toward the tighter curve leaves the easy correction.
+//
+// Split in two because a 430mm arc at R=95 needs a ~200mm bed in both axes.
+// Halved, each piece is a 130 degree crescent and fits anything. Set
+// TUBE_PIECES = 1 on a 220mm bed for a single continuous run and no joint.
+TUBE_TOTAL  = 430;   // whole run, temple to temple around the back
+TUBE_PIECES = 2;
+TUBE_LEN    = TUBE_TOTAL / TUBE_PIECES;
+TUBE_R      = 95;    // curve radius as printed
 
 // Profile x is the tube's HEIGHT and runs negative — rotate([0,90,0]) maps
 // (x,y,z) -> (z,y,-x), so the extrusion axis becomes X and the profile's x is
 // negated on its way to Z. Positive here would put the tube under the bed.
-module tube_profile() {
-  difference() {
-    intersection() {
-      translate([-TUBE_OD / 2, 0]) circle(d = TUBE_OD, $fn = 64);
-      // keep everything above the flat
-      translate([-TUBE_OD - 1, -TUBE_OD])
-        square([TUBE_OD + 1 - TUBE_FLAT, 2 * TUBE_OD]);
+// Cross-section for rotate_extrude, which reads a 2D shape in the +X half of
+// the XY plane and maps x -> radius, y -> Z. So here x is the RADIAL width and
+// y is the height off the bed, with the flat at the bottom and the whole
+// section lifted so it starts at y = 0.
+module tube_section_2d() {
+  translate([0, TUBE_OD / 2 - TUBE_FLAT])
+    difference() {
+      intersection() {
+        circle(d = TUBE_OD, $fn = 64);
+        translate([-TUBE_OD, -TUBE_OD / 2 + TUBE_FLAT])
+          square([2 * TUBE_OD, 2 * TUBE_OD]);   // slice the underside flat
+      }
+      circle(d = TUBE_BORE, $fn = 64);
     }
-    translate([-TUBE_OD / 2, 0]) circle(d = TUBE_BORE, $fn = 64);
-  }
 }
 
-module cable_tube(len = TUBE_LEN) {
-  // The flat is cut TUBE_FLAT up from the section's lowest point, so without
-  // this shift the part sits that far above the bed. Most slicers drop it
-  // silently, but not all, and a part floating in the file is a part someone
-  // eventually prints supported on thin air.
+module cable_tube(len = TUBE_LEN, r = TUBE_R) {
+  rotate_extrude(angle = len / r * 180 / PI, $fn = 260)
+    translate([r, 0]) tube_section_2d();
+}
+
+// Straight version, kept for a bench test of the electrical run before the
+// real one is committed to.
+module cable_tube_straight(len = TUBE_LEN) {
   translate([0, 0, -TUBE_FLAT])
-    rotate([0, 90, 0]) linear_extrude(height = len) tube_profile();
+    rotate([0, 90, 0]) linear_extrude(height = len)
+      rotate([0, 0, -90]) tube_section_2d();
 }
 
+// Each crescent is rotated to sit symmetrically about the Y axis — a shallow
+// bowl rather than a tipped-over C. A 130 degree arc laid at its natural
+// orientation is 162 x 99mm; the same arc centred is 180 x 62mm, because the
+// bounding box then follows the chord and the sagitta instead of the radius.
+// Stacked, that is the difference between needing a 220mm bed and a 200mm one.
 module tube_plate() {
-  for (i = [0 : TUBE_COUNT - 1])
-    translate([0, i * (TUBE_OD + 4), 0]) cable_tube();
+  sweep = TUBE_LEN / TUBE_R * 180 / PI;
+  pitch = TUBE_R * (1 - cos(sweep / 2)) + TUBE_OD + 6;
+  for (i = [0 : TUBE_PIECES - 1])
+    translate([0, i * pitch, 0])
+      rotate([0, 0, 90 - sweep / 2]) cable_tube();
 }
 
 // ============================================================================
