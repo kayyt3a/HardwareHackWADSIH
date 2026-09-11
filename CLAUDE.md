@@ -50,7 +50,8 @@ Don't relitigate these without a new reason.
 | **Zero external purchases** | Everything from the Freenove Ultimate Starter Kit + XIAO ESP32S3 Sense. No shipping risk, no budget beyond what every team got. |
 | **Dumb board, smart server** | The ESP32 only captures and plays. All intelligence is server-side Python, so the smart half can be fixed without reflashing. |
 | **Two pods, not one** | One box of all five components is a lump on the side of the head. Split keeps each pod thin, and puts the camera at the front and the speaker at the ear where they belong. |
-| **The amp stays in the REAR pod** | Moving it forward would shorten the rear pod and cut the wires along the arm from 5 to 2, which is why it keeps getting suggested. Reject it. Bulk behind the ear is hidden by the wearer's own head; bulk at the hinge sits in peripheral vision and is the first thing anyone looking at them sees. **Where the volume sits beats how much of it there is.** Rear pod is deliberately the larger one: 55 x 31mm vs the front's 42 x 22mm. |
+| **One pod on EACH temple** | Both pods on one arm put all the mass on one side and the glasses slid down that side of the face. Camera pod on one temple, audio pod on the other, so they counterweight. **Cost: the wire run is no longer 10cm along one arm — it is ~35cm around the back of the head.** See the I2S warning below. |
+| **The amp stays in the REAR pod** — *under review* | The original reason (bulk behind the ear is hidden, bulk at the hinge is not) still holds. But the reason to move it has changed: with the pods on opposite temples the I2S run is now ~35cm of unshielded jumper wire instead of 10cm. Moving the amp to the camera pod would leave only two speaker-level analogue wires on that long run, which tolerate it far better. Not yet changed — it is a wiring decision, not a CAD one. |
 
 ### Demoted to "what we'd build next" (pitch material, not built)
 
@@ -63,14 +64,33 @@ scoping discipline rather than apology.
 
 ## Hardware
 
-**Front pod** (near hinge): XIAO ESP32S3 Sense + camera + trigger.
-**Rear pod** (behind ear): audio amplifier + speaker.
-Joined by 5 jumper wires carrying I2S + power along the temple arm.
+**Camera pod** (one temple, near the hinge): XIAO ESP32S3 Sense + camera +
+trigger. Its aperture is in the **front end wall**, not the lid — the camera
+looks forward along the arm, and a hole in the lid would point the lens
+sideways out of the side of the wearer's head.
+**Audio pod** (the other temple, behind that ear): amplifier + speaker.
+Joined by 5 jumper wires carrying I2S + power.
 
-I2S is slow serial, so a ~10cm jumper-wire run is electrically fine. That's
-what makes the two-pod split possible without buying a ribbon cable. The
-honest cost is that the wires run **exposed** along the arm — name it in the
-pitch before a judge notices it.
+**The long run is now the main electrical risk.** At 10cm along one arm, I2S
+over jumper wire was comfortably fine. Around the back of the head it is
+~35cm, and BCLK runs near 1MHz. Unshielded, that is no longer obviously safe —
+it may work, degrade to noise, or fail intermittently, which is the worst of
+the three on a demo night. Mitigations, cheapest first:
+
+1. **Twist the ground wire together with BCLK** along the whole run. Costs
+   nothing and is the single most effective thing.
+2. Drop the I2S sample rate — less bandwidth, slower edges.
+3. **Move the amp into the camera pod**, so the long run carries two
+   speaker-level analogue wires instead of five digital ones. Low-impedance
+   analogue does not care about 35cm. This is the real fix if 1 and 2 fail.
+
+Test the full-length run on the bench **before** it is threaded into sleeves.
+
+The wires are concealed by printed TPU **sleeve segments** (`tpu_sleeves`,
+9 x 40mm ≈ 36cm). They are a flat-floored channel rather than a round tube
+because a split tube cannot sit on a print bed on anything but a line or two
+thin edges, and in TPU that peels. The mouth is 2.4mm against a 4.2mm bore, so
+the bundle presses past a 0.9mm lip and stays put.
 
 ### The axis convention — read before touching the CAD
 
@@ -144,6 +164,8 @@ shape (pods, lids), PLA for disposable test prints only.
 | **Never mix ring sizes under one pod** | Each ladder step is 0.6mm thicker, so it stands its rail 0.6mm higher. A pod bridging two different sizes seats on one rail and rocks on the other. Both rings under a pod must be the same size — and with four printed per size, they will be. |
 | **Rail squish and slot clearance are one number** | The pod's dovetail slot is cut with `CLEARANCE` of slack, so `DT_SQUISH` on the TPU rail must **exceed** it or the joint is a slip fit and the pod rattles. They were tuned separately once and cancelled out exactly. |
 | **The amp is wired flat, not on sockets** | `AMP_HEADERS_FITTED` defaults to false. A jumper socket adds ~10mm to the rear pod, all of it on the axis facing the wearer's head, so the shipped build solders wires straight to the amp pads. A socketed amp will not fit the default pod — render with `-D AMP_HEADERS_FITTED=true` if you need it. |
+| **The dovetail needed 0.5mm more, measured** | `DT_SLOT_EXTRA` widens the SLOT only. The printed joint could not be assembled at the designed 0.15mm interference. It is now a 0.35mm clearance fit — and that is fine, because **the taper is what makes the joint captive, not the friction**. A loose slide still cannot lift off the rail. |
+| **Pod sizes carry measured corrections** | `FB_EXTRA_*` / `RA_EXTRA_*` are additions made holding the printed parts, kept separate from the component dimensions so it stays clear which is which. `RA_EXTRA_OUT = 15` is the big one: the rear cavity was 8mm deep for a 5mm amp, and the wiring would not fit under the lid. |
 | **A GND pin takes more than one wire** | Every ground is the same node. Twist or solder several wires into one joint — that's normal, not a bodge. |
 
 ### Trigger options

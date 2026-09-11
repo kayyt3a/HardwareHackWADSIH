@@ -90,6 +90,17 @@ DT_HEIGHT = 4.0;
 // lower it if the pod will not slide on by hand.
 DT_SQUISH = 0.45;
 
+// Measured on printed parts: the joint was too tight to assemble, so the slot
+// gets this much more on top of CLEARANCE. It is applied to the SLOT ONLY, not
+// to the rail, because the rail's size is also what grips — shrinking the rail
+// instead would loosen the joint twice over.
+//   net per face = DT_SQUISH - CLEARANCE - DT_SLOT_EXTRA
+// which is now slightly negative, i.e. a sliding fit rather than a press fit.
+// That is deliberate: the TPU ring is soft enough that friction down the length
+// of the rail still holds the pod, and a joint that cannot be assembled is
+// worth nothing.
+DT_SLOT_EXTRA = 0.5;
+
 // ------------------------------------------------------------- component box
 // MEASURE YOUR OWN PARTS AND CHANGE THESE BEFORE PRINTING.
 //
@@ -162,8 +173,18 @@ AMP_PROFILE        = AMP_HEADERS_FITTED ? HEADER_STACK : AMP_HGT;
 // generously while the layout was still moving. Now that it is fixed they are
 // cut to the minimum that still lets a wire turn a corner: every millimetre
 // here is length hanging off the side of someone's face.
+// ---------------------------------------------------- measured corrections
+// From handling the first printed set. Kept as named additions rather than
+// folded into the formulas, so it stays obvious what is a component dimension
+// and what is a correction someone made holding the part.
+//
+// RA_EXTRA_OUT is the big one: the rear cavity was 8mm deep for a 5mm amp,
+// leaving 3mm for wiring, and the wires would not fit under the lid.
+FB_EXTRA_LEN = 5; FB_EXTRA_VERT = 3;  FB_EXTRA_OUT = 0;
+RA_EXTRA_LEN = 5; RA_EXTRA_VERT = 3;  RA_EXTRA_OUT = 15;
+
 FB_GAP  = 1.5;
-FB_LEN  = CAM_LEN + FB_GAP + XIAO_LEN + 2 * WALL + 3;
+FB_LEN  = CAM_LEN + FB_GAP + XIAO_LEN + 2 * WALL + 3 + FB_EXTRA_LEN;
 // BOARDS STAND ON EDGE. Their broad face is parallel to the side of the head,
 // not lying flat like a shelf.
 //
@@ -183,16 +204,16 @@ FB_LEN  = CAM_LEN + FB_GAP + XIAO_LEN + 2 * WALL + 3;
 // which is the cheap axis, but the front pod is the one in peripheral vision —
 // so spend it deliberately, not by default.
 FB_VERT_MIN = 0;
-FB_VERT = max(XIAO_WID, CAM_WID, FB_VERT_MIN);     // vertical (Y) — footprint
-FB_OUT  = max(XIAO_PROFILE, CAM_HGT) + WIRE_ROOM;  // outward (Z) — thickness
+FB_VERT = max(XIAO_WID, CAM_WID, FB_VERT_MIN) + FB_EXTRA_VERT;   // vertical (Y)
+FB_OUT  = max(XIAO_PROFILE, CAM_HGT) + WIRE_ROOM + FB_EXTRA_OUT; // outward (Z)
 
-RA_LEN  = AMP_LEN + SPKR_DIA + 2 * WALL + 2;
+RA_LEN  = AMP_LEN + SPKR_DIA + 2 * WALL + 2 + RA_EXTRA_LEN;
 // Same for the rear pod, and it matters more here: the speaker's 28mm was the
 // single biggest number in the build and it was pointed straight out sideways.
 // On edge it runs vertically, behind the ear, where the ear itself hides it —
 // which is exactly where a behind-the-ear hearing aid puts the same bulk.
-RA_VERT = max(AMP_WID, SPKR_DIA);
-RA_OUT  = max(AMP_PROFILE, SPKR_HGT) + WIRE_ROOM;
+RA_VERT = max(AMP_WID, SPKR_DIA) + RA_EXTRA_VERT;
+RA_OUT  = max(AMP_PROFILE, SPKR_HGT) + WIRE_ROOM + RA_EXTRA_OUT;
 
 // ============================================================================
 // helpers
@@ -284,7 +305,21 @@ function pod_height(out) = WALL + out + LID_T + LID_LIP;
 function lid_len(length) = length - WALL - LID_CLR;
 function lid_wid(vert)   = vert + 2 * LID_GROOVE - 2 * LID_CLR;
 
-module pod_base(length, out, vert, cable_slot_front = true) {
+// ------------------------------------------------------- camera aperture
+// The camera looks FORWARD, along the arm, so its aperture belongs in the
+// front END WALL — not in the lid. The lid is the outward face: a hole there
+// points the lens sideways, square out of the side of the wearer's head, at
+// whatever happens to be to their left.
+//
+// It is a vertical SLOT rather than a round hole. The camera hangs off a short
+// ribbon from a board standing on edge, so exactly where it ends up in the
+// cavity is not knowable from the CAD — the slot lets it sit anywhere in a
+// 12mm band and still see out.
+CAM_APERTURE_W = 7.5;   // across the wall (Y)
+CAM_APERTURE_H = 12;    // up the wall (Z) — the latitude
+
+module pod_base(length, out, vert, cable_slot_front = true,
+                camera_front = false) {
   bw = vert + 2 * WALL;                  // Y outer
   bh = pod_height(out);                  // Z outer
   slot_pad = DT_HEIGHT + WALL;           // extra Z for the slot boss
@@ -334,7 +369,20 @@ module pod_base(length, out, vert, cable_slot_front = true) {
 
     // dovetail slot, cut all the way through in X so it slides on
     translate([-EPS, bw / 2, -slot_pad])
-      dovetail(length + 2 * EPS, CLEARANCE);
+      dovetail(length + 2 * EPS, CLEARANCE + DT_SLOT_EXTRA);
+
+    // Forward-looking camera aperture through the front end wall, centred on
+    // the cavity. Stadium-shaped so the ends are round and it prints cleanly.
+    if (camera_front) {
+      acz = WALL + out / 2;                     // centre of the cavity
+      span = CAM_APERTURE_H - CAM_APERTURE_W;   // centre-to-centre of the ends
+      translate([-EPS, bw / 2, acz])
+        rotate([0, 90, 0])
+          hull()
+            for (dz = [-span / 2, span / 2])
+              translate([dz, 0, 0])
+                cylinder(h = WALL + 2 * EPS, d = CAM_APERTURE_W, $fn = 40);
+    }
 
     // cable exit
     if (cable_slot_front)
@@ -443,9 +491,12 @@ module pod_lid(length, out, vert, camera_hole = false, touch_recess = false,
 // parts
 // ============================================================================
 
-module frontboard_base() { pod_base(FB_LEN, FB_OUT, FB_VERT); }
+module frontboard_base() { pod_base(FB_LEN, FB_OUT, FB_VERT,
+                                   camera_front = true); }
+// No camera_hole: the aperture moved to the base's front end wall, so the lid
+// carries only the touch pad.
 module frontboard_lid()  { pod_lid(FB_LEN, FB_OUT, FB_VERT,
-                                   camera_hole = true, touch_recess = true); }
+                                   touch_recess = true); }
 module rearaudio_base()  { pod_base(RA_LEN, RA_OUT, RA_VERT); }
 module rearaudio_lid()   { pod_lid(RA_LEN, RA_OUT, RA_VERT, grille = true); }
 
@@ -473,6 +524,56 @@ module ring_ladder() {
 }
 
 // ============================================================================
+// cable sleeve — conceals the run around the back of the head
+// ============================================================================
+// With one pod on each temple, the wires no longer run along a single arm.
+// They leave one pod, run back along that temple, around the back of the head,
+// and forward to the other — roughly 35cm of exposed jumper wire, which is
+// both the ugliest thing on the build and the easiest to snag.
+//
+// This is a CHANNEL, not a tube, and that is a printing decision. A round
+// split tube has to lie on the bed either on a single curved line or on the
+// two thin edges of its slit; neither sticks, and in TPU they peel. A channel
+// with a flat floor sits down properly, needs no support, and the bore's
+// ceiling is a self-supporting arch.
+//
+// The opening is narrower than the bore, so the bundle presses in past the lip
+// and stays. Printed in TPU it opens under a fingernail and closes again.
+//
+// Printed as SEGMENTS rather than one 35cm piece: segments follow the curve of
+// the head without kinking, survive a failed print (you lose one, not the
+// run), and let the wearer leave gaps where the cable needs to flex most.
+SL_BORE   = 4.2;   // bundle of five jumper wires is about 3.8mm across
+SL_W      = 6.6;   // outer width
+SL_H      = 5.4;   // outer height
+SL_BORE_Z = 2.8;   // bore centre above the floor
+SL_SLIT   = 2.4;   // narrower than the bore — this is what retains the wires
+SL_SEG    = 40;    // length of one segment
+SL_COUNT  = 9;     // 9 x 40mm = 36cm, about one head
+
+// Profile is drawn with x as the sleeve's HEIGHT, running negative, because
+// rotate([0,90,0]) below maps (x,y,z) -> (z,y,-x): the extrusion axis becomes
+// X, and the profile's x is negated on its way to Z. Drawing the height
+// positive here puts the whole channel underneath the bed.
+module sleeve_profile() {
+  difference() {
+    translate([-SL_H, -SL_W / 2]) square([SL_H, SL_W]);
+    translate([-SL_BORE_Z, 0]) circle(d = SL_BORE, $fn = 48);
+    // the mouth, from the bore's centre up to the top face
+    translate([-SL_H, -SL_SLIT / 2]) square([SL_H - SL_BORE_Z, SL_SLIT]);
+  }
+}
+
+module cable_sleeve(len = SL_SEG) {
+  rotate([0, 90, 0]) linear_extrude(height = len) sleeve_profile();
+}
+
+module sleeve_plate() {
+  for (i = [0 : SL_COUNT - 1])
+    translate([0, i * (SL_W + 3), 0]) cable_sleeve();
+}
+
+// ============================================================================
 // print plates
 // ============================================================================
 
@@ -493,6 +594,7 @@ module petg_plate() {
 // Everything soft, one plate, TPU.
 module tpu_plate()  { ring_set(); }
 module tpu_ladder() { ring_ladder(); }
+module tpu_sleeves() { sleeve_plate(); }
 
 // ============================================================================
 // render selector:  openscad -o out.stl -D 'part="frontboard_base"' this.scad
@@ -507,6 +609,8 @@ else if (part == "rearaudio_base")  rearaudio_base();
 else if (part == "rearaudio_lid")   rearaudio_lid();
 else if (part == "tpu_plate")       tpu_plate();
 else if (part == "tpu_ladder")      tpu_ladder();
+else if (part == "tpu_sleeves")     tpu_sleeves();
+else if (part == "cable_sleeve")    cable_sleeve();
 // "none" renders nothing. Needed so another file can `include` this one for
 // its modules and constants without the selector below also emitting a plate
 // into that file's output.
