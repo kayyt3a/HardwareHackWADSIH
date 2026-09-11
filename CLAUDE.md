@@ -123,11 +123,11 @@ sits where it is put. Constant radius rather than a true head profile, because
 TPU straightens far more easily than it bends, so erring toward the tighter
 curve leaves the easy correction.
 
-430mm total, as 2 x 215mm crescents (`TUBE_PIECES`). Each is rotated on the
+450mm total, as 2 x 225mm crescents (`TUBE_PIECES`). Each is rotated on the
 plate to sit as a shallow bowl rather than a tipped-over C — 180 x 62mm instead
 of 162 x 99mm, because the bounding box then follows the chord and sagitta
 rather than the radius. Set `TUBE_PIECES = 1` on a 220mm bed for one continuous
-430mm run and no joint at all.
+450mm run and no joint at all.
 
 The curve does not interfere with the pod sockets: over 6mm of engagement a
 R=95 arc deviates 0.047mm, against 0.15mm of designed squeeze.

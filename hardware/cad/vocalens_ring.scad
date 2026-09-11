@@ -633,7 +633,7 @@ TUBE_FLAT  = 0.5;    // sliced off the underside for bed adhesion
 // Split in two because a 430mm arc at R=95 needs a ~200mm bed in both axes.
 // Halved, each piece is a 130 degree crescent and fits anything. Set
 // TUBE_PIECES = 1 on a 220mm bed for a single continuous run and no joint.
-TUBE_TOTAL  = 430;   // whole run, temple to temple around the back
+TUBE_TOTAL  = 450;   // whole run, temple to temple around the back
 TUBE_PIECES = 2;
 TUBE_LEN    = TUBE_TOTAL / TUBE_PIECES;
 TUBE_R      = 95;    // curve radius as printed
