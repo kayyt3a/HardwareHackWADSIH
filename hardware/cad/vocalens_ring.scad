@@ -325,6 +325,17 @@ function lid_wid(vert)   = vert + 2 * LID_GROOVE - 2 * LID_CLR;
 // ribbon from a board standing on edge, so exactly where it ends up in the
 // cavity is not knowable from the CAD — the slot lets it sit anywhere in a
 // 12mm band and still see out.
+// Cable pass-throughs. Sized so the five-wire bundle (~3.8mm) passes without
+// being pinched, AND so the sleeve that butts up against it (6.6 x 5.4mm outer)
+// is not wider than the hole it feeds — a sleeve that cannot reach the pod
+// leaves a bare gap at each end, which is exactly where the wires are most
+// visible and most likely to be tugged.
+//
+// Stadium-shaped, not a square cut: wire crossing a sharp corner under repeated
+// head movement is how insulation chafes through.
+CABLE_W = 9;   // across the wall (Y)
+CABLE_H = 6;   // up the wall (Z)
+
 CAM_APERTURE_W = 7.5;   // across the wall (Y)
 CAM_APERTURE_H = 12;    // up the wall (Z) — the latitude
 
@@ -394,13 +405,17 @@ module pod_base(length, out, vert, cable_slot_front = true,
                 cylinder(h = WALL + 2 * EPS, d = CAM_APERTURE_W, $fn = 40);
     }
 
-    // cable exit
-    if (cable_slot_front)
-      translate([-EPS, bw / 2 - 3, WALL + out / 2 - 2])
-        cube([WALL + 2 * EPS, 6, 4]);
-    // cable entry at the other end
-    translate([length - WALL - EPS, bw / 2 - 3, WALL + out / 2 - 2])
-      cube([WALL + 2 * EPS, 6, 4]);
+    // Cable pass-throughs, front and rear.
+    for (spec = [[cable_slot_front, -EPS], [true, length - WALL - EPS]])
+      if (spec[0]) {
+        cspan = CABLE_W - CABLE_H;
+        translate([spec[1], bw / 2, WALL + out / 2])
+          rotate([0, 90, 0])
+            hull()
+              for (dy = [-cspan / 2, cspan / 2])
+                translate([0, dy, 0])
+                  cylinder(h = WALL + 2 * EPS, d = CABLE_H, $fn = 32);
+      }
   }
   }
 }
@@ -504,7 +519,12 @@ module pod_lid(length, out, vert, camera_hole = false, touch_recess = false,
 // parts
 // ============================================================================
 
+// cable_slot_front = false: the front wall is the lens aperture now, and the
+// wires leave rearward toward the back of the head. The old front slot fell
+// entirely inside the aperture anyway — invisible, but it weakened the wall
+// the camera looks through for nothing.
 module frontboard_base() { pod_base(FB_LEN, FB_OUT, FB_VERT,
+                                   cable_slot_front = false,
                                    camera_front = true); }
 // No camera_hole: the aperture moved to the base's front end wall, so the lid
 // carries only the touch pad.
