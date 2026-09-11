@@ -101,6 +101,17 @@ the connectors never enter the tube. **Thread the tube before soldering the
 amp** — solder first and both ends are un-threadable, and the only way back is
 to cut a wire.
 
+Each pod carries a **socket boss** on its rear end wall that the tube pushes
+into, so the tube is retained rather than butted against a hole — otherwise it
+slides back under any tug and bares the wire at the two points where that looks
+worst. The socket bore is 0.3mm under the tube's OD, so the soft TPU squeezes
+into the rigid PETG; same trick as the ring/rail joint.
+
+**It is not a dovetail, and that is deliberate.** A dovetail resists lift-off
+perpendicular to its slide axis. The load on a cable tube is axial pull-out,
+straight along the tube, which a dovetail does nothing about. Match the joint
+to the load.
+
 D-section, flattened 0.5mm along the underside: a round tube 180mm long touches
 the bed on a single line and peels in TPU, where the flat gives a 3.7mm contact
 strip. Two pieces because 360mm does not fit a hobby bed in any orientation;

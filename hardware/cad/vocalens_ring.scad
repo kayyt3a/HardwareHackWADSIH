@@ -336,11 +336,27 @@ function lid_wid(vert)   = vert + 2 * LID_GROOVE - 2 * LID_CLR;
 CABLE_W = 9;   // across the wall (Y)
 CABLE_H = 6;   // up the wall (Z)
 
+// TUBE SOCKET. A short boss on the outside of the end wall that the cable tube
+// pushes into, so the tube is retained rather than merely butted against a
+// hole — otherwise it slides back under any tug and bares the wire at exactly
+// the two points where that looks worst.
+//
+// Deliberately NOT a dovetail. A dovetail resists lift-off perpendicular to
+// its slide axis; the load here is axial pull-out, straight along the tube,
+// which a dovetail does nothing about. An interference socket resists it
+// directly — and it is the same trick the ring/rail joint already uses: soft
+// TPU squeezed into rigid PETG, where the tolerance is absorbed by the soft
+// part.
+//
+// The socket bore is UNDER the tube's outside diameter on purpose.
+TUBE_SOCKET_L       = 6;     // how far the tube goes in
+TUBE_SOCKET_SQUEEZE = 0.3;   // socket is this much smaller than the tube
+
 CAM_APERTURE_W = 7.5;   // across the wall (Y)
 CAM_APERTURE_H = 12;    // up the wall (Z) — the latitude
 
 module pod_base(length, out, vert, cable_slot_front = true,
-                camera_front = false) {
+                camera_front = false, tube_socket_rear = false) {
   bw = vert + 2 * WALL;                  // Y outer
   bh = pod_height(out);                  // Z outer
   slot_pad = DT_HEIGHT + WALL;           // extra Z for the slot boss
@@ -356,6 +372,19 @@ module pod_base(length, out, vert, cable_slot_front = true,
   // that runs along this exact band shears their top half off and leaves the
   // rest buried in solid wall — present in the file, absent from the part, and
   // silent about it. LID_DETENT = 0 removes them properly.
+  // Socket boss on the rear end wall. Outside the difference() below for the
+  // same reason the detents are: the cable pass-through is cut along this axis
+  // and would hollow the boss out from the inside.
+  if (tube_socket_rear)
+    difference() {
+      translate([length, bw / 2, WALL + out / 2]) rotate([0, 90, 0])
+        cylinder(h = TUBE_SOCKET_L,
+                 d = TUBE_OD - TUBE_SOCKET_SQUEEZE + 2 * WALL, $fn = 48);
+      translate([length - EPS, bw / 2, WALL + out / 2]) rotate([0, 90, 0])
+        cylinder(h = TUBE_SOCKET_L + 2 * EPS,
+                 d = TUBE_OD - TUBE_SOCKET_SQUEEZE, $fn = 48);
+    }
+
   if (LID_DETENT > 0)
     for (y0 = [WALL - LID_GROOVE, WALL + vert])
       translate([length - 7, y0, gz])
@@ -525,12 +554,14 @@ module pod_lid(length, out, vert, camera_hole = false, touch_recess = false,
 // the camera looks through for nothing.
 module frontboard_base() { pod_base(FB_LEN, FB_OUT, FB_VERT,
                                    cable_slot_front = false,
-                                   camera_front = true); }
+                                   camera_front = true,
+                                   tube_socket_rear = true); }
 // No camera_hole: the aperture moved to the base's front end wall, so the lid
 // carries only the touch pad.
 module frontboard_lid()  { pod_lid(FB_LEN, FB_OUT, FB_VERT,
                                    touch_recess = true); }
-module rearaudio_base()  { pod_base(RA_LEN, RA_OUT, RA_VERT); }
+module rearaudio_base()  { pod_base(RA_LEN, RA_OUT, RA_VERT,
+                                   tube_socket_rear = true); }
 module rearaudio_lid()   { pod_lid(RA_LEN, RA_OUT, RA_VERT, grille = true); }
 
 // Four rings: two per pod (front and back of each) so each pod is held at two
