@@ -203,7 +203,12 @@ FB_LEN  = CAM_LEN + FB_GAP + XIAO_LEN + 2 * WALL + 3 + FB_EXTRA_LEN;
 // the lid can carry a bigger touch pad. It costs vertical height at the hinge,
 // which is the cheap axis, but the front pod is the one in peripheral vision —
 // so spend it deliberately, not by default.
-FB_VERT_MIN = 0;
+// 28 rather than 0. The camera pod is no longer sized by the XIAO (19mm) but
+// by what the lid has to carry: a 28.52mm coin needs a lid at least 31mm wide.
+// With FB_EXTRA_VERT this puts the pod at 34.2mm outer — the same width as the
+// audio pod, which is also what makes the two sides look like a matched pair
+// rather than two different objects.
+FB_VERT_MIN = 28;
 FB_VERT = max(XIAO_WID, CAM_WID, FB_VERT_MIN) + FB_EXTRA_VERT;   // vertical (Y)
 FB_OUT  = max(XIAO_PROFILE, CAM_HGT) + WIRE_ROOM + FB_EXTRA_OUT; // outward (Z)
 
@@ -287,7 +292,12 @@ module temple_ring(in_vert = RING_IN_VERT, in_out = RING_IN_OUT) {
 //
 // That is also why the lid cannot be dropped in — it is wider than the hole it
 // covers. It only goes in endwise, which is the point.
-LID_T      = 1.6;   // lid plate thickness
+// 3.2, not 1.6. The touch pad is a 20c coin, 2.5mm thick, and a recess has to
+// be shallower than the plate it is cut into — a 2.5mm pocket in a 1.6mm lid
+// is a hole, and the coin falls through it. At 3.2 the coin recesses fully and
+// still leaves 0.7mm of lid under it. Costs 1.6mm of outward depth on both
+// pods, which is the cheapest place to spend it.
+LID_T      = 3.2;   // lid plate thickness
 LID_LIP    = 1.0;   // wall left above the groove — this is what retains it
 LID_GROOVE = 1.0;   // how far the groove cuts into each side wall
 LID_CLR    = 0.25;  // sliding clearance, per face
@@ -427,9 +437,12 @@ BUTTON_PLUNGER_D  = 4.2;   // clearance hole for the plunger, not the body
 // proud edge to catch on hair. PAD_WIRE_D goes right through into the cavity:
 // solder the trigger wire to the BACK of the pad before gluing it in, so no
 // solder joint is visible and nothing conductive is exposed to a fingertip.
-PAD_W      = 18.0;  // across the lid (Y). Clamped to (vert + 2*WALL) - 2 in code.
-PAD_L      = 20.0;  // along the arm (X). Free to grow — this is the cheap axis.
-PAD_DEPTH  = 0.8;   // set to your disc/foil thickness so it finishes flush.
+// Sized for an Australian 20c: 28.52mm across, 2.50mm thick. PAD_L is set
+// equal to PAD_W so the stadium collapses to a circle and the coin sits in a
+// round pocket rather than a slot with the coin rattling along it.
+PAD_W      = 29.0;  // 28.52 coin + clearance. Clamped to lid width - 2 in code.
+PAD_L      = 29.0;  // equal to PAD_W -> a circle, not a stadium
+PAD_DEPTH  = 2.6;   // 20c is 2.50mm; this seats it just below flush.
                     // Clamped in code to leave 0.6mm of lid under the pocket:
                     // a recess as deep as the plate is not a recess, it is a
                     // hole, and the pad would fall through it.

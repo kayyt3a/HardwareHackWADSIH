@@ -175,10 +175,16 @@ shape (pods, lids), PLA for disposable test prints only.
 - **Touch pad** — one wire to any scrap of metal, **no ground return**. Best
   when GND pins are spoken for and smallest in the pod. Needs calibration.
   **This is what's built**, so `USE_PUSH_BUTTON` is 0 and the lid is cut for a
-  pad. The pad is a 9 x 20mm **stadium, not a circle**: the lid's outer face is
-  only 10.2mm across (that axis runs into the scalp), so a real coin cannot fit
-  — but capacitance follows area, and the stadium has ~3x the area of a 9mm
-  disc. `TRIGGER_IS_BUTTON` in the CAD must match `USE_PUSH_BUTTON` in `pins.h`.
+  pad. `TRIGGER_IS_BUTTON` in the CAD must match `USE_PUSH_BUTTON` in `pins.h`.
+  The pad is an **Australian 20c coin** — 28.52mm across, 2.50mm thick, and
+  **11.3g**. The coin is what sizes the camera pod now, not the XIAO: the lid
+  must be ≥31mm wide to hold it, which is why `FB_VERT_MIN` is 28 and the pod
+  is 34.2mm. `LID_T` is 3.2 rather than 1.6 for the same reason — a 2.5mm
+  recess in a 1.6mm plate is a hole, not a pocket.
+  **The 11.3g is worth a second look.** The pods were put on opposite temples
+  to balance the weight; the coin puts a third of a pod's worth back on one
+  side. Copper tape or foil in the same pocket has ample electrode area at
+  essentially zero mass, and the pocket takes either.
 - **Button** — deterministic, nothing to calibrate, but needs two connections
   and a through-hole switch can't take a jumper socket directly.
 
