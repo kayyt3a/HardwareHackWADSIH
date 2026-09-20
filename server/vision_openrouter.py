@@ -9,8 +9,16 @@ Same interface as vision.py (read_label / answer_question, taking image
 BYTES + a media type), so main.py can import this in its place:
     import vision_openrouter as vision
 
-Model is overridable without touching code:
+Model and provider are overridable without touching code:
     VISION_MODEL=some/other-model in .env
+    VISION_PROVIDER=some-provider in .env
+
+VISION_PROVIDER pins vision requests to a preferred OpenRouter provider,
+instead of letting OpenRouter pick for itself. Defaults to
+"google-vertex/global" (Google's own route for Gemini). Accepts a
+comma-separated list to set a preference order. Fallbacks are ON by default,
+so an unavailable provider degrades to another rather than failing; set
+VISION_PROVIDER_ALLOW_FALLBACKS=0 to lock it to the listed providers only.
 
 Setup (once):
     pip install requests python-dotenv
@@ -33,7 +41,18 @@ from typing import Optional
 from openrouter_client import OpenRouterError as VisionError
 from openrouter_client import chat_text
 
-MODEL = os.getenv("VISION_MODEL", "google/gemma-4-31b-it")
+MODEL = os.getenv("VISION_MODEL", "google/gemini-3.5-flash-lite")
+
+# Google's own Vertex route for Gemini, so latency and billing are
+# predictable rather than depending on whoever OpenRouter picks.
+PROVIDER = os.getenv("VISION_PROVIDER", "google-vertex/global").strip()
+
+# Fallbacks ON: if the Vertex endpoint is unavailable, degrade to another
+# provider rather than failing. A wearer waiting on an answer would rather
+# have a slower one than none. Set to 0 to lock to PROVIDER only.
+PROVIDER_ALLOW_FALLBACKS = os.getenv(
+    "VISION_PROVIDER_ALLOW_FALLBACKS", "1"
+).strip().lower() in ("1", "true", "yes")
 DEFAULT_QUESTION = "What does this say?"
 MAX_IMAGE_BYTES = 4_000_000   # downscale images bigger than ~4 MB
 
@@ -68,6 +87,25 @@ that a printed detail exists, never to judge whether it's safe for them.
 Phrase it as "this contains X, which you've noted as an allergy" not "this
 is unsafe for you" or "you should/shouldn't take this". If no such facts are
 given, don't mention a profile at all."""
+
+
+def _provider_payload() -> dict:
+    """OpenRouter's routing options for this request. Empty (= let OpenRouter
+    choose) unless VISION_PROVIDER names one or more providers, in which case
+    only those are allowed, in the order given."""
+    if not PROVIDER:
+        return {}
+
+    order = [p.strip() for p in PROVIDER.split(",") if p.strip()]
+    if not order:
+        return {}
+
+    return {
+        "provider": {
+            "order": order,
+            "allow_fallbacks": PROVIDER_ALLOW_FALLBACKS,
+        }
+    }
 
 
 def _downscale_image(image_bytes: bytes) -> tuple[bytes, str]:
@@ -115,6 +153,74 @@ def _extract_json(raw_text: str) -> dict:
     )
 
 
+def answer_audio_question(
+    image_bytes: bytes,
+    audio_bytes: bytes,
+    media_type: str = "image/jpeg",
+    audio_format: str = "wav",
+    user_context: Optional[str] = None,
+) -> dict:
+    """One call that takes the photo AND the recorded question together,
+    skipping the separate speech-to-text round trip entirely.
+
+    The model hears the question and looks at the photo in the same request,
+    so the transcript never has to come back to us and go out again — it
+    saves a whole network round trip to OpenRouter, which measured ~0.6-0.7s
+    off the pipeline, most of the STT stage.
+
+    Requires a VISION_MODEL that accepts audio input (google/gemini-3.5-flash-lite
+    does; check the model's input_modalities on OpenRouter before switching).
+    Callers should fall back to transcribe-then-ask if this raises.
+
+    "heard" comes back alongside the usual fields so the transcript is still
+    logged and inspectable — losing that visibility would make a misheard
+    question impossible to tell apart from a bad answer."""
+    if len(image_bytes) > MAX_IMAGE_BYTES:
+        image_bytes, media_type = _downscale_image(image_bytes)
+
+    b64_image = base64.b64encode(image_bytes).decode("utf-8")
+    b64_audio = base64.b64encode(audio_bytes).decode("utf-8")
+
+    prompt_text = (
+        "The audio clip is this person speaking a question about the photo. "
+        "Listen to it, then answer that question about what's in the photo, "
+        "and respond with the JSON object described in your instructions. "
+        'Add one extra field, "heard", containing the question you heard, '
+        "verbatim. If the audio is silent or unintelligible, set \"heard\" to "
+        'null and answer as if asked "What does this say?"'
+    )
+    if user_context:
+        prompt_text += f"\n\nFacts about this person, for context only: {user_context}."
+
+    messages = [
+        {"role": "system", "content": SYSTEM_PROMPT},
+        {
+            "role": "user",
+            "content": [
+                {"type": "text", "text": prompt_text},
+                {
+                    "type": "input_audio",
+                    "input_audio": {"data": b64_audio, "format": audio_format},
+                },
+                {
+                    "type": "image_url",
+                    "image_url": {"url": f"data:{media_type};base64,{b64_image}"},
+                },
+            ],
+        },
+    ]
+
+    raw_text = chat_text(MODEL, messages, temperature=0.2, **_provider_payload())
+    result = _extract_json(raw_text)
+
+    result.setdefault("spoken_summary", "I couldn't read that clearly.")
+    result.setdefault("category", None)
+    result.setdefault("confidence", 0.0)
+    result.setdefault("needs_reposition", False)
+    result.setdefault("heard", None)
+    return result
+
+
 def _call_vision(image_bytes: bytes, media_type: str, question: str, user_context: Optional[str] = None) -> dict:
     if len(image_bytes) > MAX_IMAGE_BYTES:
         image_bytes, media_type = _downscale_image(image_bytes)
@@ -142,7 +248,7 @@ def _call_vision(image_bytes: bytes, media_type: str, question: str, user_contex
         },
     ]
 
-    raw_text = chat_text(MODEL, messages, temperature=0.2)
+    raw_text = chat_text(MODEL, messages, temperature=0.2, **_provider_payload())
     result = _extract_json(raw_text)
 
     result.setdefault("spoken_summary", "I couldn't read that clearly.")

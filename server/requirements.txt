@@ -1,10 +1,15 @@
+# Web server
 fastapi==0.115.0
 uvicorn[standard]==0.30.6
-anthropic==0.34.2
 python-multipart==0.0.9
-python-dotenv==1.0.1
 pydantic>=2.10.0
-openai==1.51.0
-pyzbar==0.1.9
-Pillow>=11.0.0
+
+# Config + HTTP to OpenRouter (vision, speech-to-text, text-to-speech)
+python-dotenv==1.0.1
 requests==2.32.3
+
+# Image downscaling before a vision call (vision_openrouter.py)
+Pillow>=11.0.0
+
+# Audio conversion is standard library only — see pcm.py. No numpy, no
+# ffmpeg, nothing to install for the speech path.
