@@ -40,7 +40,7 @@
 // is fine in normal use, but do not hold the button down while the board is
 // powering up. If that ever becomes awkward, move PIN_TRIGGER to GPIO 2 (pad
 // D1) instead; nothing else in the firmware depends on this number.
-#define USE_PUSH_BUTTON 0   // 0 = capacitive pad (built): one wire, no ground return
+#define USE_PUSH_BUTTON 0
 #define PIN_TRIGGER 3         // pad D2 on the silkscreen. Button, or touch pad.
 
 // Touch-pad settings — only used when USE_PUSH_BUTTON is 0. Both values come
@@ -50,7 +50,16 @@
 // A touch pad needs ONE wire and no ground connection, which is why it is the
 // better choice when GND pins are already spoken for.
 #define TOUCH_ACTIVE_HIGH 1   // ESP32-S3 readings rise on touch; classic ESP32 falls
-#define TOUCH_THRESHOLD 40000 // placeholder — replace with the selftest's number
+#define TOUCH_THRESHOLD 79000 // changed after selftest successful
 #define PIN_I2S_BCLK 7        // I2S out to amp -> bone-conduction transducer
 #define PIN_I2S_LRC 8
 #define PIN_I2S_DIN 9
+
+// Camera orientation — the sensor's physical mounting doesn't always match
+// "right side up" in software, so this corrects it after the fact rather
+// than needing to physically remount anything. If a captured photo looks
+// upside-down and/or mirrored, flip these (0/1) and reflash — no need to
+// touch anything else. Try combinations until a photo comes out correct:
+// vflip alone, hmirror alone, or both together cover every case.
+#define CAMERA_VFLIP 1
+#define CAMERA_HMIRROR 0

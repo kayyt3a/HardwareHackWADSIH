@@ -1,10 +1,22 @@
 // Vocalens firmware — glasses form factor, XIAO ESP32S3 Sense
 //
-// Trigger: wake word ("hey ..., what does this say?") OR a manual press on
-// the temple as a backup — a push button by default, see USE_PUSH_BUTTON in
-// pins.h. On trigger: record the spoken question from
-// the onboard mic, capture a JPEG frame, POST both to the server, and play
-// the returned MP3 answer through a bone-conduction transducer.
+// Trigger: a press on the temple — a touch pad or a push button, see
+// USE_PUSH_BUTTON in pins.h. On trigger: capture a JPEG frame, POST it to
+// the server, and play the answer that comes back through a
+// bone-conduction transducer.
+//
+// The answer arrives as RAW PCM — 16 kHz, 16-bit signed little-endian,
+// mono — and goes straight to the I2S DAC. There is no audio decoder on
+// the device and no audio library in the build; see audio_playback.cpp.
+//
+// NOT FINISHED YET — each is compiled in but switched off by a define
+// below, so turning one on is a one-line change:
+//  - The mic (mic_capture.h). No spoken question is sent yet; it's typed
+//    into the server's terminal while the photo uploads.
+//  - Wake-word detection (wake_word.h), which needs ESP-SR. The press is
+//    the only trigger.
+//  - The offline barcode fallback (offline_fallback.h). With no network a
+//    press just says so.
 //
 // Known gotchas carried over from otto_finder's build notes:
 //  - PSRAM must be set to OPI PSRAM in board config (see platformio.ini
@@ -15,10 +27,6 @@
 //  - Verify every pin in pins.h against your specific XIAO ESP32S3 Sense
 //    wiring before flashing — camera and mic pins are fixed by the board,
 //    everything else is only a suggested layout.
-//  - Wake-word detection (wake_word.h) and mic recording (mic_capture.h) are
-//    both stubs pending ESP-SR integration — see comments in those files.
-//    The manual trigger works standalone without either being finished, so
-//    build and test the rest of the pipeline against the button first.
 
 #include <Arduino.h>
 #include <WiFi.h>
@@ -26,9 +34,26 @@
 #include "esp_camera.h"
 #include "pins.h"
 #include "secrets.h"
-#include "wake_word.h"
 #include "mic_capture.h"
 #include "offline_fallback.h"
+#include "wake_word.h"
+
+// FEATURE SWITCHES — all three are written but not finished, so they are
+// compiled in and left switched off rather than deleted. Flip one to 1 when
+// its header does something real; nothing else in this file needs changing.
+//
+//   MIC      — implemented. On, the press records MIC_RECORD_SECONDS of
+//              PDM audio and sends it with the photo; the server saves it
+//              to questions/ and transcribes it. Off, this skips the 128 KB
+//              PSRAM allocation and the empty audio part on every press.
+//   WAKEWORD — isWakeWordDetected() in wake_word.h always returns false,
+//              pending ESP-SR. Off, the pad is the only trigger.
+//   OFFLINE  — handleOfflineFallback() in offline_fallback.h only prints a
+//              message. On, a press with no network tries a local barcode
+//              decode instead of giving up.
+#define MIC_ENABLED 1
+#define WAKEWORD_ENABLED 0
+#define OFFLINE_FALLBACK_ENABLED 0
 
 bool wifiConnected = false;
 
@@ -42,7 +67,19 @@ void setupWiFi() {
     attempts++;
   }
   wifiConnected = (WiFi.status() == WL_CONNECTED);
-  Serial.println(wifiConnected ? "\nWiFi connected" : "\nWiFi FAILED — offline mode");
+  if (wifiConnected) {
+    Serial.println("\nWiFi connected");
+  } else {
+    // Print the specific reason instead of just "failed" — the numeric code
+    // narrows down what's actually wrong:
+    //   1 = WL_NO_SSID_AVAIL      -> network name not found/visible at all
+    //                                (classic sign of a 5GHz-only network,
+    //                                 since the ESP32-S3 can't see 5GHz)
+    //   4 = WL_CONNECT_FAILED     -> usually a wrong password
+    //   6 = WL_DISCONNECTED       -> found the network but didn't associate
+    //   0 = WL_IDLE_STATUS        -> never really tried (rare)
+    Serial.printf("\nWiFi FAILED — offline mode (status code %d)\n", WiFi.status());
+  }
 }
 
 bool setupCamera() {
@@ -67,16 +104,36 @@ bool setupCamera() {
   config.pin_reset = RESET_GPIO_NUM;
   config.xclk_freq_hz = 20000000;
   config.pixel_format = PIXFORMAT_JPEG;
-  config.frame_size = FRAMESIZE_VGA; // 640x480 — enough detail for label text,
-                                      // small enough to upload fast on WiFi
-  config.jpeg_quality = 12;
+  config.frame_size = FRAMESIZE_SVGA; // 800x600 — one preset step down from
+                                      // XGA (1024x768), about 39% fewer
+                                      // pixels and so a markedly smaller
+                                      // POST body
+  // Lower = less compression = crisper fine text, but a bigger JPEG and so
+  // a bigger POST body. 6 -> 7 is roughly 5% off the encoded size at
+  // effectively no cost to legibility; go much past 10 and small print on a
+  // label starts to smear.
+  config.jpeg_quality = 7;
   config.fb_count = psramFound() ? 2 : 1;
+  // Without this, fb_count > 1 defaults to FIFO ("grab when empty") —
+  // esp_camera_fb_get() then returns the OLDEST buffered frame, which can be
+  // stale by tens of seconds if the driver's been filling the queue while
+  // idle between triggers. CAMERA_GRAB_LATEST always returns the newest
+  // frame instead, discarding anything older.
+  config.grab_mode = CAMERA_GRAB_LATEST;
 
   esp_err_t err = esp_camera_init(&config);
   if (err != ESP_OK) {
     Serial.printf("Camera init failed: 0x%x\n", err);
     return false;
   }
+
+  // Correct sensor orientation in software (see pins.h for how to tune).
+  sensor_t *sensor = esp_camera_sensor_get();
+  if (sensor) {
+    sensor->set_vflip(sensor, CAMERA_VFLIP);
+    sensor->set_hmirror(sensor, CAMERA_HMIRROR);
+  }
+
   return true;
 }
 
@@ -115,17 +172,77 @@ bool manualTriggered() {
 #endif
 }
 
-// Implemented in audio_playback.cpp — see that file for ESP8266Audio wiring.
-void playMp3Stream(WiFiClient *stream, int contentLength);
+// Implemented in audio_playback.cpp. The server returns raw 16 kHz mono
+// 16-bit PCM, so there is no decoding step — see that file for the I2S setup.
+void setupSpeaker();
+void playPcmStream(WiFiClient *stream, int contentLength);
 
-// POSTs the JPEG frame + recorded question audio as multipart/form-data to
-// /ask and plays back the returned MP3. Multipart is built manually since
-// HTTPClient doesn't provide a helper for it.
+// POSTs the JPEG frame to /ask as multipart/form-data and plays the PCM
+// answer that comes back. Multipart is built manually since HTTPClient
+// doesn't provide a helper for it.
+// Grabs one frame. The camera driver keeps capturing continuously even while
+// idle between triggers, so after a long gap the first frame handed back can
+// be a stale one from the buffer queue. One throwaway flushes it; with
+// CAMERA_GRAB_LATEST and fb_count = 2 a second adds only latency.
+static camera_fb_t *grabFrame() {
+  camera_fb_t *warmup = esp_camera_fb_get();
+  if (warmup) {
+    esp_camera_fb_return(warmup);
+  }
+  delay(50);
+  return esp_camera_fb_get();
+}
+
+#if MIC_ENABLED
+// Handed to recordQuestion() so the photo is taken WHILE the question is
+// being recorded, rather than after the recording ends. Without this the
+// wearer speaks, waits, and only then does the camera fire — which also
+// means the frame shows wherever they had drifted to by the end.
+static void grabFrameDuringRecording(void *ctx) {
+  *(camera_fb_t **)ctx = grabFrame();
+}
+
+// Ends the recording on a SECOND press of the trigger. The pad that started
+// it is usually still held when recording begins, so a press only counts
+// once it has been released — the same edge-triggering loop() does, which is
+// what stops one long touch reading as press after press.
+static bool triggerPressedAgain(void *) {
+  static bool released = false;
+  if (!manualTriggered()) {
+    released = true;
+    return false;
+  }
+  if (released) {
+    released = false;  // ready for the next recording
+    return true;
+  }
+  return false;
+}
+#endif
+
 void captureAskAndSpeak() {
-  uint8_t *audioBuf = (uint8_t *)ps_malloc(MIC_BUFFER_BYTES);
-  size_t audioLen = audioBuf ? recordQuestion(audioBuf) : 0;
+  camera_fb_t *fb = nullptr;
 
-  camera_fb_t *fb = esp_camera_fb_get();
+#if MIC_ENABLED
+  uint8_t *audioBuf = (uint8_t *)ps_malloc(MIC_BUFFER_BYTES);
+  if (!audioBuf) {
+    // Silent before: the press just took a photo with no recording, which
+    // looks exactly like a mic that isn't working.
+    Serial.printf("[MIC] no PSRAM for %u bytes — recording skipped\n",
+                  (unsigned)MIC_BUFFER_BYTES);
+  }
+  // Records until Enter is pressed in the serial monitor; the frame is
+  // captured partway through, via the callback.
+  size_t audioLen = audioBuf ? recordQuestion(audioBuf, grabFrameDuringRecording,
+                                              &fb, triggerPressedAgain, nullptr)
+                             : 0;
+#else
+  uint8_t *audioBuf = nullptr;
+  size_t audioLen = 0;
+#endif
+
+  // Either the mic path never ran, or its capture failed — try once here.
+  if (!fb) fb = grabFrame();
   if (!fb) {
     Serial.println("Camera capture failed");
     if (audioBuf) free(audioBuf);
@@ -133,8 +250,12 @@ void captureAskAndSpeak() {
   }
 
   if (!wifiConnected) {
+#if OFFLINE_FALLBACK_ENABLED
     Serial.println("No WiFi — falling back to offline barcode scan");
     handleOfflineFallback(fb);
+#else
+    Serial.println("No WiFi — nothing to send to");
+#endif
     esp_camera_fb_return(fb);
     if (audioBuf) free(audioBuf);
     return;
@@ -143,6 +264,18 @@ void captureAskAndSpeak() {
   HTTPClient http;
   String url = String("http://") + SERVER_HOST + ":" + SERVER_PORT + "/ask";
   http.begin(url);
+  // 90 seconds. Vision plus speech takes several on its own, and on the
+  // bench the server is also waiting on a typed question. The library's
+  // default is far shorter. A timeout that fires early is invisible from
+  // the server side — it logs a clean 200 while the glasses have already
+  // hung up and play nothing.
+  http.setTimeout(90000);
+
+  // The server puts the plain-text answer in X-Spoken-Text alongside the
+  // audio body. Collecting it costs nothing and doesn't consume the body,
+  // so the monitor can show what was said as well as play it.
+  const char *headerKeys[] = {"X-Spoken-Text"};
+  http.collectHeaders(headerKeys, 1);
 
   String boundary = "VocalensBoundary";
   http.addHeader("Content-Type", "multipart/form-data; boundary=" + boundary);
@@ -186,9 +319,20 @@ void captureAskAndSpeak() {
   if (audioBuf) free(audioBuf);
 
   if (httpCode == 200) {
-    Serial.println("Got response, playing audio");
+    // The answer text comes back in a header, so printing it costs nothing
+    // and doesn't consume the body — the MP3 is still there to play.
+    String answerText = http.header("X-Spoken-Text");
+    Serial.println("\n  ===== ANSWER =====");
+    Serial.println("  " + answerText);
+    Serial.println("  ===================\n");
+
+    // Plays as soon as the body is buffered — no further trigger needed.
+    // getSize() is the Content-Length: -1 means the server didn't send one
+    // (chunked), which playPcmStream can't buffer and will refuse.
+    int bodyLen = http.getSize();
+    Serial.printf("Audio body: %d bytes\n", bodyLen);
     WiFiClient *stream = http.getStreamPtr();
-    playMp3Stream(stream, http.getSize());
+    playPcmStream(stream, bodyLen);
   } else {
     Serial.printf("Server error: %d\n", httpCode);
   }
@@ -210,17 +354,61 @@ void setup() {
     Serial.println("Halting: camera required");
     while (true) delay(1000);
   }
+#if WAKEWORD_ENABLED
   setupWakeWord();
+#endif
+#if MIC_ENABLED
   setupMic();
+#endif
+#if OFFLINE_FALLBACK_ENABLED
   setupOfflineFallback();
-  Serial.println("Glasses ready — say the wake word or press the button");
+#endif
+  setupSpeaker();
+#if WAKEWORD_ENABLED
+  Serial.println("Glasses ready — say the wake word or press the pad");
+#else
+  Serial.println("Glasses ready — press the pad");
+#endif
 }
 
 void loop() {
-  if (isWakeWordDetected() || manualTriggered()) {
-    Serial.println("Triggered — recording question and capturing frame");
-    captureAskAndSpeak();
-    delay(1000); // debounce: avoid immediately re-triggering on the same tap
+  // Edge-triggered: only fires on a fresh touch (not-touched -> touched),
+  // and won't fire again until the pad is released first. This matters more
+  // than it might seem, because manualTriggered() is a simple level check
+  // (true for as long as the reading is above threshold) — without this,
+  // an uncalibrated/borderline threshold (or just a lingering touch during
+  // the several-second capture+server round trip) causes it to keep
+  // re-firing on its own every ~1 second, which is exactly the
+  // "runs automatically" symptom.
+  static bool wasTriggered = false;
+#if WAKEWORD_ENABLED
+  bool nowTriggered = isWakeWordDetected() || manualTriggered();
+#else
+  bool nowTriggered = manualTriggered();
+#endif
+
+  // A short blackout after each round trip. Releasing the pad takes a
+  // moment, and a borderline threshold can read as a second press the
+  // instant the first one finishes — which arrives at the server as two
+  // captures of the same thing.
+  static unsigned long ignoreUntil = 0;
+
+  // Say so on every press, even one that gets ignored. Without this a press
+  // inside the blackout window looks identical to a pad that didn't register
+  // at all, and you can't tell which you are debugging.
+  if (nowTriggered && !wasTriggered) {
+    Serial.println("[PAD] pressed");
+    if (millis() <= ignoreUntil) {
+      Serial.printf("[PAD] ignored — %lums left of the post-capture blackout\n",
+                    (unsigned long)(ignoreUntil - millis()));
+    }
   }
+
+  if (nowTriggered && !wasTriggered && millis() > ignoreUntil) {
+    Serial.println("Triggered — capturing frame");
+    captureAskAndSpeak();
+    ignoreUntil = millis() + 1500;
+  }
+  wasTriggered = nowTriggered;
   delay(20);
 }
