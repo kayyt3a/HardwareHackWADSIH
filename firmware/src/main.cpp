@@ -91,6 +91,10 @@ void setupWiFi() {
 // nothing. keepServerWarm() pings /health while idle so the connection is
 // still open when the pad is pressed.
 WiFiClientSecure serverClient;
+// Created once and never destroyed. HTTPClient's destructor calls stop() on
+// its connection, so a local HTTPClient hung up at the end of every request
+// and nothing was ever reused.
+HTTPClient serverHttp;
 unsigned long lastServerContact = 0;
 const unsigned long KEEPALIVE_MS = 20000;
 
@@ -99,13 +103,16 @@ void keepServerWarm() {
   // Time-based on purpose: if the server is unreachable, retrying every loop
   // would block the pad for the whole timeout, over and over.
   if (lastServerContact != 0 && millis() - lastServerContact < KEEPALIVE_MS) return;
-  HTTPClient http;
+  HTTPClient &http = serverHttp;
   http.setReuse(true);
   http.setTimeout(8000);
   http.begin(serverClient, String("https://") + SERVER_HOST + "/health");
+  bool wasOpen = serverClient.connected();
   int code = http.GET();
   if (code > 0) http.getString();   // drain so the connection can be reused
   http.end();
+  Serial.printf("[NET] keep-alive ping: %d, connection was %s, now %s\n", code,
+                wasOpen ? "open" : "closed", serverClient.connected() ? "open" : "closed");
   if (code != 200) serverClient.stop();
   lastServerContact = millis();
 }
@@ -117,13 +124,22 @@ void keepServerWarm() {
 static volatile bool warmConnectDone = true;
 
 static void warmConnectTask(void *) {
-  serverClient.connect(SERVER_HOST, 443);
+  unsigned long t = millis();
+  int ok = serverClient.connect(SERVER_HOST, 443);
+  Serial.printf("[NET] early connect %s in %lums\n", ok ? "OK" : "FAILED", millis() - t);
   warmConnectDone = true;
   vTaskDelete(nullptr);
 }
 
 void startWarmConnect() {
-  if (WiFi.status() != WL_CONNECTED || serverClient.connected()) return;
+  if (WiFi.status() != WL_CONNECTED) {
+    Serial.println("[NET] early connect skipped: WiFi down");
+    return;
+  }
+  if (serverClient.connected()) {
+    Serial.println("[NET] connection still open from last time");
+    return;
+  }
   warmConnectDone = false;
   // 12 kB stack: the TLS handshake needs far more than the default.
   if (xTaskCreatePinnedToCore(warmConnectTask, "warmConnect", 12288, nullptr,
@@ -339,7 +355,7 @@ void captureAskAndSpeak() {
   }
 
   waitWarmConnect();
-  HTTPClient http;
+  HTTPClient &http = serverHttp;
   http.setReuse(true);
   String url = String("https://") + SERVER_HOST + "/ask";
   http.begin(serverClient, url);
