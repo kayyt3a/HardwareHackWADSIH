@@ -31,12 +31,14 @@
 #include <Arduino.h>
 #include <WiFi.h>
 #include <HTTPClient.h>
+#include <WiFiClientSecure.h>
 #include "esp_camera.h"
 #include "pins.h"
 #include "secrets.h"
 #include "mic_capture.h"
 #include "offline_fallback.h"
 #include "wake_word.h"
+
 
 // FEATURE SWITCHES — all three are written but not finished, so they are
 // compiled in and left switched off rather than deleted. Flip one to 1 when
@@ -58,6 +60,8 @@
 bool wifiConnected = false;
 
 void setupWiFi() {
+  WiFi.mode(WIFI_STA);
+  WiFi.setAutoReconnect(true);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   Serial.print("Connecting to WiFi");
   int attempts = 0;
@@ -80,6 +84,50 @@ void setupWiFi() {
     //   0 = WL_IDLE_STATUS        -> never really tried (rare)
     Serial.printf("\nWiFi FAILED — offline mode (status code %d)\n", WiFi.status());
   }
+}
+
+// One TLS connection, kept open and reused for every request. Opening a new
+// HTTPS connection costs the ESP32 1-3 s of handshake; reusing it costs
+// nothing. keepServerWarm() pings /health while idle so the connection is
+// still open when the pad is pressed.
+WiFiClientSecure serverClient;
+unsigned long lastServerContact = 0;
+const unsigned long KEEPALIVE_MS = 20000;
+
+void keepServerWarm() {
+  if (WiFi.status() != WL_CONNECTED) return;
+  // Time-based on purpose: if the server is unreachable, retrying every loop
+  // would block the pad for the whole timeout, over and over.
+  if (lastServerContact != 0 && millis() - lastServerContact < KEEPALIVE_MS) return;
+  HTTPClient http;
+  http.setReuse(true);
+  http.setTimeout(8000);
+  http.begin(serverClient, String("https://") + SERVER_HOST + "/health");
+  int code = http.GET();
+  if (code > 0) http.getString();   // drain so the connection can be reused
+  http.end();
+  if (code != 200) serverClient.stop();
+  lastServerContact = millis();
+}
+
+// Called on every press. On battery the board often boots before the phone
+// hotspot is up, so the boot-time attempt in setupWiFi() fails. Without
+// this, that one failure left the board offline until it was power-cycled.
+bool ensureWiFi() {
+  if (WiFi.status() == WL_CONNECTED) {
+    wifiConnected = true;
+    return true;
+  }
+  Serial.print("WiFi down — reconnecting");
+  WiFi.disconnect();
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  for (int i = 0; i < 20 && WiFi.status() != WL_CONNECTED; i++) {
+    delay(500);
+    Serial.print(".");
+  }
+  wifiConnected = (WiFi.status() == WL_CONNECTED);
+  Serial.println(wifiConnected ? " connected" : " failed");
+  return wifiConnected;
 }
 
 bool setupCamera() {
@@ -241,6 +289,7 @@ void captureAskAndSpeak() {
   size_t audioLen = 0;
 #endif
 
+  const unsigned long tStop = millis();   // recording finished
   // Either the mic path never ran, or its capture failed — try once here.
   if (!fb) fb = grabFrame();
   if (!fb) {
@@ -249,7 +298,7 @@ void captureAskAndSpeak() {
     return;
   }
 
-  if (!wifiConnected) {
+  if (!ensureWiFi()) {
 #if OFFLINE_FALLBACK_ENABLED
     Serial.println("No WiFi — falling back to offline barcode scan");
     handleOfflineFallback(fb);
@@ -262,8 +311,9 @@ void captureAskAndSpeak() {
   }
 
   HTTPClient http;
-  String url = String("http://") + SERVER_HOST + ":" + SERVER_PORT + "/ask";
-  http.begin(url);
+  http.setReuse(true);
+  String url = String("https://") + SERVER_HOST + "/ask";
+  http.begin(serverClient, url);
   // 90 seconds. Vision plus speech takes several on its own, and on the
   // bench the server is also waiting on a typed question. The library's
   // default is far shorter. A timeout that fires early is invisible from
@@ -313,7 +363,13 @@ void captureAskAndSpeak() {
   }
   memcpy(body + offset, tail.c_str(), tail.length());
 
+  const unsigned long tSend = millis();
+  const bool reused = serverClient.connected();
   int httpCode = http.POST(body, totalLen);
+  const unsigned long tReply = millis();
+  Serial.printf("[TIME] prep %lums | connection %s | upload %u B + server wait %lums\n",
+                tSend - tStop, reused ? "REUSED" : "NEW (handshake)",
+                (unsigned)totalLen, tReply - tSend);
   free(body);
   esp_camera_fb_return(fb);
   if (audioBuf) free(audioBuf);
@@ -332,11 +388,18 @@ void captureAskAndSpeak() {
     int bodyLen = http.getSize();
     Serial.printf("Audio body: %d bytes\n", bodyLen);
     WiFiClient *stream = http.getStreamPtr();
+    const unsigned long tPlay = millis();
     playPcmStream(stream, bodyLen);
+    Serial.printf("[TIME] download+play %lums | stop-speaking -> reply arrived %lums\n",
+                  millis() - tPlay, tReply - tStop);
   } else {
     Serial.printf("Server error: %d\n", httpCode);
   }
   http.end();
+  // A failed or half-read reply can leave junk on the connection; start
+  // clean next time rather than reuse it.
+  if (httpCode != 200) serverClient.stop();
+  lastServerContact = millis();
 }
 
 void setup() {
@@ -350,6 +413,8 @@ void setup() {
 #endif
 
   setupWiFi();
+  serverClient.setInsecure();
+  keepServerWarm();
   if (!setupCamera()) {
     Serial.println("Halting: camera required");
     while (true) delay(1000);
@@ -410,5 +475,6 @@ void loop() {
     ignoreUntil = millis() + 1500;
   }
   wasTriggered = nowTriggered;
+  if (!nowTriggered) keepServerWarm();
   delay(20);
 }
