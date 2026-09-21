@@ -20,6 +20,7 @@ captures/, so both ends of a round trip can be inspected after the fact.
 
 Run: uvicorn main:app --host 0.0.0.0 --port 8000
 """
+import asyncio
 import logging
 import os
 from datetime import datetime
@@ -115,6 +116,36 @@ def _save_capture(image_bytes: bytes, tag: str = "") -> Path:
     return path
 
 
+# Fixed replies are the same text every time, so their audio is generated
+# once and reused instead of paying for a TTS call (~3 s) on every request.
+REPOSITION_TEXT = "I can't see that clearly. Try turning your head a little, or moving closer."
+_CACHEABLE = {REPOSITION_TEXT}
+_tts_cache: dict = {}
+
+
+def _synthesize_cached(text: str) -> bytes:
+    if text in _tts_cache:
+        return _tts_cache[text]
+    pcm_bytes = tts.synthesize(text)
+    if text in _CACHEABLE:
+        _tts_cache[text] = pcm_bytes
+    return pcm_bytes
+
+
+@app.on_event("startup")
+async def _prewarm_tts_cache():
+    # Fill the cache in the background so even the first "can't see" reply
+    # is instant. A failure here is harmless: it just gets generated on use.
+    def _fill():
+        for text in _CACHEABLE:
+            try:
+                _synthesize_cached(text)
+                logger.info("TTS cache ready: %r", text)
+            except Exception:
+                logger.exception("TTS cache prewarm failed for %r", text)
+    asyncio.get_running_loop().run_in_executor(None, _fill)
+
+
 def _speak(spoken: str, confidence: float = 1.0, category: Optional[str] = None,
            timer: Optional[timings.Timer] = None) -> Response:
     """Synthesize and return RAW PCM — 16 kHz, 16-bit signed little-endian,
@@ -125,8 +156,9 @@ def _speak(spoken: str, confidence: float = 1.0, category: Optional[str] = None,
     printed — one per request, whatever route through ask() produced it."""
     timer = timer or timings.Timer()
 
-    with timer.stage("tts", f"{tts.MODEL} / {tts.VOICE}"):
-        pcm_bytes = tts.synthesize(spoken)
+    cached = spoken in _tts_cache
+    with timer.stage("tts", "cached" if cached else f"{tts.MODEL} / {tts.VOICE}"):
+        pcm_bytes = _synthesize_cached(spoken)
 
     stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     audio_path = AUDIO_DIR / f"reply_{stamp}.wav"
@@ -164,7 +196,7 @@ def _speak(spoken: str, confidence: float = 1.0, category: Optional[str] = None,
 
 def _speak_vision_result(result: dict, timer: Optional[timings.Timer] = None) -> Response:
     if result["needs_reposition"] or result["confidence"] < CONFIDENCE_THRESHOLD:
-        spoken = "I can't see that clearly. Try turning your head a little, or moving closer."
+        spoken = REPOSITION_TEXT
     else:
         spoken = result["spoken_summary"]
     return _speak(spoken, result["confidence"], result["category"], timer=timer)
