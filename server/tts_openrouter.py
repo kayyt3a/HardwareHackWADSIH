@@ -1,55 +1,36 @@
 """
 tts_openrouter.py
 
-Text-to-speech via OpenRouter's dedicated /audio/speech endpoint. Default
-model: Deepgram Flux TTS (free), voice "flux-sharon-en".
+Text-to-speech for VocaLens. Turns the spoken answer from /ask into audio
+the glasses can play.
 
-Returns RAW PCM: 16 kHz, 16-bit signed little-endian, mono. That is what
-the glasses' I2S DAC consumes directly, so the firmware needs no decoder —
-it writes the bytes straight out. The provider is asked for a WAV and the
-container is stripped (and the audio resampled to 16 kHz mono) in pcm.py.
+Model: x-ai/grok-voice-tts-1.0 (Grok), voice "ara", via OpenRouter's
+/audio/speech endpoint.
 
-Matches tts.py's synthesize() signature so main.py can import this in its
-place:
-    import tts_openrouter as tts
+What it does:
+    synthesize(text) asks the model for audio and returns RAW PCM: 16 kHz,
+    16-bit, mono. The board's I2S amp plays those bytes directly, so the
+    firmware needs no decoder. pcm.py does the resampling / conversion.
 
-Model/voice/format are overridable without touching code:
-    TTS_MODEL=some/other-model in .env
-    TTS_VOICE=some-other-voice-id in .env
-    TTS_FORMAT=pcm in .env        (format support VARIES BY MODEL, and an
-                                   unsupported one is a 400. Left unset,
-                                   each of FORMAT_CANDIDATES is tried in
-                                   turn and the first one the model accepts
-                                   is used. MP3 is not an option here —
-                                   there is no decoder in this path.)
-    TTS_SOURCE_RATE=24000 in .env (only for response_format="pcm". The rate
-                                   is normally read from the response's
-                                   Content-Type; this is the fallback when
-                                   the provider doesn't state one. Getting
-                                   it wrong doesn't error — it just plays at
-                                   the wrong speed and pitch, which sounds
-                                   like a completely different voice.)
-(Deepgram Flux voice IDs follow the pattern flux-{name}-en, e.g.
-flux-kit-en, flux-cole-en — see Deepgram's Flux TTS voice list. If you
-switch TTS_MODEL to a different provider, its voice IDs will look
-different — check that model's OpenRouter page.)
+Important notes:
+    - Grok only accepts response_format "pcm" or "mp3". "pcm" is used; MP3
+      is not an option because there is no MP3 decoder on this path.
+    - FORMAT_CANDIDATES are tried in order and the first accepted one is
+      remembered. Set TTS_FORMAT=pcm to skip the check.
+    - For "pcm", the source rate is read from the response's Content-Type.
+      TTS_SOURCE_RATE is only the fallback. If it's wrong nothing errors;
+      the voice just plays at the wrong speed and pitch.
+    - TTS_SPEED (default 1.2) is asked of the provider first. If refused,
+      the audio is sped up locally instead, which also raises the pitch.
 
-Setup (once):
-    pip install requests python-dotenv
-    Add to the .env file in this folder:
-        OPENROUTER_API_KEY=sk-or-...
+Settings (.env or Railway variables, all optional):
+    TTS_MODEL, TTS_VOICE, TTS_FORMAT, TTS_SPEED, TTS_SOURCE_RATE,
+    TTS_OUTPUT_DIR
 
-Bench/CLI usage from a terminal, in this folder:
-    python tts_openrouter.py "some text to speak"
-    python tts_openrouter.py "some text to speak" output.wav
-
-Audio files are written into the audio_output/ folder next to this script
-(created automatically) as WAV, so they're playable on the desktop even
-though what goes over the wire is bare PCM. Give a bare filename to name
-the file; give a path with a folder in it (or an absolute path) to write
-somewhere else. Override the folder with TTS_OUTPUT_DIR in .env.
+Test from a terminal in this folder:
+    python tts_openrouter.py "some text to speak" [output.wav]
+Saves a playable WAV to audio_output/.
 """
-
 import logging
 import os
 import re
@@ -92,7 +73,7 @@ logger = logging.getLogger("vocalens.tts")
 # for models that only do containers.
 FORMAT_CANDIDATES = ["pcm", "wav"]
 
-# Deepgram Flux's linear16 default. Only used when the response doesn't say.
+# Fallback source rate for "pcm" when the response doesn't state one.
 SOURCE_RATE = int(os.getenv("TTS_SOURCE_RATE", "24000"))
 
 # Set from .env if given, otherwise discovered on the first call and then
@@ -101,7 +82,6 @@ _working_format = os.getenv("TTS_FORMAT")
 
 
 def _rate_from_content_type(content_type: str) -> Optional[int]:
-    """Pull the rate out of e.g. "audio/pcm; rate=24000"."""
     match = re.search(r"rate=(\d+)", content_type or "")
     return int(match.group(1)) if match else None
 
@@ -146,8 +126,7 @@ def _request(text: str, fmt: str) -> tuple:
 
 
 def synthesize(text: str) -> bytes:
-    """Text -> raw 16 kHz mono 16-bit PCM bytes. Matches tts.py's interface
-    so main.py can import this module in its place."""
+    """Text -> raw 16 kHz mono 16-bit PCM bytes."""
     global _working_format
 
     if not text or not text.strip():
