@@ -20,10 +20,8 @@ captures/, so both ends of a round trip can be inspected after the fact.
 
 Run: uvicorn main:app --host 0.0.0.0 --port 8000
 """
-import asyncio
 import logging
 import os
-import sys
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
@@ -80,42 +78,6 @@ AUDIO_DIR.mkdir(parents=True, exist_ok=True)
 # Delete this block and its use in ask() once the mic is trusted.
 QUESTIONS_DIR = Path(__file__).parent / "questions"
 QUESTIONS_DIR.mkdir(exist_ok=True)
-
-# ---------------------------------------------------------------------------
-# DISABLED: console question mode, the bench stand-in for the mic. The mic is
-# the input now. Kept verbatim inside this string so it can be switched back
-# on by deleting the two ''' lines below (and the matching block in ask()).
-# Nothing else about it has been changed. The asyncio and sys imports above
-# are only used by this block and are left in place for the same reason.
-# ---------------------------------------------------------------------------
-'''
-# CONSOLE QUESTION MODE: the press triggers the capture, and the frame's
-# arrival is what prompts you here — so the photo is already uploaded and
-# waiting while you type. Set CONSOLE_QUESTION=0 in .env to skip the prompt
-# and always do a plain label read.
-CONSOLE_QUESTION = os.environ.get("CONSOLE_QUESTION", "1") not in ("0", "false", "False")
-CONSOLE_QUESTION_TIMEOUT = float(os.environ.get("CONSOLE_QUESTION_TIMEOUT", "30"))
-
-
-async def _console_question() -> Optional[str]:
-    """Prompt in this terminal and wait for a typed line. None on timeout."""
-    if not CONSOLE_QUESTION or not sys.stdin or not sys.stdin.isatty():
-        return None
-
-    print(f"\n>>> Photo in. Question? ({CONSOLE_QUESTION_TIMEOUT:.0f}s, "
-          f"Enter alone = just read the label)")
-    try:
-        line = await asyncio.wait_for(
-            asyncio.get_running_loop().run_in_executor(None, sys.stdin.readline),
-            timeout=CONSOLE_QUESTION_TIMEOUT,
-        )
-    except asyncio.TimeoutError:
-        print("(no answer — reading the label)")
-        return None
-
-    return line.strip() or None
-'''
-
 
 def _question_wav(raw: bytes) -> tuple:
     """Return (wav_bytes, note, levels) for an uploaded recording.
@@ -238,31 +200,6 @@ async def ask(
         timer.note("upload", f"{len(image_bytes)} bytes JPEG")
         with timer.stage("save_capture"):
             _save_capture(image_bytes, tag="ask")
-
-        # DISABLED: the original three-source block, kept verbatim in the string
-        # below. To revert, delete everything from here down to the end of the
-        # mic block and unquote this, then re-enable the console block near the
-        # top of this file.
-        '''
-        # Three sources, in order of how real they are. The console prompt is
-        # the bench stand-in for the mic and wins while the mic is a stub;
-        # question_text is accepted so anything else (curl, a script) can drive
-        # this endpoint; question_audio is the actual product path.
-        question = await _console_question()
-        if question:
-            logger.info("Question (typed here): %r", question)
-        elif question_text:
-            question = question_text
-            logger.info("Question (from client): %r", question)
-        elif question_audio is not None:
-            audio_bytes = await question_audio.read()
-            if audio_bytes:
-                try:
-                    question = stt.transcribe(audio_bytes, filename=question_audio.filename or "q.wav")
-                    logger.info("Transcribed question: %r", question)
-                except Exception:
-                    logger.exception("Transcription failed, falling back to default question")
-        '''
 
         # The mic is the question now: the button press records, and what it
         # recorded arrives here as question_audio. question_text is still
