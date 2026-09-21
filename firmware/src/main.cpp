@@ -110,6 +110,33 @@ void keepServerWarm() {
   lastServerContact = millis();
 }
 
+// Opens the TLS connection on the other CPU core while the wearer is still
+// speaking, so the 1-3 s handshake overlaps the recording instead of adding
+// to the wait afterwards. It has to be the other core: on this one the
+// handshake would block the mic and drop audio.
+static volatile bool warmConnectDone = true;
+
+static void warmConnectTask(void *) {
+  serverClient.connect(SERVER_HOST, 443);
+  warmConnectDone = true;
+  vTaskDelete(nullptr);
+}
+
+void startWarmConnect() {
+  if (WiFi.status() != WL_CONNECTED || serverClient.connected()) return;
+  warmConnectDone = false;
+  // 12 kB stack: the TLS handshake needs far more than the default.
+  if (xTaskCreatePinnedToCore(warmConnectTask, "warmConnect", 12288, nullptr,
+                              1, nullptr, 0) != pdPASS) {
+    warmConnectDone = true;   // couldn't start it; the request connects itself
+  }
+}
+
+void waitWarmConnect() {
+  unsigned long started = millis();
+  while (!warmConnectDone && millis() - started < 10000) delay(5);
+}
+
 // Called on every press. On battery the board often boots before the phone
 // hotspot is up, so the boot-time attempt in setupWiFi() fails. Without
 // this, that one failure left the board offline until it was power-cycled.
@@ -270,6 +297,7 @@ static bool triggerPressedAgain(void *) {
 
 void captureAskAndSpeak() {
   camera_fb_t *fb = nullptr;
+  startWarmConnect();   // handshake runs while the wearer speaks
 
 #if MIC_ENABLED
   uint8_t *audioBuf = (uint8_t *)ps_malloc(MIC_BUFFER_BYTES);
@@ -310,6 +338,7 @@ void captureAskAndSpeak() {
     return;
   }
 
+  waitWarmConnect();
   HTTPClient http;
   http.setReuse(true);
   String url = String("https://") + SERVER_HOST + "/ask";
