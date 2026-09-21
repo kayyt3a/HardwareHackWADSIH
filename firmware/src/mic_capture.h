@@ -29,7 +29,7 @@ static const size_t MIC_CHUNK_BYTES = MIC_SAMPLE_RATE * 2 / 10;  // 100ms
 // End of speech: how long the room has to go quiet again before the
 // recording stops on its own. Long enough to survive the pause in the
 // middle of a sentence, short enough not to feel like a wait.
-static const uint32_t MIC_SILENCE_MS = 1200;
+static const uint32_t MIC_SILENCE_MS = 1000;
 
 // How much louder than the room's own floor a chunk has to be to count as
 // speech, and how far back down it has to fall to count as quiet again. A
