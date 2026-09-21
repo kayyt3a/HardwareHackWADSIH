@@ -51,6 +51,11 @@
 // better choice when GND pins are already spoken for.
 #define TOUCH_ACTIVE_HIGH 1   // ESP32-S3 readings rise on touch; classic ESP32 falls
 #define TOUCH_THRESHOLD 79000 // changed after selftest successful
+// Used instead of TOUCH_THRESHOLD: a touch is a reading this many percent
+// above the untouched baseline measured at boot. A fixed number fails on
+// battery, where touches read much weaker than on USB. Lower it if touches
+// are missed; raise it if the pad fires on its own.
+#define TOUCH_RISE_PERCENT 3
 #define PIN_I2S_BCLK 7        // I2S out to amp -> bone-conduction transducer
 #define PIN_I2S_LRC 8
 #define PIN_I2S_DIN 9

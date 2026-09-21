@@ -244,6 +244,24 @@ bool setupCamera() {
 //     how close the wearer's head is, so it must be calibrated on the
 //     assembled device (the selftest build does this) and rechecked if the
 //     build changes.
+float touchBaseline = 0;
+
+// Averages the untouched reading at power-on (~0.5 s). Don't touch the pad
+// during it; if you do, the drift tracking in manualTriggered() recovers.
+void calibrateTouch() {
+#if !USE_PUSH_BUTTON
+  uint64_t sum = 0;
+  const int n = 25;
+  for (int i = 0; i < n; i++) {
+    sum += touchRead(PIN_TRIGGER);
+    delay(20);
+  }
+  touchBaseline = (float)sum / n;
+  Serial.printf("[PAD] baseline %.0f, touch above %.0f (+%d%%)\n", touchBaseline,
+                touchBaseline * (100 + TOUCH_RISE_PERCENT) / 100.0f, TOUCH_RISE_PERCENT);
+#endif
+}
+
 bool manualTriggered() {
 #if USE_PUSH_BUTTON
   // Wired button-to-GND with the internal pull-up enabled, so the pin idles
@@ -255,11 +273,20 @@ bool manualTriggered() {
   // build once — it prints the baseline, the touched range, and which of
   // these two values to use. Guessing makes the pad fire constantly or never
   // fire, and the wiring looks identical either way.
+  // Compared against the baseline measured at boot, not a fixed number:
+  // readings shift between USB and battery power. See calibrateTouch().
+  uint32_t v = touchRead(PIN_TRIGGER);
+  float limit = touchBaseline * (100.0f + TOUCH_RISE_PERCENT) / 100.0f;
+  float limitLow = touchBaseline * (100.0f - TOUCH_RISE_PERCENT) / 100.0f;
 #if TOUCH_ACTIVE_HIGH
-  return touchRead(PIN_TRIGGER) > TOUCH_THRESHOLD;
+  bool touched = v > limit;
 #else
-  return touchRead(PIN_TRIGGER) < TOUCH_THRESHOLD;
+  bool touched = v < limitLow;
 #endif
+  // Follow slow drift (temperature, humidity, a touch held at power-on)
+  // while untouched, so the baseline corrects itself within a few seconds.
+  if (!touched) touchBaseline = touchBaseline * 0.995f + v * 0.005f;
+  return touched;
 #endif
 }
 
@@ -449,6 +476,7 @@ void captureAskAndSpeak() {
 
 void setup() {
   Serial.begin(115200);
+  calibrateTouch();
 
 #if USE_PUSH_BUTTON
   // INPUT_PULLUP holds the pin HIGH through an internal resistor, so a plain
