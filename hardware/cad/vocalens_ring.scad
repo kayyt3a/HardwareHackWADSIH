@@ -362,7 +362,8 @@ CAM_APERTURE_H = 12;    // up the wall (Z) — the latitude
 
 module pod_base(length, out, vert, cable_slot_front = true,
                 cable_slot_rear = true, camera_front = false,
-                ap_w = CAM_APERTURE_W, ap_h = CAM_APERTURE_H) {
+                ap_w = CAM_APERTURE_W, ap_h = CAM_APERTURE_H,
+                dovetail = true) {
   bw = vert + 2 * WALL;                  // Y outer
   bh = pod_height(out);                  // Z outer
   slot_pad = DT_HEIGHT + WALL;           // extra Z for the slot boss
@@ -388,8 +389,9 @@ module pod_base(length, out, vert, cable_slot_front = true,
     union() {
       rounded_prism(length, bw, bh, EDGE_RADIUS);
       // boss on the underside carrying the dovetail slot
-      translate([0, bw / 2 - (DT_HEAD + 2 * WALL) / 2, -slot_pad])
-        rounded_prism(length, DT_HEAD + 2 * WALL, slot_pad + EPS, 0.8);
+      if (dovetail)
+        translate([0, bw / 2 - (DT_HEAD + 2 * WALL) / 2, -slot_pad])
+          rounded_prism(length, DT_HEAD + 2 * WALL, slot_pad + EPS, 0.8);
 
     }
 
@@ -411,8 +413,9 @@ module pod_base(length, out, vert, cable_slot_front = true,
       cube([length - WALL + EPS, vert + 2 * LID_GROOVE, LID_T + LID_CLR]);
 
     // dovetail slot, cut all the way through in X so it slides on
-    translate([-EPS, bw / 2, -slot_pad])
-      dovetail(length + 2 * EPS, CLEARANCE + DT_SLOT_EXTRA);
+    if (dovetail)
+      translate([-EPS, bw / 2, -slot_pad])
+        dovetail(length + 2 * EPS, CLEARANCE + DT_SLOT_EXTRA);
 
     // Forward-looking camera aperture through the front end wall, centred on
     // the cavity. Stadium-shaped so the ends are round and it prints cleanly.
@@ -494,9 +497,27 @@ PAD_WIRE_D = 2.2;   // pass-through for the trigger wire
 // x = WALL in pod coordinates (hard against the front end wall). So a feature
 // meant to land at pod x = P is written here as P - WALL. Get this wrong and
 // the camera looks into the inside of a wall.
+// Concentric rings of holes filling a circle of `dia`. Ring spacing is fixed
+// at 3mm so the open area stays roughly constant whatever size it is asked for.
+module grille_holes(cx, cy, dia, hole_d) {
+  rings = floor((dia / 2 - hole_d) / 3);
+  translate([cx, cy, -EPS]) {
+    cylinder(h = LID_T + 2 * EPS, d = hole_d, $fn = 16);
+    for (i = [1 : rings]) {
+      r = i * 3;
+      n = max(6, floor(2 * PI * r / 3));
+      for (j = [0 : n - 1])
+        rotate([0, 0, j * 360 / n])
+          translate([r, 0, 0])
+            cylinder(h = LID_T + 2 * EPS, d = hole_d, $fn = 16);
+    }
+  }
+}
+
 module pod_lid(length, out, vert, camera_hole = false, touch_recess = false,
                grille = false, usbc = false,
-               pad_w_in = PAD_W, pad_l_in = PAD_L, pad_d_in = PAD_DEPTH) {
+               pad_w_in = PAD_W, pad_l_in = PAD_L, pad_d_in = PAD_DEPTH,
+               pad_cx_in = -1, big_grille_d = 0, big_grille_cx = 0) {
   ll = lid_len(length);
   lw = lid_wid(vert);
 
@@ -517,7 +538,7 @@ module pod_lid(length, out, vert, camera_hole = false, touch_recess = false,
       } else {
         pad_w = min(pad_w_in, lw - 2);     // never breach the lid's own edges
         pad_d = min(pad_d_in, LID_T - 0.6);
-        cx    = ll - pad_l_in / 2 - 4;
+        cx    = (pad_cx_in >= 0) ? pad_cx_in : ll - pad_l_in / 2 - 4;
         span  = pad_l_in - pad_w;
 
         translate([cx, lw / 2, LID_T - pad_d])
@@ -542,10 +563,13 @@ module pod_lid(length, out, vert, camera_hole = false, touch_recess = false,
               cylinder(h = LID_T + 2 * EPS, d = USBC_H, $fn = 32);
     }
 
-    if (grille)
-      for (a = [0 : 60 : 359], r = [2.6, 5.2])
-        translate([ll - 14 + r * cos(a), lw / 2 + r * sin(a), -EPS])
-          cylinder(h = LID_T + 2 * EPS, d = 1.8, $fn = 16);
+
+    // A grille sized to the speaker, placed where the caller wants it. Rings
+    // of holes rather than one big opening: a 25mm hole in a 3.2mm lid leaves
+    // the lid a frame with nothing across it, and the speaker needs something
+    // to sit against anyway.
+    if (big_grille_d > 0)
+      grille_holes(big_grille_cx, lw / 2, big_grille_d, 2.0);
   }
 }
 
@@ -570,7 +594,12 @@ module frontboard_lid()  { pod_lid(FB_LEN, FB_OUT, FB_VERT,
 module rearaudio_base()  { pod_base(RA_LEN, RA_OUT, RA_VERT,
                                    cable_slot_front = true,
                                    cable_slot_rear  = false); }
-module rearaudio_lid()   { pod_lid(RA_LEN, RA_OUT, RA_VERT, grille = true); }
+// The grille is sized to the speaker behind it (28mm), not left at the 13mm
+// it used to be. A 28mm driver firing through a 13mm hole pattern is a muffled
+// one, and the lid has the room.
+module rearaudio_lid()   { pod_lid(RA_LEN, RA_OUT, RA_VERT,
+                                   big_grille_d  = SPKR_DIA - 3,
+                                   big_grille_cx = lid_len(RA_LEN) - 20); }
 
 // -------------------------------------------------------- front box (v2)
 // Sized from the assembled stack rather than from a parts list: 15 wide, 19
@@ -611,6 +640,62 @@ module front_box_lid()  { pod_lid(FBX_LEN, FBX_OUT, FBX_VERT,
                                   touch_recess = true, usbc = true,
                                   pad_w_in = FBX_PAD_W, pad_l_in = FBX_PAD_L,
                                   pad_d_in = FBX_PAD_D); }
+
+// ========================================================== battery box
+// Holds the battery, the amplifier board, the speaker and the 5c touch pad.
+// It is NOT a temple pod — at 55 x 40 x 26mm it is far too big to hang off
+// glasses, so it carries no dovetail and no rings. It is a pack that sits in a
+// pocket or on a lanyard with a cable up to the camera pod.
+//
+// The stack is the one in the photo: battery flat on the floor, amp board on
+// the battery, speaker on the board facing the lid. That is what makes the box
+// 52mm long instead of 62 — laid side by side the speaker and board need
+// 25 + 32 = 57mm of floor, which is wider than the battery they would sit on.
+//
+// THE COIN. The pad is a 5c, and a 5c is 19.41mm across, not the 16.5 measured.
+// The pocket is 20mm: that takes a real 5c with clearance, and still takes a
+// 16.5mm disc, which sits loose but glues in perfectly well. Sized the other
+// way round it would take neither. Where a measurement and a known standard
+// disagree, size for whichever failure is recoverable.
+BATT_L = 50; BATT_W = 35; BATT_H = 6;
+AMP_L  = 32; AMP_W  = 22; AMP_H  = 5;
+SPK_D  = 25; SPK_H  = 6;
+BB_COIN_D = 20.0;   // 5c is 19.41 — see above
+BB_COIN_T = 1.4;    // 5c is 1.30 thick; pocket a touch deeper so it sits flush
+
+BB_VERT = BATT_W + 2;                         // 37 — across the box
+BB_OUT  = BATT_H + AMP_H + SPK_H + 2;         // 20 — the stack, plus wiring
+BB_LEN  = BATT_L + 2 + 2 * WALL;              // 55.2 outer
+
+// Lid feature positions, in lid-local X. The lid starts at x = WALL in box
+// coordinates, so these are offsets from the inside of the front end wall.
+BB_GRILLE_CX = 15;   // over the speaker
+BB_PAD_CX    = 39;   // the coin, clear of the grille: 24mm apart, and the two
+                     // radii only add to 22, so they cannot touch
+
+module battery_box_base() {
+  pod_base(BB_LEN, BB_OUT, BB_VERT,
+           cable_slot_front = false,   // wires leave one end only
+           cable_slot_rear  = true,
+           camera_front     = false,
+           dovetail         = false);
+}
+
+module battery_box_lid() {
+  pod_lid(BB_LEN, BB_OUT, BB_VERT,
+          touch_recess  = true,
+          pad_w_in      = BB_COIN_D,
+          pad_l_in      = BB_COIN_D,   // equal -> a round pocket, not a slot
+          pad_d_in      = BB_COIN_T,
+          pad_cx_in     = BB_PAD_CX,
+          big_grille_d  = SPK_D - 3,   // holes stay inside the speaker's rim
+          big_grille_cx = BB_GRILLE_CX);
+}
+
+module battery_box_plate() {
+  translate([0, 0, 0]) battery_box_base();
+  translate([0, BB_VERT + 2 * WALL + 10, 0]) battery_box_lid();
+}
 
 // ---------------------------------------------------------- ballast pod
 // The third pod. It holds no electronics — just coins, enough of them to
@@ -719,6 +804,9 @@ else if (part == "frontboard_base") frontboard_base();
 else if (part == "frontboard_lid")  frontboard_lid();
 else if (part == "rearaudio_base")  rearaudio_base();
 else if (part == "rearaudio_lid")   rearaudio_lid();
+else if (part == "battery_box")     battery_box_plate();
+else if (part == "battery_box_base") battery_box_base();
+else if (part == "battery_box_lid") battery_box_lid();
 else if (part == "front_box_base")  front_box_base();
 else if (part == "front_box_lid")   front_box_lid();
 else if (part == "ballast_base")    ballast_base();

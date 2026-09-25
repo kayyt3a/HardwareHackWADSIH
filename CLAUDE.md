@@ -90,6 +90,24 @@ cable opening, on the end that faces the other; every other wall is closed.
 The concealment tube that used to run around the back of the head is gone with
 the arrangement that needed it.
 
+### The battery box
+
+Not a temple pod. At 55 x 40 x 26mm it is far too big to hang off glasses, so
+it carries no dovetail and no rings — it is a pack for a pocket or a lanyard,
+with a cable up to the camera pod. It holds the battery (50 x 35 x 6), the amp
+board (22 x 32), the speaker (d25) and the 5c touch pad.
+
+The stack is battery flat on the floor, board on the battery, speaker on the
+board facing the lid. That is what keeps the box 52mm long rather than 62:
+side by side the speaker and board need 25 + 32 = 57mm of floor, wider than
+the battery they would otherwise sit on.
+
+**The coin pocket is 20mm, against a measured 16.5.** The pad is a 5c and a 5c
+is 19.41mm across; a 16.5mm pocket takes neither. 20mm takes a real 5c with
+clearance and still takes a 16.5mm disc, which sits loose but glues in fine.
+Where a measurement and a known standard disagree, size for whichever failure
+is recoverable.
+
 ### The ballast pod
 
 Its outer dimensions are copied from the camera pod rather than sized to its
@@ -189,6 +207,7 @@ are TPU.
 | **The amp is wired flat, not on sockets** | `AMP_HEADERS_FITTED` defaults to false. A jumper socket adds ~10mm to the rear pod, all of it on the axis facing the wearer's head, so the shipped build solders wires straight to the amp pads. A socketed amp will not fit the default pod — render with `-D AMP_HEADERS_FITTED=true` if you need it. |
 | **The dovetail needed 0.5mm more, measured** | `DT_SLOT_EXTRA` widens the SLOT only. The printed joint could not be assembled at the designed 0.15mm interference. It is now a 0.35mm clearance fit — and that is fine, because **the taper is what makes the joint captive, not the friction**. A loose slide still cannot lift off the rail. |
 | **Pod sizes carry measured corrections** | `FB_EXTRA_*` / `RA_EXTRA_*` are additions made holding the printed parts, kept separate from the component dimensions so it stays clear which is which. `RA_EXTRA_OUT = 15` is the big one: the rear cavity was 8mm deep for a 5mm amp, and the wiring would not fit under the lid. |
+| **Grilles are sized to their speaker** | The audio pod's grille was a fixed 13mm pattern over a 28mm driver — a muffled speaker for no reason. `grille_holes()` now fills whatever diameter it is given with 3mm-spaced rings, and each lid asks for its own speaker's size. |
 | **A GND pin takes more than one wire** | Every ground is the same node. Twist or solder several wires into one joint — that's normal, not a bodge. |
 
 ### Trigger options
