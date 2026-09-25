@@ -50,8 +50,7 @@ Don't relitigate these without a new reason.
 | **Zero external purchases** | Everything from the Freenove Ultimate Starter Kit + XIAO ESP32S3 Sense. No shipping risk, no budget beyond what every team got. |
 | **Dumb board, smart server** | The ESP32 only captures and plays. All intelligence is server-side Python, so the smart half can be fixed without reflashing. |
 | **Two pods, not one** | One box of all five components is a lump on the side of the head. Split keeps each pod thin, and puts the camera at the front and the speaker at the ear where they belong. |
-| **One pod on EACH temple** | Both pods on one arm put all the mass on one side and the glasses slid down that side of the face. Camera pod on one temple, audio pod on the other, so they counterweight. **Cost: the wire run is no longer 10cm along one arm — it is ~35cm around the back of the head.** See the I2S warning below. |
-| **The amp stays in the REAR pod** — *under review* | The original reason (bulk behind the ear is hidden, bulk at the hinge is not) still holds. But the reason to move it has changed: with the pods on opposite temples the I2S run is now ~35cm of unshielded jumper wire instead of 10cm. Moving the amp to the camera pod would leave only two speaker-level analogue wires on that long run, which tolerate it far better. Not yet changed — it is a wiring decision, not a CAD one. |
+| **Both working pods on ONE temple, ballast on the other** | Splitting them across temples needed ~35cm of wire around the back of the head, and the jumper wires are not that long. Camera and audio pods sit on one arm as originally built, with a short run between their facing ends. Balance is restored by a **third pod on the other temple holding coins** — same outer shell, no electronics, no openings. **This also removes the long-I2S risk entirely**, which was the largest electrical unknown in the build. |
 
 ### Demoted to "what we'd build next" (pitch material, not built)
 
@@ -64,73 +63,31 @@ scoping discipline rather than apology.
 
 ## Hardware
 
-**Camera pod** (one temple, near the hinge): XIAO ESP32S3 Sense + camera +
-trigger. Its aperture is in the **front end wall**, not the lid — the camera
-looks forward along the arm, and a hole in the lid would point the lens
+**Camera pod** (front of one temple, near the hinge): XIAO ESP32S3 Sense +
+camera + trigger. Its aperture is in the **front end wall**, not the lid — the
+camera looks forward along the arm, and a hole in the lid would point the lens
 sideways out of the side of the wearer's head.
-**Audio pod** (the other temple, behind that ear): amplifier + speaker.
-Joined by 5 jumper wires carrying I2S + power.
+**Audio pod** (behind it on the same arm): amplifier + speaker.
+**Ballast pod** (the other temple): coins, nothing else.
 
-**The long run is now the main electrical risk.** At 10cm along one arm, I2S
-over jumper wire was comfortably fine. Around the back of the head it is
-~35cm, and BCLK runs near 1MHz. Unshielded, that is no longer obviously safe —
-it may work, degrade to noise, or fail intermittently, which is the worst of
-the three on a demo night. Mitigations, cheapest first:
+The two working pods are joined by 5 jumper wires over ~10cm, which is what
+I2S over unshielded wire is comfortably fine with. Each pod has exactly **one**
+cable opening, on the end that faces the other; every other wall is closed.
+The concealment tube that used to run around the back of the head is gone with
+the arrangement that needed it.
 
-1. **Twist the ground wire together with BCLK** along the whole run. Costs
-   nothing and is the single most effective thing.
-2. Drop the I2S sample rate — less bandwidth, slower edges.
-3. **Move the amp into the camera pod**, so the long run carries two
-   speaker-level analogue wires instead of five digital ones. Low-impedance
-   analogue does not care about 35cm. This is the real fix if 1 and 2 fail.
+### The ballast pod
 
-Test the full-length run on the bench **before** it is threaded into sleeves.
+Its outer dimensions are copied from the camera pod rather than sized to its
+contents, and that is the point: from the outside it has to read as the same
+object, or the glasses look like they have a lump on one side and a different
+lump on the other. Only the openings differ — no lens aperture, no cable slots,
+nothing goes in or out.
 
-The wires run inside a **closed TPU tube** (`tpu_tubes`, 2 x 180mm = 360mm).
-
-It was first designed as an open-mouthed channel that the bundle pressed into.
-That tidied five loose wires into one line but you could still see straight
-down onto them — which is not concealment, and it was rightly rejected. The
-tube is sealed: no line of sight to the wires anywhere along the run.
-
-**Assembly order is not optional.** The bundle can only be threaded one way:
-the camera-pod end carries Dupont sockets, 5.64mm across the diagonal, which
-will not pass the 5mm bore; the audio-pod end is bare because the amp is wired
-flat. So the bare ends feed in at the camera end and come out at the amp, and
-the connectors never enter the tube. **Thread the tube before soldering the
-amp** — solder first and both ends are un-threadable, and the only way back is
-to cut a wire.
-
-Each pod carries a **socket boss** on its rear end wall that the tube pushes
-into, so the tube is retained rather than butted against a hole — otherwise it
-slides back under any tug and bares the wire at the two points where that looks
-worst. The socket bore is 0.3mm under the tube's OD, so the soft TPU squeezes
-into the rigid PETG; same trick as the ring/rail joint.
-
-**It is not a dovetail, and that is deliberate.** A dovetail resists lift-off
-perpendicular to its slide axis. The load on a cable tube is axial pull-out,
-straight along the tube, which a dovetail does nothing about. Match the joint
-to the load.
-
-D-section, flattened 0.5mm along the underside: a round tube touches the bed on
-a single line and peels in TPU, where the flat gives a 3.7mm contact strip.
-
-**Printed pre-curved at R=95mm**, roughly the radius of the back of a head. A
-straight tube forced around a head is a spring — every millimetre of it stores
-energy and pushes back, and it has only two things to push against: the two
-pods, held on by friction against TPU rings. It would walk them off. Curved, it
-sits where it is put. Constant radius rather than a true head profile, because
-TPU straightens far more easily than it bends, so erring toward the tighter
-curve leaves the easy correction.
-
-450mm total, as 2 x 225mm crescents (`TUBE_PIECES`). Each is rotated on the
-plate to sit as a shallow bowl rather than a tipped-over C — 180 x 62mm instead
-of 162 x 99mm, because the bounding box then follows the chord and sagitta
-rather than the radius. Set `TUBE_PIECES = 1` on a 220mm bed for one continuous
-450mm run and no joint at all.
-
-The curve does not interfere with the pod sockets: over 6mm of engagement a
-R=95 arc deviates 0.047mm, against 0.15mm of designed squeeze.
+Coins lie flat and stack outward. The cavity is 43.5 x 31 x 18mm, so seven 20c
+pieces fit — 79g, far more than the other side can weigh. **Balance is tuned by
+how many coins go in, not by reprinting**, which is why it is deliberately
+oversized. 5c is 2.83g, 10c 5.65g, 20c 11.30g, 50c 15.55g; mix to trim.
 
 ### The axis convention — read before touching the CAD
 

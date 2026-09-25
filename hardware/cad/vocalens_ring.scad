@@ -336,27 +336,11 @@ function lid_wid(vert)   = vert + 2 * LID_GROOVE - 2 * LID_CLR;
 CABLE_W = 9;   // across the wall (Y)
 CABLE_H = 6;   // up the wall (Z)
 
-// TUBE SOCKET. A short boss on the outside of the end wall that the cable tube
-// pushes into, so the tube is retained rather than merely butted against a
-// hole — otherwise it slides back under any tug and bares the wire at exactly
-// the two points where that looks worst.
-//
-// Deliberately NOT a dovetail. A dovetail resists lift-off perpendicular to
-// its slide axis; the load here is axial pull-out, straight along the tube,
-// which a dovetail does nothing about. An interference socket resists it
-// directly — and it is the same trick the ring/rail joint already uses: soft
-// TPU squeezed into rigid PETG, where the tolerance is absorbed by the soft
-// part.
-//
-// The socket bore is UNDER the tube's outside diameter on purpose.
-TUBE_SOCKET_L       = 6;     // how far the tube goes in
-TUBE_SOCKET_SQUEEZE = 0.3;   // socket is this much smaller than the tube
-
 CAM_APERTURE_W = 7.5;   // across the wall (Y)
 CAM_APERTURE_H = 12;    // up the wall (Z) — the latitude
 
 module pod_base(length, out, vert, cable_slot_front = true,
-                camera_front = false, tube_socket_rear = false) {
+                cable_slot_rear = true, camera_front = false) {
   bw = vert + 2 * WALL;                  // Y outer
   bh = pod_height(out);                  // Z outer
   slot_pad = DT_HEIGHT + WALL;           // extra Z for the slot boss
@@ -372,19 +356,6 @@ module pod_base(length, out, vert, cable_slot_front = true,
   // that runs along this exact band shears their top half off and leaves the
   // rest buried in solid wall — present in the file, absent from the part, and
   // silent about it. LID_DETENT = 0 removes them properly.
-  // Socket boss on the rear end wall. Outside the difference() below for the
-  // same reason the detents are: the cable pass-through is cut along this axis
-  // and would hollow the boss out from the inside.
-  if (tube_socket_rear)
-    difference() {
-      translate([length, bw / 2, WALL + out / 2]) rotate([0, 90, 0])
-        cylinder(h = TUBE_SOCKET_L,
-                 d = TUBE_OD - TUBE_SOCKET_SQUEEZE + 2 * WALL, $fn = 48);
-      translate([length - EPS, bw / 2, WALL + out / 2]) rotate([0, 90, 0])
-        cylinder(h = TUBE_SOCKET_L + 2 * EPS,
-                 d = TUBE_OD - TUBE_SOCKET_SQUEEZE, $fn = 48);
-    }
-
   if (LID_DETENT > 0)
     for (y0 = [WALL - LID_GROOVE, WALL + vert])
       translate([length - 7, y0, gz])
@@ -435,7 +406,8 @@ module pod_base(length, out, vert, cable_slot_front = true,
     }
 
     // Cable pass-throughs, front and rear.
-    for (spec = [[cable_slot_front, -EPS], [true, length - WALL - EPS]])
+    for (spec = [[cable_slot_front, -EPS],
+                 [cable_slot_rear,  length - WALL - EPS]])
       if (spec[0]) {
         cspan = CABLE_W - CABLE_H;
         translate([spec[1], bw / 2, WALL + out / 2])
@@ -548,26 +520,59 @@ module pod_lid(length, out, vert, camera_hole = false, touch_recess = false,
 // parts
 // ============================================================================
 
-// cable_slot_front = false: the front wall is the lens aperture now, and the
-// wires leave rearward toward the back of the head. The old front slot fell
-// entirely inside the aperture anyway — invisible, but it weakened the wall
-// the camera looks through for nothing.
+// Both pods sit on the SAME temple arm again, camera in front of audio, so the
+// only wire run is the short one between their facing ends. The camera pod
+// therefore has one opening at the rear and none at the front, where the lens
+// aperture is; the audio pod has one at the front and none at the rear. No
+// opening anywhere else — every hole is somewhere for dust to get in and for a
+// judge to see wire through.
 module frontboard_base() { pod_base(FB_LEN, FB_OUT, FB_VERT,
                                    cable_slot_front = false,
-                                   camera_front = true,
-                                   tube_socket_rear = true); }
+                                   cable_slot_rear  = true,
+                                   camera_front     = true); }
 // No camera_hole: the aperture moved to the base's front end wall, so the lid
 // carries only the touch pad.
 module frontboard_lid()  { pod_lid(FB_LEN, FB_OUT, FB_VERT,
                                    touch_recess = true); }
 module rearaudio_base()  { pod_base(RA_LEN, RA_OUT, RA_VERT,
-                                   tube_socket_rear = true); }
+                                   cable_slot_front = true,
+                                   cable_slot_rear  = false); }
 module rearaudio_lid()   { pod_lid(RA_LEN, RA_OUT, RA_VERT, grille = true); }
+
+// ---------------------------------------------------------- ballast pod
+// The third pod. It holds no electronics — just coins, enough of them to
+// match whatever the other temple ends up weighing.
+//
+// Its outer dimensions are copied from the camera pod rather than sized to
+// its contents, which is the whole point: from the outside it has to read as
+// the same object, or the glasses look like they have a lump on one side and
+// a different lump on the other. Only the openings differ — no lens aperture
+// and no cable slots, because nothing goes in or out of it.
+//
+// Coins lie FLAT and stack outward. A 20c is 28.52mm across and 2.5mm thick,
+// so the cavity takes them face-on across its width and depth, and the stack
+// grows along the axis with the most room. Seven fit, which is 79g — far more
+// range than the other side can possibly need, so the balance is tuned by
+// how many go in rather than by reprinting.
+BAL_LEN  = FB_LEN;
+BAL_VERT = FB_VERT;
+BAL_OUT  = FB_OUT;
+
+module ballast_base() { pod_base(BAL_LEN, BAL_OUT, BAL_VERT,
+                                 cable_slot_front = false,
+                                 cable_slot_rear  = false,
+                                 camera_front     = false); }
+// Plain lid: no pad pocket, no grille. Nothing to put through it.
+module ballast_lid()  { pod_lid(BAL_LEN, BAL_OUT, BAL_VERT); }
 
 // Four rings: two per pod (front and back of each) so each pod is held at two
 // points and can't rock. Printing four also gives you spares.
-module ring_set() {
-  for (i = [0 : 3])
+// Six rings are needed now, two under each of the three pods. RING_COUNT
+// exists so a top-up plate can be printed without reprinting the set.
+RING_COUNT = 4;
+
+module ring_set(n = RING_COUNT) {
+  for (i = [0 : n - 1])
     translate([i * (RING_LEN + 4), 0, 0]) temple_ring();
 }
 
@@ -588,102 +593,6 @@ module ring_ladder() {
 }
 
 // ============================================================================
-// cable tube — the run around the back of the head
-// ============================================================================
-// CLOSED, not split. An earlier version was a channel with an open mouth: it
-// tidied five loose wires into one line but you could still see straight down
-// onto them, which is not concealment. This is a sealed tube — the wires go
-// inside and there is no line of sight to them anywhere along the run.
-//
-// That is only possible because the bundle can be threaded, and it can only be
-// threaded one way round:
-//   * the camera-pod end carries Dupont sockets (2.6 x 5.0mm, 5.64mm across the
-//     diagonal) which will NOT pass a 5mm bore;
-//   * the audio-pod end is bare, because the amp is wired flat.
-// So the bare ends are fed in at the camera end and come out at the amp, and
-// the connectors stay outside the tube entirely.
-//   >>> THREAD THE TUBE BEFORE SOLDERING THE AMP. <<<
-// Soldering first makes both ends un-threadable and the only way back is to cut
-// a wire.
-//
-// D-SECTION, flattened along the bottom. A round tube 180mm long touches the
-// bed on a single line and peels off it in TPU. The flat gives a 3.7mm contact
-// strip, and it also sits better against the neck than a round one rolls.
-//
-// Two pieces rather than one: 360mm does not fit on a hobby bed in any
-// orientation, and the joint lands at the back of the head where it is under
-// hair.
-TUBE_BORE  = 5.0;    // bundle packs to ~4.2mm
-TUBE_WALL  = 1.2;
-TUBE_OD    = TUBE_BORE + 2 * TUBE_WALL;
-TUBE_FLAT  = 0.5;    // sliced off the underside for bed adhesion
-// PRINTED PRE-CURVED, not straight.
-//
-// A straight tube forced round a head is a spring: every millimetre of it is
-// storing energy and pushing back, and it has only two places to push against
-// — the two pods, which are held on by friction against TPU rings. The cord
-// would slowly walk them off. Curving it to the shape it will be worn in means
-// it sits there instead of fighting.
-//
-// TUBE_R = 95 because the back of a human head is roughly that. The curve is a
-// constant radius rather than a real head profile: the temple runs are
-// straighter than the back is, but TPU straightens far more easily than it
-// bends, so erring toward the tighter curve leaves the easy correction.
-//
-// Split in two because a 430mm arc at R=95 needs a ~200mm bed in both axes.
-// Halved, each piece is a 130 degree crescent and fits anything. Set
-// TUBE_PIECES = 1 on a 220mm bed for a single continuous run and no joint.
-TUBE_TOTAL  = 450;   // whole run, temple to temple around the back
-TUBE_PIECES = 2;
-TUBE_LEN    = TUBE_TOTAL / TUBE_PIECES;
-TUBE_R      = 95;    // curve radius as printed
-
-// Profile x is the tube's HEIGHT and runs negative — rotate([0,90,0]) maps
-// (x,y,z) -> (z,y,-x), so the extrusion axis becomes X and the profile's x is
-// negated on its way to Z. Positive here would put the tube under the bed.
-// Cross-section for rotate_extrude, which reads a 2D shape in the +X half of
-// the XY plane and maps x -> radius, y -> Z. So here x is the RADIAL width and
-// y is the height off the bed, with the flat at the bottom and the whole
-// section lifted so it starts at y = 0.
-module tube_section_2d() {
-  translate([0, TUBE_OD / 2 - TUBE_FLAT])
-    difference() {
-      intersection() {
-        circle(d = TUBE_OD, $fn = 64);
-        translate([-TUBE_OD, -TUBE_OD / 2 + TUBE_FLAT])
-          square([2 * TUBE_OD, 2 * TUBE_OD]);   // slice the underside flat
-      }
-      circle(d = TUBE_BORE, $fn = 64);
-    }
-}
-
-module cable_tube(len = TUBE_LEN, r = TUBE_R) {
-  rotate_extrude(angle = len / r * 180 / PI, $fn = 260)
-    translate([r, 0]) tube_section_2d();
-}
-
-// Straight version, kept for a bench test of the electrical run before the
-// real one is committed to.
-module cable_tube_straight(len = TUBE_LEN) {
-  translate([0, 0, -TUBE_FLAT])
-    rotate([0, 90, 0]) linear_extrude(height = len)
-      rotate([0, 0, -90]) tube_section_2d();
-}
-
-// Each crescent is rotated to sit symmetrically about the Y axis — a shallow
-// bowl rather than a tipped-over C. A 130 degree arc laid at its natural
-// orientation is 162 x 99mm; the same arc centred is 180 x 62mm, because the
-// bounding box then follows the chord and the sagitta instead of the radius.
-// Stacked, that is the difference between needing a 220mm bed and a 200mm one.
-module tube_plate() {
-  sweep = TUBE_LEN / TUBE_R * 180 / PI;
-  pitch = TUBE_R * (1 - cos(sweep / 2)) + TUBE_OD + 6;
-  for (i = [0 : TUBE_PIECES - 1])
-    translate([0, i * pitch, 0])
-      rotate([0, 0, 90 - sweep / 2]) cable_tube();
-}
-
-// ============================================================================
 // print plates
 // ============================================================================
 
@@ -691,20 +600,22 @@ module tube_plate() {
 module petg_plate() {
   fbw = FB_VERT + 2 * WALL;
   raw = RA_VERT + 2 * WALL;
+  balw = BAL_VERT + 2 * WALL;
 
   translate([0, 0, DT_HEIGHT + WALL]) frontboard_base();
   translate([FB_LEN + 8, 0, DT_HEIGHT + WALL]) rearaudio_base();
+  translate([FB_LEN + RA_LEN + 16, 0, DT_HEIGHT + WALL]) ballast_base();
 
-  // Lids are plain plates now — they lie flat either way up and need no
-  // rotation and no support.
+  // Lids are plain plates — they lie flat either way up, no rotation, no
+  // support.
   translate([0, fbw + 14, 0]) frontboard_lid();
   translate([FB_LEN + 8, raw + 14, 0]) rearaudio_lid();
+  translate([FB_LEN + RA_LEN + 16, balw + 14, 0]) ballast_lid();
 }
 
 // Everything soft, one plate, TPU.
 module tpu_plate()  { ring_set(); }
 module tpu_ladder() { ring_ladder(); }
-module tpu_tubes()   { tube_plate(); }
 
 // ============================================================================
 // render selector:  openscad -o out.stl -D 'part="frontboard_base"' this.scad
@@ -717,10 +628,10 @@ else if (part == "frontboard_base") frontboard_base();
 else if (part == "frontboard_lid")  frontboard_lid();
 else if (part == "rearaudio_base")  rearaudio_base();
 else if (part == "rearaudio_lid")   rearaudio_lid();
+else if (part == "ballast_base")    ballast_base();
+else if (part == "ballast_lid")     ballast_lid();
 else if (part == "tpu_plate")       tpu_plate();
 else if (part == "tpu_ladder")      tpu_ladder();
-else if (part == "tpu_tubes")       tpu_tubes();
-else if (part == "cable_tube")      cable_tube();
 // "none" renders nothing. Needed so another file can `include` this one for
 // its modules and constants without the selector below also emitting a plate
 // into that file's output.
