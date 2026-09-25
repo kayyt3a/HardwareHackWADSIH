@@ -300,9 +300,21 @@ module temple_ring(in_vert = RING_IN_VERT, in_out = RING_IN_OUT) {
 LID_T      = 3.2;   // lid plate thickness
 LID_LIP    = 1.0;   // wall left above the groove — this is what retains it
 LID_GROOVE = 1.0;   // how far the groove cuts into each side wall
-LID_CLR    = 0.25;  // sliding clearance, per face
-LID_DETENT = 0.3;   // click bump near the entry. Set to 0 for a plain friction
-                    // slide if the lid will not go in.
+LID_CLR    = 0.25;  // sliding clearance, per face — INCLUDING thickness.
+                    // It was once applied only to the lid's length and width,
+                    // leaving it exactly as thick as the groove it slides in.
+                    // A zero-clearance sliding fit binds on any real print, and
+                    // it meant the detent below had to be absorbed entirely by
+                    // bending the lid. A 3.2mm PLA plate does not bend 0.3mm;
+                    // it cracks, or it never goes in.
+LID_DETENT = 0.35;  // click bump near the entry, sized against LID_CLR.
+                    // The lid rides UP in its own 0.25mm of slop to get over
+                    // it, so only the remaining 0.10mm has to come from
+                    // bending — which a 3.2mm PLA plate does without
+                    // complaint, where 0.30mm of bend would have cracked it.
+                    // Kept slightly above the slop rather than equal to it so
+                    // print tolerance cannot erase the detent entirely.
+                    // Set to 0 for a plain friction slide.
 
 // ============================================================================
 // pod base — rigid box with the dovetail slot underneath
@@ -386,7 +398,7 @@ module pod_base(length, out, vert, cable_slot_front = true,
     // of the FRONT end wall (x = WALL, which is the lid's stop) out through the
     // rear (x = length), which is the end it slides in from.
     translate([WALL, WALL - LID_GROOVE, gz])
-      cube([length - WALL + EPS, vert + 2 * LID_GROOVE, LID_T]);
+      cube([length - WALL + EPS, vert + 2 * LID_GROOVE, LID_T + LID_CLR]);
 
     // dovetail slot, cut all the way through in X so it slides on
     translate([-EPS, bw / 2, -slot_pad])

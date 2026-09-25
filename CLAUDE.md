@@ -142,8 +142,18 @@ reprint, not a 3-hour one with electronics glued in.
 
 ### Materials
 
-TPU for anything that flexes (rings), PETG for anything that must hold its
-shape (pods, lids), PLA for disposable test prints only.
+**TPU for the rings, PLA for the pods and lids.**
+
+The rings are the one part where the material *is* the mechanism: they grip by
+stretching onto the arm at 20-30% strain. PLA does not stretch, it snaps. That
+substitution is never available, however convenient.
+
+The pods were PETG and are now PLA. PLA is more brittle, but nothing in a pod
+is under sustained load, and it buys two things: it prints better, and it
+shares a bed temperature (~55-60C) with TPU, so both materials can run in one
+job on a tool-changer. PETG at ~80C could not. `FINAL_combined_U1.stl` is that
+single-file plate — eight separate bodies, so the slicer can be told which two
+are TPU.
 
 ---
 
@@ -156,6 +166,8 @@ shape (pods, lids), PLA for disposable test prints only.
 | **ESP8266Audio must be pinned to 1.9.x** | 2.x targets ESP-IDF 5 (`driver/i2s_std.h`); this platform is arduino-esp32 2.0.17 / IDF 4.4 (`driver/i2s.h`). |
 | **Touch polarity is chip-specific** | On the original ESP32 `touchRead()` *falls* on touch; on the S3 it *rises*. Run the selftest build — it measures and prints both the direction and a threshold. |
 | **GPIO 3 is a strapping pin** | Fine in use, but don't hold a button on it down during power-up. GPIO 2 (pad `D1`) is the drop-in alternative. |
+| **The lid had zero clearance in Z** | `LID_CLR` was applied to the lid's length and width but never its thickness, so it was exactly as thick as the groove it slid in. The groove is now `LID_T + LID_CLR`. Worth remembering as a shape: a clearance constant is only as good as the number of places it is actually used. |
+| **The detent is sized against the slop, not against feel** | `LID_DETENT` is 0.35 against 0.25mm of slop, so the lid rides up in its own clearance and only 0.10mm comes from bending. With zero slop it needed 0.30mm of bend — which PLA answers by cracking. Kept above the slop rather than equal to it so print tolerance cannot erase the detent. |
 | **The lid slides, it does not press on** | It enters from the REAR and stops against the inside of the front end wall, which also registers the camera hole. Its grooves cut **outward into the side walls**, never inward over the cavity: the front pod's cavity is exactly as wide as the XIAO, so any inward lip would stop the board going in. The lid is therefore wider than the opening it covers and cannot be dropped in — endwise is the only way. `LID_DETENT` is a 0.3mm click bump near the entry; set it to 0 for a plain friction slide. |
 | **A sealed pod passes every automated check** | The cavity was once cut `out + EPS` deep instead of `out + WALL`, stopping 1.59mm short of the top face and leaving each pod a closed box with no way in. It rendered correctly from outside, exported watertight, and mated with the ring — a sealed void is perfectly manifold. Only a probe down the middle, or looking at a cutaway, finds it. **Verify cavities by probing the interior, not by checking the mesh is valid.** |
 | **Never mix ring sizes under one pod** | Each ladder step is 0.6mm thicker, so it stands its rail 0.6mm higher. A pod bridging two different sizes seats on one rail and rocks on the other. Both rings under a pod must be the same size — and with four printed per size, they will be. |
