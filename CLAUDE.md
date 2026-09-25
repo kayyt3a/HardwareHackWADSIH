@@ -67,6 +67,20 @@ scoping discipline rather than apology.
 camera + trigger. Its aperture is in the **front end wall**, not the lid — the
 camera looks forward along the arm, and a hole in the lid would point the lens
 sideways out of the side of the wearer's head.
+
+`front_box_base` / `front_box_lid` size it from the **assembled stack as
+measured** — 15 x 19 x 40mm plus 0.5mm leeway — rather than from a parts list.
+That is 22.7mm wide against the old pod's 34.2mm. USB-C exits through the lid
+10mm from the front; the receptacle is 8.34 x 2.56mm, so the cutout is 10 x
+4mm, cut loose on purpose because a board sitting free in a pod never lines up
+with a hole as well as a drawing says.
+
+**The 20c coin cannot be the trigger on this box.** Its lid is 21mm wide and
+takes a 19mm pad at most, against the coin's 28.52mm — the old pod was 34.2mm
+wide *because* of that coin. The pad is now 18 x 20mm for copper tape or foil:
+same electrode area as a 5c, no mass, and flush in a 0.8mm pocket instead of
+needing 2.5mm of lid to bury a coin in. The coin still has a home — the
+ballast pod on the other temple is full of them.
 **Audio pod** (behind it on the same arm): amplifier + speaker.
 **Ballast pod** (the other temple): coins, nothing else.
 

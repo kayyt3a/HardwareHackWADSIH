@@ -348,11 +348,21 @@ function lid_wid(vert)   = vert + 2 * LID_GROOVE - 2 * LID_CLR;
 CABLE_W = 9;   // across the wall (Y)
 CABLE_H = 6;   // up the wall (Z)
 
+// USB-C. The receptacle itself is 8.34 x 2.56mm — that is the standard, and
+// it is why 1.5mm could not have been the opening height. The cutout is cut
+// generously rather than to the connector: the board is a loose fit inside the
+// pod, so the hole and the port will never line up as well as a drawing says,
+// and a plug that will not enter is worse than a hole that looks slightly big.
+USBC_W = 10.0;   // 8.34 receptacle + room for misalignment
+USBC_H = 4.0;    // 2.56 receptacle + the same
+USBC_FROM_FRONT = 10;   // 1cm in, measured from the front end of the lid
+
 CAM_APERTURE_W = 7.5;   // across the wall (Y)
 CAM_APERTURE_H = 12;    // up the wall (Z) — the latitude
 
 module pod_base(length, out, vert, cable_slot_front = true,
-                cable_slot_rear = true, camera_front = false) {
+                cable_slot_rear = true, camera_front = false,
+                ap_w = CAM_APERTURE_W, ap_h = CAM_APERTURE_H) {
   bw = vert + 2 * WALL;                  // Y outer
   bh = pod_height(out);                  // Z outer
   slot_pad = DT_HEIGHT + WALL;           // extra Z for the slot boss
@@ -407,14 +417,14 @@ module pod_base(length, out, vert, cable_slot_front = true,
     // Forward-looking camera aperture through the front end wall, centred on
     // the cavity. Stadium-shaped so the ends are round and it prints cleanly.
     if (camera_front) {
-      acz = WALL + out / 2;                     // centre of the cavity
-      span = CAM_APERTURE_H - CAM_APERTURE_W;   // centre-to-centre of the ends
+      acz = WALL + out / 2;                 // centre of the cavity
+      span = ap_h - ap_w;                   // 0 when they are equal -> a circle
       translate([-EPS, bw / 2, acz])
         rotate([0, 90, 0])
           hull()
             for (dz = [-span / 2, span / 2])
               translate([dz, 0, 0])
-                cylinder(h = WALL + 2 * EPS, d = CAM_APERTURE_W, $fn = 40);
+                cylinder(h = WALL + 2 * EPS, d = ap_w, $fn = 48);
     }
 
     // Cable pass-throughs, front and rear.
@@ -485,7 +495,8 @@ PAD_WIRE_D = 2.2;   // pass-through for the trigger wire
 // meant to land at pod x = P is written here as P - WALL. Get this wrong and
 // the camera looks into the inside of a wall.
 module pod_lid(length, out, vert, camera_hole = false, touch_recess = false,
-               grille = false) {
+               grille = false, usbc = false,
+               pad_w_in = PAD_W, pad_l_in = PAD_L, pad_d_in = PAD_DEPTH) {
   ll = lid_len(length);
   lw = lid_wid(vert);
 
@@ -504,10 +515,10 @@ module pod_lid(length, out, vert, camera_hole = false, touch_recess = false,
         translate([ll - 10, lw / 2, LID_T - 0.5])
           cylinder(h = 0.5 + EPS, d = BUTTON_PLUNGER_D + 3, $fn = 32);
       } else {
-        pad_w = min(PAD_W, lw - 2);        // never breach the lid's own edges
-        pad_d = min(PAD_DEPTH, LID_T - 0.6);
-        cx    = ll - PAD_L / 2 - 4;
-        span  = PAD_L - pad_w;
+        pad_w = min(pad_w_in, lw - 2);     // never breach the lid's own edges
+        pad_d = min(pad_d_in, LID_T - 0.6);
+        cx    = ll - pad_l_in / 2 - 4;
+        span  = pad_l_in - pad_w;
 
         translate([cx, lw / 2, LID_T - pad_d])
           hull()
@@ -519,6 +530,16 @@ module pod_lid(length, out, vert, camera_hole = false, touch_recess = false,
         translate([cx, lw / 2, -EPS])
           cylinder(h = LID_T + 2 * EPS, d = PAD_WIRE_D, $fn = 24);
       }
+    }
+
+    // USB-C, straight through the lid. Stadium-ended so the corners are round.
+    if (usbc) {
+      uspan = USBC_W - USBC_H;
+      translate([USBC_FROM_FRONT, lw / 2, -EPS])
+        hull()
+          for (dx = [-uspan / 2, uspan / 2])
+            translate([dx, 0, 0])
+              cylinder(h = LID_T + 2 * EPS, d = USBC_H, $fn = 32);
     }
 
     if (grille)
@@ -550,6 +571,46 @@ module rearaudio_base()  { pod_base(RA_LEN, RA_OUT, RA_VERT,
                                    cable_slot_front = true,
                                    cable_slot_rear  = false); }
 module rearaudio_lid()   { pod_lid(RA_LEN, RA_OUT, RA_VERT, grille = true); }
+
+// -------------------------------------------------------- front box (v2)
+// Sized from the assembled stack rather than from a parts list: 15 wide, 19
+// tall, 40 long as measured, plus 0.5mm of leeway all round. That is the whole
+// difference from the old camera pod, which was 34.2mm wide because it had to
+// carry a 20c coin on its lid.
+//
+// IT NO LONGER CAN. This lid is 21mm wide, so the largest pad it takes is
+// 19mm, against the coin's 28.52mm. The pad here is sized for copper tape or
+// foil instead — same electrode area as a 5c, no mass, and it sits flush in a
+// 0.8mm pocket rather than needing 2.5mm of lid to bury a coin in.
+//
+// The camera aperture is a snug 4mm round hole, not the old 7.5 x 12mm slot:
+// with the box built around the real stack, where the lens ends up is known
+// now, so the latitude the slot existed to provide is no longer needed.
+FBX_CONTENT_LEN  = 40;
+FBX_CONTENT_VERT = 19;
+FBX_CONTENT_OUT  = 15;
+FBX_LEEWAY       = 0.5;
+
+FBX_LEN  = FBX_CONTENT_LEN  + FBX_LEEWAY + 2 * WALL;
+FBX_VERT = FBX_CONTENT_VERT + FBX_LEEWAY;
+FBX_OUT  = FBX_CONTENT_OUT  + FBX_LEEWAY;
+
+FBX_CAM_D  = 4.0;    // snug on the lens barrel
+FBX_PAD_W  = 18;     // copper tape / foil, not a coin
+FBX_PAD_L  = 20;
+FBX_PAD_D  = 0.8;
+
+// Cable exit at the REAR only; the front wall is the lens aperture.
+module front_box_base() { pod_base(FBX_LEN, FBX_OUT, FBX_VERT,
+                                   cable_slot_front = false,
+                                   cable_slot_rear  = true,
+                                   camera_front     = true,
+                                   ap_w = FBX_CAM_D, ap_h = FBX_CAM_D); }
+
+module front_box_lid()  { pod_lid(FBX_LEN, FBX_OUT, FBX_VERT,
+                                  touch_recess = true, usbc = true,
+                                  pad_w_in = FBX_PAD_W, pad_l_in = FBX_PAD_L,
+                                  pad_d_in = FBX_PAD_D); }
 
 // ---------------------------------------------------------- ballast pod
 // The third pod. It holds no electronics — just coins, enough of them to
@@ -610,19 +671,19 @@ module ring_ladder() {
 
 // Everything rigid, one plate, PETG.
 module petg_plate() {
-  fbw = FB_VERT + 2 * WALL;
+  fbw = FBX_VERT + 2 * WALL;
   raw = RA_VERT + 2 * WALL;
   balw = BAL_VERT + 2 * WALL;
 
-  translate([0, 0, DT_HEIGHT + WALL]) frontboard_base();
-  translate([FB_LEN + 8, 0, DT_HEIGHT + WALL]) rearaudio_base();
-  translate([FB_LEN + RA_LEN + 16, 0, DT_HEIGHT + WALL]) ballast_base();
+  translate([0, 0, DT_HEIGHT + WALL]) front_box_base();
+  translate([FBX_LEN + 8, 0, DT_HEIGHT + WALL]) rearaudio_base();
+  translate([FBX_LEN + RA_LEN + 16, 0, DT_HEIGHT + WALL]) ballast_base();
 
   // Lids are plain plates — they lie flat either way up, no rotation, no
   // support.
-  translate([0, fbw + 14, 0]) frontboard_lid();
-  translate([FB_LEN + 8, raw + 14, 0]) rearaudio_lid();
-  translate([FB_LEN + RA_LEN + 16, balw + 14, 0]) ballast_lid();
+  translate([0, fbw + 14, 0]) front_box_lid();
+  translate([FBX_LEN + 8, raw + 14, 0]) rearaudio_lid();
+  translate([FBX_LEN + RA_LEN + 16, balw + 14, 0]) ballast_lid();
 }
 
 // ---------------------------------------------------- one-plate, two materials
@@ -658,6 +719,8 @@ else if (part == "frontboard_base") frontboard_base();
 else if (part == "frontboard_lid")  frontboard_lid();
 else if (part == "rearaudio_base")  rearaudio_base();
 else if (part == "rearaudio_lid")   rearaudio_lid();
+else if (part == "front_box_base")  front_box_base();
+else if (part == "front_box_lid")   front_box_lid();
 else if (part == "ballast_base")    ballast_base();
 else if (part == "ballast_lid")     ballast_lid();
 else if (part == "tpu_plate")       tpu_plate();
