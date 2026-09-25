@@ -613,6 +613,24 @@ module petg_plate() {
   translate([FB_LEN + RA_LEN + 16, balw + 14, 0]) ballast_lid();
 }
 
+// ---------------------------------------------------- one-plate, two materials
+// Everything for a tool-changer in a single file: the three PETG pods with
+// their lids, and the two TPU rings still owed, laid out on a shared bed.
+//
+// They are emitted as SEPARATE BODIES, not merged. A single joined solid would
+// import as one object and there would be no way to tell the slicer that part
+// of it is PETG and part of it is TPU. In the slicer: "split to objects" first,
+// then assign the filament per object — the two small rings are the TPU ones.
+//
+// The two materials do not agree about bed temperature; PETG wants ~80C and
+// TPU ~50-60C. There is one bed, so it is a compromise either way, and PETG is
+// the one that needs the adhesion over a four-hour print.
+module combined_plate() {
+  petg_plate();
+  // rings tucked in front of the pods, clear of them in Y
+  translate([0, -(RING_LEN + 10), 0]) ring_set(2);
+}
+
 // Everything soft, one plate, TPU.
 module tpu_plate()  { ring_set(); }
 module tpu_ladder() { ring_ladder(); }
@@ -631,6 +649,7 @@ else if (part == "rearaudio_lid")   rearaudio_lid();
 else if (part == "ballast_base")    ballast_base();
 else if (part == "ballast_lid")     ballast_lid();
 else if (part == "tpu_plate")       tpu_plate();
+else if (part == "combined")        combined_plate();
 else if (part == "tpu_ladder")      tpu_ladder();
 // "none" renders nothing. Needed so another file can `include` this one for
 // its modules and constants without the selector below also emitting a plate
