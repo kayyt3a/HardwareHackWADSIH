@@ -254,11 +254,8 @@ bool setupCamera() {
 //
 //   TOUCH PAD — ONE wire to any scrap of metal, no ground return. That makes
 //     it the better choice when GND pins are already spoken for, and it puts
-//     one less thing in the pod. The cost is that it has no fixed threshold:
-//     the reading moves with humidity, with how the pad is mounted, and with
-//     how close the wearer's head is, so it must be calibrated on the
-//     assembled device (the selftest build does this) and rechecked if the
-//     build changes.
+//     one less thing in the pod. A press is a reading above TOUCH_FACTOR x
+//     the idle value measured at boot.
 float touchBaseline = 0;
 
 // A press reads 2.5x the idle value. Idle value = touchBaseline, averaged at
@@ -302,6 +299,7 @@ bool manualTriggered() {
 // Implemented in audio_playback.cpp. The server returns raw 16 kHz mono
 // 16-bit PCM, so there is no decoding step — see that file for the I2S setup.
 void setupSpeaker();
+void playBeep();
 void playPcmStream(WiFiClient *stream, int contentLength);
 
 // POSTs the JPEG frame to /ask as multipart/form-data and plays the PCM
@@ -394,22 +392,24 @@ void captureAskAndSpeak() {
   HTTPClient &http = serverHttp;
   http.setReuse(true);
   String url = String("https://") + SERVER_HOST + "/ask";
-  http.begin(serverClient, url);
-  // 90 seconds. Vision plus speech takes several on its own, and on the
-  // bench the server is also waiting on a typed question. The library's
-  // default is far shorter. A timeout that fires early is invisible from
-  // the server side — it logs a clean 200 while the glasses have already
-  // hung up and play nothing.
-  http.setTimeout(90000);
-
-  // The server puts the plain-text answer in X-Spoken-Text alongside the
-  // audio body. Collecting it costs nothing and doesn't consume the body,
-  // so the monitor can show what was said as well as play it.
-  const char *headerKeys[] = {"X-Spoken-Text"};
-  http.collectHeaders(headerKeys, 1);
-
   String boundary = "VocalensBoundary";
-  http.addHeader("Content-Type", "multipart/form-data; boundary=" + boundary);
+
+  // Sets up the request. Called again for the retry, because http.end()
+  // clears the headers.
+  auto beginRequest = [&]() {
+    http.begin(serverClient, url);
+    // 20 s. This is how long the library waits for the next bytes, not the
+    // whole request, so a slow upload still gets through. It only fires if
+    // the link goes completely silent, and then the retry below kicks in
+    // rather than hanging for a minute and a half.
+    http.setTimeout(20000);
+    // The server puts the plain-text answer in X-Spoken-Text alongside the
+    // audio body, so the monitor can show what was said as well as play it.
+    const char *headerKeys[] = {"X-Spoken-Text"};
+    http.collectHeaders(headerKeys, 1);
+    http.addHeader("Content-Type", "multipart/form-data; boundary=" + boundary);
+  };
+  beginRequest();
 
   String imagePart = "--" + boundary + "\r\n"
                       "Content-Disposition: form-data; name=\"image\"; filename=\"frame.jpg\"\r\n"
@@ -447,6 +447,19 @@ void captureAskAndSpeak() {
   const unsigned long tSend = millis();
   const bool reused = serverClient.connected();
   int httpCode = http.POST(body, totalLen);
+  // Negative codes are connection failures (no reply at all), most often a
+  // reused connection the hotspot silently dropped. Retry once on a fresh
+  // connection. Server errors (4xx/5xx) are not retried.
+  if (httpCode < 0) {
+    Serial.printf("[NET] request failed (%d: %s) — retrying on a fresh connection\n",
+                  httpCode, http.errorToString(httpCode).c_str());
+    http.end();
+    serverClient.stop();
+    if (ensureWiFi()) {
+      beginRequest();
+      httpCode = http.POST(body, totalLen);
+    }
+  }
   const unsigned long tReply = millis();
   Serial.printf("[TIME] prep %lums | connection %s | upload %u B + server wait %lums\n",
                 tSend - tStop, reused ? "REUSED" : "NEW (handshake)",
@@ -553,6 +566,7 @@ void loop() {
 
   if (nowTriggered && !wasTriggered && millis() > ignoreUntil) {
     Serial.println("Triggered — capturing frame");
+    playBeep();
     pressCount++;
     captureAskAndSpeak();
     ignoreUntil = millis() + 1500;
