@@ -771,22 +771,20 @@ module petg_plate() {
   translate([FBX_LEN + RA_LEN + 16, balw + 14, 0]) ballast_lid();
 }
 
-// ---------------------------------------------------- one-plate, two materials
-// Everything for a tool-changer in a single file: the three PETG pods with
-// their lids, and the two TPU rings still owed, laid out on a shared bed.
+// ------------------------------------------------- one plate, all the PLA
+// Every rigid part in one job: three pod bases, three lids, and the battery
+// box. No TPU — the rings print separately.
 //
-// They are emitted as SEPARATE BODIES, not merged. A single joined solid would
-// import as one object and there would be no way to tell the slicer that part
-// of it is PETG and part of it is TPU. In the slicer: "split to objects" first,
-// then assign the filament per object — the two small rings are the TPU ones.
-//
-// The two materials do not agree about bed temperature; PETG wants ~80C and
-// TPU ~50-60C. There is one bed, so it is a compromise either way, and PETG is
-// the one that needs the adhesion over a four-hour print.
-module combined_plate() {
-  petg_plate();
-  // rings tucked in front of the pods, clear of them in Y
-  translate([0, -(RING_LEN + 10), 0]) ring_set(2);
+// Mixing the rings in cost more than it saved. They are 11.6mm tall, so on a
+// tool-changer the head would swap PLA -> TPU -> PLA on each of 58 layers:
+// 116 changes, each with a purge, for 2.2cm3 of parts that take twenty minutes
+// on their own. The tool changes alone outweighed the whole second job.
+module pla_all_plate() {
+  petg_plate();                                   // pods and their lids
+  translate([0, FBX_VERT + 2 * WALL + RA_VERT + 2 * WALL + 30, 0]) {
+    battery_box_base();
+    translate([BB_LEN + 6, 0, 0]) battery_box_lid();
+  }
 }
 
 // Everything soft, one plate, TPU.
@@ -812,7 +810,7 @@ else if (part == "front_box_lid")   front_box_lid();
 else if (part == "ballast_base")    ballast_base();
 else if (part == "ballast_lid")     ballast_lid();
 else if (part == "tpu_plate")       tpu_plate();
-else if (part == "combined")        combined_plate();
+else if (part == "pla_all")         pla_all_plate();
 else if (part == "tpu_ladder")      tpu_ladder();
 // "none" renders nothing. Needed so another file can `include` this one for
 // its modules and constants without the selector below also emitting a plate

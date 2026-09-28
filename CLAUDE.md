@@ -183,9 +183,14 @@ substitution is never available, however convenient.
 The pods were PETG and are now PLA. PLA is more brittle, but nothing in a pod
 is under sustained load, and it buys two things: it prints better, and it
 shares a bed temperature (~55-60C) with TPU, so both materials can run in one
-job on a tool-changer. PETG at ~80C could not. `FINAL_combined_U1.stl` is that
-single-file plate — eight separate bodies, so the slicer can be told which two
-are TPU.
+job on a tool-changer. PETG at ~80C could not.
+
+**They are still printed as two jobs, though.** Merging the rings into the PLA
+plate looked free and was not: the rings are 11.6mm tall, so a tool-changer
+swaps PLA -> TPU -> PLA on each of 58 layers — 116 changes, each with a purge,
+for 2.2cm3 of parts that take twenty minutes on their own. The tool changes
+alone cost more than the second job. `FINAL_pla_all_U1.stl` is every rigid part
+in one print; the rings run separately.
 
 ---
 
