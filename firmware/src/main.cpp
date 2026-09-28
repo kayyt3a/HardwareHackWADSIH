@@ -38,6 +38,8 @@
 #include "mic_capture.h"
 #include "offline_fallback.h"
 #include "wake_word.h"
+#include "offline_message.h"
+void playPcmFromMemory(const int16_t *samples, size_t count);
 
 
 // FEATURE SWITCHES — all three are written but not finished, so they are
@@ -301,6 +303,7 @@ bool manualTriggered() {
 void setupSpeaker();
 void playBeep();
 void playPcmStream(WiFiClient *stream, int contentLength);
+void playPcmFromMemory(const int16_t *samples, size_t count);
 
 // POSTs the JPEG frame to /ask as multipart/form-data and plays the PCM
 // answer that comes back. Multipart is built manually since HTTPClient
@@ -347,6 +350,13 @@ static bool triggerPressedAgain(void *) {
 
 void captureAskAndSpeak() {
   camera_fb_t *fb = nullptr;
+    if (WiFi.status() != WL_CONNECTED) {
+    Serial.println("[NET] offline — playing stored message");
+    playPcmFromMemory(OFFLINE_MSG, OFFLINE_MSG_SAMPLES);
+    WiFi.begin(WIFI_SSID, WIFI_PASSWORD);   // non-blocking retry for the next press
+    wifiConnected = false;
+    return;
+  }
   startWarmConnect();   // handshake runs while the wearer speaks
 
 #if MIC_ENABLED
@@ -488,6 +498,9 @@ void captureAskAndSpeak() {
                   millis() - tPlay, tReply - tStop);
   } else {
     Serial.printf("Server error: %d\n", httpCode);
+    if (httpCode <= 0) {   // no route / timeout, not an HTTP error
+      playPcmFromMemory(OFFLINE_MSG, OFFLINE_MSG_SAMPLES);
+    }
   }
   http.end();
   // A failed or half-read reply can leave junk on the connection; start

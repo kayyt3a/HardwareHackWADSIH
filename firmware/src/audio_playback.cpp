@@ -186,3 +186,18 @@ void playPcmStream(WiFiClient *stream, int contentLength) {
   free(buf);
   Serial.println("[SPK] playback finished");
 }
+
+// Plays samples that already live in memory/flash (e.g. the offline message).
+// No download step, no PSRAM allocation.
+void playPcmFromMemory(const int16_t *samples, size_t count) {
+  if (!speakerReady) {
+    Serial.println("[SPK] not initialised — call setupSpeaker() in setup()");
+    return;
+  }
+  i2s_zero_dma_buffer(I2S_NUM_1);
+  i2s_start(I2S_NUM_1);
+  writeSamples(samples, count);
+  delay(150);   // let the DMA drain so the tail isn't cut
+  i2s_zero_dma_buffer(I2S_NUM_1);
+  i2s_stop(I2S_NUM_1);
+}
