@@ -90,23 +90,24 @@ cable opening, on the end that faces the other; every other wall is closed.
 The concealment tube that used to run around the back of the head is gone with
 the arrangement that needed it.
 
-### The battery box
+### The audio pod carries the battery
 
-Not a temple pod. At 55 x 40 x 26mm it is far too big to hang off glasses, so
-it carries no dovetail and no rings — it is a pack for a pocket or a lanyard,
-with a cable up to the camera pod. It holds the battery (50 x 35 x 6), the amp
-board (22 x 32), the speaker (d25) and the 5c touch pad.
+It used to lay the amp and speaker side by side, which set its length, and the
+battery lived in a **separate box on a cable in a pocket** — for a product whose
+whole thesis is that it is on the glasses. Stacking instead (battery flat on the
+floor, amp on the battery, speaker on the amp, as in the build photos) lets the
+battery's own 50 x 35mm footprint set the size and everything else fit inside it.
 
-The stack is battery flat on the floor, board on the battery, speaker on the
-board facing the lid. That is what keeps the box 52mm long rather than 62:
-side by side the speaker and board need 25 + 32 = 57mm of floor, wider than
-the battery they would otherwise sit on.
+The merged pod is **54.2 x 39.2 x 30.4mm — shorter than the old audio pod alone**
+(60.2). One fewer box to print, and nothing left off the glasses.
 
-**The coin pocket is 20mm, against a measured 16.5.** The pad is a 5c and a 5c
-is 19.41mm across; a 16.5mm pocket takes neither. 20mm takes a real 5c with
-clearance and still takes a 16.5mm disc, which sits loose but glues in fine.
-Where a measurement and a known standard disagree, size for whichever failure
-is recoverable.
+**The 35mm width was the only thing that ever blocked this.** Every cavity was
+under 31mm on that axis; depth was never the problem, the battery is 6mm thick.
+
+Its lid carries the speaker grille and the **5c touch pad**. The coin goes here
+rather than on the camera pod because that lid is 21mm wide and takes a 19mm
+pad — a 5c is 19.41 and misses by less than half a millimetre. This lid is
+37.5mm.
 
 ### The ballast pod
 

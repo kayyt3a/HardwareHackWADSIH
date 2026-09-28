@@ -147,6 +147,15 @@ WIRE_ROOM = 2;
 SPKR_DIA = 28; SPKR_HGT = 6;
 AMP_LEN = 22; AMP_WID = 16; AMP_HGT = 5;
 
+// Measured off the actual parts. These sit ABOVE every pod dimension that
+// derives from them, because OpenSCAD resolves top-level assignments in file
+// order: used before they are declared they read as undef, and the part
+// exports as a stub with no error.
+BATT_L = 50; BATT_W = 35; BATT_H = 6;   // the battery, measured
+AMP_L  = 32; AMP_W  = 22; AMP_H  = 5;   // the amp board, measured
+SPK_D  = 25; SPK_H  = 6;                // the speaker, measured — 25, not the
+                                        // 28 that SPKR_DIA still assumes
+
 // MUST COME AFTER AMP_HGT ABOVE. At top level OpenSCAD resolves in file order,
 // so a forward reference here silently becomes undef, RA_VERT becomes undef,
 // and the rear pod exports as a stub with no body and no error.
@@ -212,13 +221,28 @@ FB_VERT_MIN = 28;
 FB_VERT = max(XIAO_WID, CAM_WID, FB_VERT_MIN) + FB_EXTRA_VERT;   // vertical (Y)
 FB_OUT  = max(XIAO_PROFILE, CAM_HGT) + WIRE_ROOM + FB_EXTRA_OUT; // outward (Z)
 
-RA_LEN  = AMP_LEN + SPKR_DIA + 2 * WALL + 2 + RA_EXTRA_LEN;
+// THE AUDIO POD CARRIES THE BATTERY TOO.
+//
+// It used to lay the amp and speaker side by side, which set its length, and
+// the battery lived in a separate box that hung off nothing — a pack in a
+// pocket on a cable, for a product whose whole thesis is that it is on the
+// glasses. Stacking instead (battery flat on the floor, amp on the battery,
+// speaker on the amp, as in the photos) means the battery's own 50 x 35mm
+// footprint sets the size and everything else fits inside it.
+//
+// The result is SHORTER than the old audio pod alone: 54.2mm against 60.2.
+// One fewer box to print, and nothing left off the glasses.
+//
+// The 35mm width was the only thing that ever blocked this. Every cavity was
+// under 31mm in that axis, and depth was never the problem — the battery is
+// 6mm thick.
+RA_LEN  = BATT_L + 1 + 2 * WALL;
 // Same for the rear pod, and it matters more here: the speaker's 28mm was the
 // single biggest number in the build and it was pointed straight out sideways.
 // On edge it runs vertically, behind the ear, where the ear itself hides it —
 // which is exactly where a behind-the-ear hearing aid puts the same bulk.
-RA_VERT = max(AMP_WID, SPKR_DIA) + RA_EXTRA_VERT;
-RA_OUT  = max(AMP_PROFILE, SPKR_HGT) + WIRE_ROOM + RA_EXTRA_OUT;
+RA_VERT = BATT_W + 1;                               // battery sets it
+RA_OUT  = BATT_H + AMP_HGT + SPK_H + WIRE_ROOM;     // the stack
 
 // ============================================================================
 // helpers
@@ -597,9 +621,20 @@ module rearaudio_base()  { pod_base(RA_LEN, RA_OUT, RA_VERT,
 // The grille is sized to the speaker behind it (28mm), not left at the 13mm
 // it used to be. A 28mm driver firing through a 13mm hole pattern is a muffled
 // one, and the lid has the room.
+// Grille sized to the speaker as measured (25mm, not the 28 SPKR_DIA still
+// assumes), plus the 5c pocket.
+//
+// The coin lives on THIS lid, not the camera pod's. That lid is 21mm wide and
+// takes a 19mm pad; a 5c is 19.41 and misses by less than half a millimetre.
+// This one is 37.5mm wide and takes it with room to spare.
 module rearaudio_lid()   { pod_lid(RA_LEN, RA_OUT, RA_VERT,
-                                   big_grille_d  = SPKR_DIA - 3,
-                                   big_grille_cx = lid_len(RA_LEN) - 20); }
+                                   big_grille_d  = SPK_D - 3,
+                                   big_grille_cx = 15,
+                                   touch_recess  = true,
+                                   pad_w_in      = BB_COIN_D,
+                                   pad_l_in      = BB_COIN_D,
+                                   pad_d_in      = BB_COIN_T,
+                                   pad_cx_in     = 37); }
 
 // -------------------------------------------------------- front box (v2)
 // Sized from the assembled stack rather than from a parts list: 15 wide, 19
@@ -641,71 +676,22 @@ module front_box_lid()  { pod_lid(FBX_LEN, FBX_OUT, FBX_VERT,
                                   pad_w_in = FBX_PAD_W, pad_l_in = FBX_PAD_L,
                                   pad_d_in = FBX_PAD_D); }
 
-// ========================================================== battery box
-// Holds the battery, the amplifier board, the speaker and the 5c touch pad.
-// It is NOT a temple pod — at 55 x 40 x 26mm it is far too big to hang off
-// glasses, so it carries no dovetail and no rings. It is a pack that sits in a
-// pocket or on a lanyard with a cable up to the camera pod.
-//
-// The stack is the one in the photo: battery flat on the floor, amp board on
-// the battery, speaker on the board facing the lid. That is what makes the box
-// 52mm long instead of 62 — laid side by side the speaker and board need
-// 25 + 32 = 57mm of floor, which is wider than the battery they would sit on.
-//
-// THE COIN. The pad is a 5c, and a 5c is 19.41mm across, not the 16.5 measured.
-// The pocket is 20mm: that takes a real 5c with clearance, and still takes a
-// 16.5mm disc, which sits loose but glues in perfectly well. Sized the other
-// way round it would take neither. Where a measurement and a known standard
-// disagree, size for whichever failure is recoverable.
-BATT_L = 50; BATT_W = 35; BATT_H = 6;
-AMP_L  = 32; AMP_W  = 22; AMP_H  = 5;
-SPK_D  = 25; SPK_H  = 6;
-BB_COIN_D = 20.0;   // 5c is 19.41 — see above
-BB_COIN_T = 1.4;    // 5c is 1.30 thick; pocket a touch deeper so it sits flush
-
-BB_VERT = BATT_W + 2;                         // 37 — across the box
-BB_OUT  = BATT_H + AMP_H + SPK_H + 2;         // 20 — the stack, plus wiring
-BB_LEN  = BATT_L + 2 + 2 * WALL;              // 55.2 outer
-
-// Lid feature positions, in lid-local X. The lid starts at x = WALL in box
-// coordinates, so these are offsets from the inside of the front end wall.
-BB_GRILLE_CX = 15;   // over the speaker
-BB_PAD_CX    = 39;   // the coin, clear of the grille: 24mm apart, and the two
-                     // radii only add to 22, so they cannot touch
-
-module battery_box_base() {
-  pod_base(BB_LEN, BB_OUT, BB_VERT,
-           cable_slot_front = false,   // wires leave one end only
-           cable_slot_rear  = true,
-           camera_front     = false,
-           dovetail         = false);
-}
-
-module battery_box_lid() {
-  pod_lid(BB_LEN, BB_OUT, BB_VERT,
-          touch_recess  = true,
-          pad_w_in      = BB_COIN_D,
-          pad_l_in      = BB_COIN_D,   // equal -> a round pocket, not a slot
-          pad_d_in      = BB_COIN_T,
-          pad_cx_in     = BB_PAD_CX,
-          big_grille_d  = SPK_D - 3,   // holes stay inside the speaker's rim
-          big_grille_cx = BB_GRILLE_CX);
-}
-
-module battery_box_plate() {
-  translate([0, 0, 0]) battery_box_base();
-  translate([0, BB_VERT + 2 * WALL + 10, 0]) battery_box_lid();
-}
+// The 5c touch pad. 20mm against a measured 16.5: the pad is a 5c, a 5c is
+// 19.41mm across, and 16.5 would take neither. 20 takes a real 5c with
+// clearance and still takes a 16.5mm disc loose. Where a measurement and a
+// published standard disagree, size for the recoverable failure.
+BB_COIN_D = 20.0;
+BB_COIN_T = 1.4;
 
 // ---------------------------------------------------------- ballast pod
 // The third pod. It holds no electronics — just coins, enough of them to
 // match whatever the other temple ends up weighing.
 //
-// Its outer dimensions are copied from the camera pod rather than sized to
-// its contents, which is the whole point: from the outside it has to read as
-// the same object, or the glasses look like they have a lump on one side and
-// a different lump on the other. Only the openings differ — no lens aperture
-// and no cable slots, because nothing goes in or out of it.
+// Sized to sit between its two neighbours rather than match either: the camera
+// pod is now 22.7mm wide and the audio pod 39.2, so there is no single object
+// left to copy. What matters is that it reads as part of the same family and
+// holds enough coins, and at 34.2mm it does both. No lens aperture and no
+// cable slots — nothing goes in or out of it.
 //
 // Coins lie FLAT and stack outward. A 20c is 28.52mm across and 2.5mm thick,
 // so the cavity takes them face-on across its width and depth, and the stack
@@ -772,20 +758,19 @@ module petg_plate() {
 }
 
 // ------------------------------------------------- one plate, all the PLA
-// Every rigid part in one job: three pod bases, three lids, and the battery
-// box. No TPU — the rings print separately.
+// Every rigid part in one job: three pod bases and their three lids. No TPU —
+// the rings print separately.
 //
 // Mixing the rings in cost more than it saved. They are 11.6mm tall, so on a
 // tool-changer the head would swap PLA -> TPU -> PLA on each of 58 layers:
 // 116 changes, each with a purge, for 2.2cm3 of parts that take twenty minutes
 // on their own. The tool changes alone outweighed the whole second job.
 module pla_all_plate() {
-  petg_plate();                                   // pods and their lids
-  translate([0, FBX_VERT + 2 * WALL + RA_VERT + 2 * WALL + 30, 0]) {
-    battery_box_base();
-    translate([BB_LEN + 6, 0, 0]) battery_box_lid();
-  }
+  // Three pods and their three lids — that is everything now. The battery box
+  // is gone: the audio pod absorbed it.
+  petg_plate();
 }
+
 
 // Everything soft, one plate, TPU.
 module tpu_plate()  { ring_set(); }
@@ -802,9 +787,6 @@ else if (part == "frontboard_base") frontboard_base();
 else if (part == "frontboard_lid")  frontboard_lid();
 else if (part == "rearaudio_base")  rearaudio_base();
 else if (part == "rearaudio_lid")   rearaudio_lid();
-else if (part == "battery_box")     battery_box_plate();
-else if (part == "battery_box_base") battery_box_base();
-else if (part == "battery_box_lid") battery_box_lid();
 else if (part == "front_box_base")  front_box_base();
 else if (part == "front_box_lid")   front_box_lid();
 else if (part == "ballast_base")    ballast_base();
